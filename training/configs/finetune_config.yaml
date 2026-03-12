@@ -1,0 +1,33 @@
+model:
+  input_dim: 6
+  hidden_dim: 256
+  n_residual_blocks: 4
+  branch_dim: 64
+
+training:
+  epochs: 300
+  batch_size: 256
+  learning_rate: 1.0e-5
+  weight_decay: 1.0e-5
+  early_stopping_patience: 30
+  unfreeze_after_epoch: 100    # switch to full fine-tuning after 100 epochs
+  unfreeze_lr: 1.0e-6
+  val_fraction: 0.2
+  random_seed: 42
+
+loss:
+  lambda_physics: 0.005     # smaller lambda for fine-tuning
+  use_huber: true
+  huber_delta: 1.0
+
+data:
+  p0_value: null             # set per run at runtime via --p0 CLI argument
+  x_tar_col: "P_react_x"
+  weight_col: null
+
+pretrained:
+  checkpoint_path: "checkpoints/pretrain/best_pretrain.pth"
+
+output:
+  checkpoint_dir: "checkpoints/finetune/"
+  scaler_save_path: "checkpoints/pretrain/scaler_bundle.json"  # reuse pretrain scaler

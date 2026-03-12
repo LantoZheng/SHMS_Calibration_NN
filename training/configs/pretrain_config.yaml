@@ -1,0 +1,39 @@
+model:
+  input_dim: 6          # [x_fp, y_fp, xp_fp, yp_fp, x_tar, p0]
+  hidden_dim: 256
+  n_residual_blocks: 4
+  branch_dim: 64
+
+training:
+  epochs: 200
+  batch_size: 2048
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-4
+  early_stopping_patience: 20
+  gradient_clip_max_norm: 1.0
+  val_fraction: 0.2
+  random_seed: 42
+
+loss:
+  lambda_physics: 0.01
+  use_huber: true
+  huber_delta: 1.0
+  transport_matrix:
+    M_xptar_xp_fp: 0.0    # SHMS: parallel-to-point in dispersive plane
+    M_yptar_yp_fp: -1.0   # SHMS: point-to-point in non-dispersive (approx)
+
+data:
+  simc_tree_name: "h10"
+  x_tar_sigma_cm: 0.1    # Gaussian raster sigma for SIMC x_tar synthesis
+  p0_values:             # list of p0 (GeV/c) to sample uniformly across
+    - 2.7
+    - 4.0
+    - 4.4
+    - 5.1
+    - 6.0
+    - 8.0
+    - 11.0
+
+output:
+  checkpoint_dir: "checkpoints/pretrain/"
+  scaler_save_path: "checkpoints/pretrain/scaler_bundle.json"
