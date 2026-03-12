@@ -1,8 +1,8 @@
-# SHMS_Calicration_NN
+# SHMS_Calibration_NN
 
 Neural-network training module extracted from the `AI-ML-R-SIDIS` project for SHMS optics calibration.
 
-> Note: The repository name keeps the original requested spelling: **Calicration**.
+Repository name spelling has been corrected to **Calibration**.
 
 ## Structure
 
