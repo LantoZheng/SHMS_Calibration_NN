@@ -51,6 +51,20 @@ class ScalerBundle:
         self._fitted = True
         return self
 
+    def set_fitted_scalers(
+        self, scaler_X: StandardScaler, scaler_Y: StandardScaler
+    ) -> "ScalerBundle":
+        """
+        Attach externally-fitted scalers and mark this bundle as fitted.
+
+        Useful when scalers are fitted by another component (e.g. SIMCDataset)
+        but should still be persisted via ScalerBundle.save().
+        """
+        self.scaler_X = scaler_X
+        self.scaler_Y = scaler_Y
+        self._fitted = True
+        return self
+
     def transform_X(self, X: np.ndarray) -> np.ndarray:
         self._check_fitted()
         return self.scaler_X.transform(X)

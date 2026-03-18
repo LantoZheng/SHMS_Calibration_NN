@@ -28,6 +28,8 @@ training/
 │   ├── run_pretrain.py           # CLI: Stage 1
 │   ├── run_finetune.py           # CLI: Stage 2
 │   └── evaluate_model.py         # CLI: evaluation & comparison
+├── notebooks/
+│   └── simc_pretrain_handover.ipynb  # Stage 1 notebook (SIMC data handover)
 └── tests/
     ├── test_model.py
     ├── test_dataset.py
@@ -78,6 +80,15 @@ python training/scripts/run_pretrain.py \
 
 The fitted `ScalerBundle` is saved to `checkpoints/pretrain/scaler_bundle.json`
 and **must be reused** in Stage 2.
+
+### Notebook Workflow
+
+For a notebook-based Stage-1 workflow, use:
+
+`training/notebooks/simc_pretrain_handover.ipynb`
+
+It follows the same SIMC variable mapping and training flow as
+`training/scripts/run_pretrain.py`.
 
 ## Stage 2 — Fine-tuning on Sieve/Foil Data
 

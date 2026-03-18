@@ -29,6 +29,8 @@ pytest training/tests -v
 python training/scripts/run_pretrain.py --config training/configs/pretrain_config.yaml --simc-files /path/to/*.root
 ```
 
+Notebook version: `training/notebooks/simc_pretrain_handover.ipynb`
+
 ## Source attribution
 
 This repository is split from the `training` part of `AI-ML-R-SIDIS`.
