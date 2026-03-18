@@ -108,10 +108,7 @@ def main() -> None:
     target_features = ["delta", "xptar", "yptar", "ytar"]
     bundle = ScalerBundle(input_features=input_features, target_features=target_features)
     if dataset.scaler_X is not None and dataset.scaler_Y is not None:
-        import numpy as np
-        bundle.scaler_X = dataset.scaler_X
-        bundle.scaler_Y = dataset.scaler_Y
-        bundle._fitted = True
+        bundle.set_fitted_scalers(dataset.scaler_X, dataset.scaler_Y)
         bundle.save(scaler_path)
         print(f"Scaler bundle saved to: {scaler_path}")
 
