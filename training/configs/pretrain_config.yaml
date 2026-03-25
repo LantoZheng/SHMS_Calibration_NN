@@ -7,7 +7,7 @@ model:
 training:
   epochs: 200
   batch_size: 2048
-  learning_rate: 1.0e-3
+  learning_rate: 1.0e-3 #Try 
   weight_decay: 1.0e-4
   early_stopping_patience: 20
   gradient_clip_max_norm: 1.0
