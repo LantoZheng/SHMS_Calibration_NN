@@ -101,9 +101,10 @@ def main() -> None:
         rng_seed=config.get("training", {}).get("random_seed", 42),
     )
     print(f"Dataset size: {len(dataset)} events")
+    actual_input_dim = dataset.X.shape[1]
 
     # Save scaler bundle
-    mcfg = config.get("model", {})
+    mcfg = config.setdefault("model", {})
     input_features = ["x_fp", "y_fp", "xp_fp", "yp_fp", "x_tar"] + (["p0"] if p0 is not None else [])
     target_features = ["delta", "xptar", "yptar", "ytar"]
     bundle = ScalerBundle(input_features=input_features, target_features=target_features)
@@ -113,8 +114,14 @@ def main() -> None:
         print(f"Scaler bundle saved to: {scaler_path}")
 
     # Build model
+    if mcfg.get("input_dim") not in (None, actual_input_dim):
+        print(
+            f"Info: overriding model.input_dim from {mcfg.get('input_dim')} "
+            f"to {actual_input_dim} to match dataset features."
+        )
+    mcfg["input_dim"] = actual_input_dim
     model = ResidualMLP(
-        input_dim=mcfg.get("input_dim", 6),
+        input_dim=mcfg.get("input_dim", actual_input_dim),
         hidden_dim=mcfg.get("hidden_dim", 256),
         n_residual_blocks=mcfg.get("n_residual_blocks", 4),
         branch_dim=mcfg.get("branch_dim", 64),

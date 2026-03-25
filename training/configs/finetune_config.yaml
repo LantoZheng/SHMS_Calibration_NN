@@ -24,6 +24,7 @@ data:
   p0_value: null             # set per run at runtime via --p0 CLI argument
   x_tar_col: "P_react_x"
   weight_col: null
+  include_pset_imag: false   # set true to add P_set and I_mag as inputs
 
 pretrained:
   checkpoint_path: "checkpoints/pretrain/best_pretrain.pth"

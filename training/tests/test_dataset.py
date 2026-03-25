@@ -17,6 +17,8 @@ def _make_df(n: int = 50) -> pd.DataFrame:
             "P_dc_xp_fp": rng.uniform(-0.06, 0.06, n),
             "P_dc_yp_fp": rng.uniform(-0.04, 0.04, n),
             "P_react_x": rng.normal(0, 0.1, n),
+            "P_set": rng.uniform(3.5, 6.0, n),
+            "I_mag": rng.uniform(0.8, 1.2, n),
             "P_gtr_dp": rng.uniform(-8, 8, n),
             "P_gtr_th": rng.uniform(-0.05, 0.05, n),
             "P_gtr_ph": rng.uniform(-0.03, 0.03, n),
@@ -67,6 +69,31 @@ def test_input_dim_without_xtar():
     assert ds.X.shape[1] == 4
 
 
+def test_include_pset_imag_adds_features():
+    df = _make_df(12)
+    ds = SieveDataset(df, include_pset_imag=True)
+    # 4 DC + 1 x_tar + 2 operating params = 7
+    assert ds.X.shape[1] == 7
+
+
+def test_pset_imag_dropped_when_disabled():
+    df = _make_df(8)
+    ds = SieveDataset(
+        df,
+        input_cols=[
+            "P_dc_x_fp",
+            "P_dc_y_fp",
+            "P_dc_xp_fp",
+            "P_dc_yp_fp",
+            "P_set",
+            "I_mag",
+        ],
+        x_tar_col=None,
+        include_pset_imag=False,
+    )
+    assert ds.X.shape[1] == 4
+
+
 def test_weight_col():
     df = _make_df(10)
     ds = SieveDataset(df, weight_col="cluster_weight")
@@ -98,3 +125,20 @@ def test_with_scaler():
     assert len(ds) == 50
     # Scaled data should have approximately zero mean
     assert abs(ds.X.mean().item()) < 1.0
+
+
+def test_scaler_mismatch_when_adding_pset_imag():
+    from sklearn.preprocessing import StandardScaler
+
+    df = _make_df(15)
+    base_X = df[["P_dc_x_fp", "P_dc_y_fp", "P_dc_xp_fp", "P_dc_yp_fp"]].values
+    scaler_X = StandardScaler().fit(base_X)
+
+    with pytest.raises(ValueError):
+        SieveDataset(
+            df,
+            x_tar_col=None,
+            p0_value=None,
+            scaler_X=scaler_X,
+            include_pset_imag=True,
+        )

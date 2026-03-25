@@ -50,6 +50,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--p0", type=float, default=None, help="Central momentum GeV/c")
     parser.add_argument("--device", default=None, help="'cuda' or 'cpu'")
     parser.add_argument("--output-dir", default=None, help="Override checkpoint output directory")
+    parser.add_argument(
+        "--include-pset-imag",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Include P_set and I_mag as additional input features",
+    )
     return parser.parse_args()
 
 
@@ -80,16 +86,22 @@ def main() -> None:
         or config.get("output", {}).get("checkpoint_dir", "checkpoints/finetune/")
     )
 
-    p0 = args.p0 if args.p0 is not None else config.get("data", {}).get("p0_value", None)
+    dcfg = config.setdefault("data", {})
+    p0 = args.p0 if args.p0 is not None else dcfg.get("p0_value", None)
 
     # Load scaler bundle from pre-training (MUST reuse — do not refit)
     print(f"Loading scaler bundle from: {scaler_path}")
     scaler_bundle = ScalerBundle.load(scaler_path)
 
     # Build dataset
-    dcfg = config.get("data", {})
     x_tar_col = dcfg.get("x_tar_col", "P_react_x")
     weight_col = dcfg.get("weight_col", None)
+    include_pset_imag = (
+        args.include_pset_imag
+        if args.include_pset_imag is not None
+        else dcfg.get("include_pset_imag", False)
+    )
+    dcfg["include_pset_imag"] = include_pset_imag
 
     print(f"Loading sieve data from: {args.sieve_data}")
     dataset = SieveDataset(
@@ -99,13 +111,21 @@ def main() -> None:
         weight_col=weight_col,
         scaler_X=scaler_bundle.scaler_X,
         scaler_Y=scaler_bundle.scaler_Y,
+        include_pset_imag=include_pset_imag,
     )
     print(f"Dataset size: {len(dataset)} events")
+    actual_input_dim = dataset.X.shape[1]
 
     # Build model (architecture must match pre-training)
-    mcfg = config.get("model", {})
+    mcfg = config.setdefault("model", {})
+    if mcfg.get("input_dim") not in (None, actual_input_dim):
+        print(
+            f"Info: overriding model.input_dim from {mcfg.get('input_dim')} "
+            f"to {actual_input_dim} to match dataset features."
+        )
+    mcfg["input_dim"] = actual_input_dim
     model = ResidualMLP(
-        input_dim=mcfg.get("input_dim", 6),
+        input_dim=mcfg.get("input_dim", actual_input_dim),
         hidden_dim=mcfg.get("hidden_dim", 256),
         n_residual_blocks=mcfg.get("n_residual_blocks", 4),
         branch_dim=mcfg.get("branch_dim", 64),

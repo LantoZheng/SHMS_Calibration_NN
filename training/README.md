@@ -120,6 +120,10 @@ python training/scripts/run_finetune.py \
 
 This CSV is the output of `SHMS_Optics_calibration_tools` cluster labeling.
 
+Optional operating conditions:
+- If your sieve data includes `P_set` and `I_mag`, they are ignored by default so the model does not depend on them.
+- To train/evaluate with these inputs, set `data.include_pset_imag: true` in the config or pass `--include-pset-imag` to `run_finetune.py` / `evaluate_model.py`.
+
 ### Variable Naming Convention
 
 | SIMC name   | hcana name      | Internal key | Physical meaning             |

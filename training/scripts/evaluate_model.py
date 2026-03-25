@@ -47,6 +47,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--p0", type=float, default=None, help="Central momentum GeV/c")
     parser.add_argument("--plot-dir", default=None, help="Directory to save resolution plots")
     parser.add_argument("--device", default="cpu", help="'cuda' or 'cpu'")
+    parser.add_argument(
+        "--include-pset-imag",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Include P_set and I_mag as additional input features (match training)",
+    )
     return parser.parse_args()
 
 
@@ -63,6 +69,13 @@ def main() -> None:
     ckpt = torch.load(args.checkpoint, map_location=args.device)
     cfg = ckpt.get("config", {})
     mcfg = cfg.get("model", {})
+    dcfg = cfg.get("data", {})
+
+    include_pset_imag = (
+        args.include_pset_imag
+        if args.include_pset_imag is not None
+        else dcfg.get("include_pset_imag", False)
+    )
 
     model = ResidualMLP(
         input_dim=mcfg.get("input_dim", 6),
@@ -90,13 +103,22 @@ def main() -> None:
         print("Warning: no scaler bundle found — metrics will be in normalised space.")
 
     # Build dataset
+    p0_value = args.p0 if args.p0 is not None else dcfg.get("p0_value", None)
+
     dataset = SieveDataset(
         data_source=args.test_data,
-        p0_value=args.p0,
+        p0_value=p0_value,
         scaler_X=scaler_bundle.scaler_X if scaler_bundle else None,
         scaler_Y=scaler_bundle.scaler_Y if scaler_bundle else None,
+        include_pset_imag=include_pset_imag,
     )
     print(f"Test dataset size: {len(dataset)} events")
+    if dataset.X.shape[1] != model.input_layer.in_features:
+        raise ValueError(
+            f"Model expects {model.input_layer.in_features} input features but "
+            f"dataset provides {dataset.X.shape[1]}. "
+            "Verify include_pset_imag and input columns to match the trained model."
+        )
 
     # Evaluate
     evaluator = OpticsEvaluator(model=model, scaler_bundle=scaler_bundle, device=args.device)
