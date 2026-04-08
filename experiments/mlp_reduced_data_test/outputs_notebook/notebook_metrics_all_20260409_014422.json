@@ -1,0 +1,82 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_nn_train_3gev15deg.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_nn_train_3gev15deg.inp",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "test_fraction": 0.15,
+  "epochs": 40,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "dropout": 0.1,
+  "hidden": 256,
+  "n_blocks": 4,
+  "early_stopping_patience": 12,
+  "early_stopping_min_delta": 1e-05,
+  "grad_clip_max_norm": 1.0,
+  "prefix": "ps",
+  "p0_gev": 1.4,
+  "events": {
+    "all": 100000,
+    "after_filter": 33787
+  },
+  "training_summary": {
+    "n_train": 21960,
+    "n_val": 6758,
+    "n_test": 5069,
+    "best_epoch": 38,
+    "best_val_loss": 0.04167010262608528,
+    "stopped_early": false,
+    "eval_split": "test"
+  },
+  "metrics": {
+    "rmse_val": [
+      0.22379179298877716,
+      0.001634692307561636,
+      0.0013906484236940742,
+      0.00967597309499979
+    ],
+    "mae_val": [
+      0.17077548801898956,
+      0.0011847276473417878,
+      0.0011032542679458857,
+      0.007749851793050766
+    ],
+    "rmse_test": [
+      0.22714607417583466,
+      0.0016461628256365657,
+      0.0014036452630534768,
+      0.009729950688779354
+    ],
+    "mae_test": [
+      0.1742035299539566,
+      0.0011953721987083554,
+      0.001115637132897973,
+      0.007800874765962362
+    ]
+  },
+  "reco_overlay_available": {
+    "delta": true,
+    "xptar": true,
+    "yptar": true,
+    "ytar": true
+  }
+}

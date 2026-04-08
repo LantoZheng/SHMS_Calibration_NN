@@ -1,0 +1,50 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_3foil_nosieve_down.root",
+  "inp_file": null,
+  "tree_name": "h10",
+  "target_mode": "all",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 40,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "weight_decay": 1e-05,
+  "prefix": "ps",
+  "p0_gev": 1.4,
+  "events": {
+    "all": 192560,
+    "after_filter": 100000
+  },
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "rmse": [
+      0.25981149077415466,
+      0.0019827440846711397,
+      0.0008076770463958383,
+      0.005806520581245422
+    ],
+    "mae": [
+      0.15003253519535065,
+      0.0010701678693294525,
+      0.0006419417331926525,
+      0.005028931889683008
+    ]
+  }
+}

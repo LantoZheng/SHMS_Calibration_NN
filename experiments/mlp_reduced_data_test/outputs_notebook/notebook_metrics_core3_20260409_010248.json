@@ -1,0 +1,52 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_nn_train_3gev15deg.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_nn_train_3gev15deg.inp",
+  "tree_name": "h10",
+  "target_mode": "core3",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 40,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "weight_decay": 1e-05,
+  "prefix": "ps",
+  "p0_gev": 1.4,
+  "events": {
+    "all": 100000,
+    "after_filter": 33787
+  },
+  "metrics": {
+    "n_train": 27029,
+    "n_val": 6758,
+    "rmse": [
+      0.18545761704444885,
+      0.0016271753702312708,
+      0.001313354354351759
+    ],
+    "mae": [
+      0.1370709389448166,
+      0.0012003269512206316,
+      0.001035463297739625
+    ]
+  },
+  "reco_overlay_available": {
+    "delta": true,
+    "xptar": true,
+    "yptar": true
+  }
+}
