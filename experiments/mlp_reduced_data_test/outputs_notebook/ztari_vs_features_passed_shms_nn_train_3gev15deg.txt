@@ -1,0 +1,9 @@
+root: /Users/zhengxiaoyang/Desktop/AI_ML R-SIDIS/mc-single-arm/worksim/shms_nn_train_3gev15deg.root
+tree: h10
+prefix: ps
+total_events: 100000
+passed_events: 33834
+passed_fraction: 0.338340
+ztari_branch: psztari
+features: psxfp, psyfp, psxpfp, psypfp, psdeltai, psxptari, psyptari
+output_png: /Users/zhengxiaoyang/Desktop/AI_ML R-SIDIS/SHMS_Calibration_NN/experiments/mlp_reduced_data_test/outputs_notebook/ztari_vs_features_passed_shms_nn_train_3gev15deg.png

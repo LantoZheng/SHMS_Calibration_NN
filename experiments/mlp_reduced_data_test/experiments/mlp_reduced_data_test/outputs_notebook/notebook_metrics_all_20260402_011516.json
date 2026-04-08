@@ -1,0 +1,42 @@
+{
+  "root_file": "/Users/zhengxiaoyang/Desktop/AI_ML R-SIDIS/mc-single-arm/worksim/shms_nn_train_3gev15deg.root",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "train_fraction": 1.0,
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 40,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "prefix": "ps",
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "rmse": [
+      12.470282554626465,
+      0.028150560334324837,
+      0.031660255044698715,
+      0.5757994651794434
+    ],
+    "mae": [
+      10.040958404541016,
+      0.022667722776532173,
+      0.02551012486219406,
+      0.49707910418510437
+    ]
+  }
+}
