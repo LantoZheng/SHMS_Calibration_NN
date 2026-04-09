@@ -1,0 +1,240 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_extended_nosieve.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_extended_nosieve.inp",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "training_mode": "root-reco-correction",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "target_truth_branches": [
+    "psdeltai",
+    "psxptari",
+    "psyptari",
+    "psztari"
+  ],
+  "target_reco_branches": [
+    "psdelta",
+    "psxptar",
+    "psyptar",
+    "psztar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 60,
+  "batch_size": 2048,
+  "lr": 0.0008,
+  "weight_decay": 0.0001,
+  "prefix": "ps",
+  "p0_gev": 3.0,
+  "model": {
+    "hidden": 192,
+    "blocks": 3,
+    "dropout": 0.1
+  },
+  "optimization": {
+    "grad_clip_norm": 1.0,
+    "early_stopping_patience": 12,
+    "early_stopping_min_delta": 0.0001,
+    "scheduler_patience": 4,
+    "scheduler_factor": 0.5,
+    "min_lr": 1e-05,
+    "target_loss_weights": {
+      "delta": 1.0,
+      "xptar": 1.0,
+      "yptar": 1.0,
+      "ytar": 0.4000000059604645
+    }
+  },
+  "events": {
+    "all": 1864466,
+    "after_filter": 100000
+  },
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "best_epoch": 58,
+    "best_val_loss": 0.17619189620018005,
+    "best_val_loss_per_target": [
+      0.17788976430892944,
+      0.19838236272335052,
+      0.3268302083015442,
+      0.004163144621998072
+    ],
+    "baseline_rmse": [
+      0.31672176718711853,
+      0.0023002629168331623,
+      0.0015437505207955837,
+      29.304140090942383
+    ],
+    "baseline_mae": [
+      0.1473662555217743,
+      0.0011910701869055629,
+      0.0010478365002200007,
+      24.79462242126465
+    ],
+    "baseline_bias": [
+      -0.017970813438296318,
+      -9.04836124391295e-05,
+      -5.8999259636038914e-05,
+      4.108316421508789
+    ],
+    "baseline_resid_std": [
+      0.316211462020874,
+      0.0022984822280704975,
+      0.001542620942927897,
+      29.014713287353516
+    ],
+    "baseline_rel_rmse": [
+      0.025507686659693718,
+      0.11583076417446136,
+      0.09671100229024887,
+      2.34450101852417
+    ],
+    "baseline_rel_mae": [
+      0.011868373490869999,
+      0.05997686833143234,
+      0.06564358621835709,
+      1.9837133884429932
+    ],
+    "rmse": [
+      0.2659550905227661,
+      0.001999617787078023,
+      0.0014513143105432391,
+      2.6694366931915283
+    ],
+    "mae": [
+      0.12266328185796738,
+      0.0010554154869168997,
+      0.001002263044938445,
+      1.7043601274490356
+    ],
+    "bias": [
+      0.002513634040951729,
+      2.8908150852657855e-05,
+      -4.617799277184531e-06,
+      0.08163946866989136
+    ],
+    "resid_std": [
+      0.2659432888031006,
+      0.001999410567805171,
+      0.0014513072092086077,
+      2.6681885719299316
+    ],
+    "rel_rmse": [
+      0.021419111639261246,
+      0.10069163888692856,
+      0.09092017263174057,
+      0.21357040107250214
+    ],
+    "rel_mae": [
+      0.009878880344331264,
+      0.053145915269851685,
+      0.06278855353593826,
+      0.13635867834091187
+    ],
+    "correction_rmse": [
+      0.2659551203250885,
+      0.001999617787078023,
+      0.0014513143105432391,
+      2.6694369316101074
+    ],
+    "correction_mae": [
+      0.12266329675912857,
+      0.0010554154869168997,
+      0.001002263161353767,
+      1.7043603658676147
+    ],
+    "rmse_improvement_pct": [
+      16.028793334960938,
+      13.070033073425293,
+      5.987768173217773,
+      90.89057922363281
+    ],
+    "mae_improvement_pct": [
+      16.762977600097656,
+      11.389311790466309,
+      4.34929084777832,
+      93.12608337402344
+    ]
+  },
+  "ytar_feature_diag": [
+    {
+      "source": "yptar",
+      "group": "truth_target",
+      "corr_with_ytar": 0.7282368589488531,
+      "corr_with_nonlinear_part": 0.7305898942142224,
+      "abs_corr_with_nonlinear": 0.7305898942142224
+    },
+    {
+      "source": "y_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.5564958189863586,
+      "corr_with_nonlinear_part": 0.55542850032276,
+      "abs_corr_with_nonlinear": 0.55542850032276
+    },
+    {
+      "source": "yp_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.2783593213241242,
+      "corr_with_nonlinear_part": 0.2760322196324841,
+      "abs_corr_with_nonlinear": 0.2760322196324841
+    },
+    {
+      "source": "xp_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.06808921754928889,
+      "corr_with_nonlinear_part": 0.0725513756514503,
+      "abs_corr_with_nonlinear": 0.0725513756514503
+    },
+    {
+      "source": "delta",
+      "group": "truth_target",
+      "corr_with_ytar": 0.0645880467440525,
+      "corr_with_nonlinear_part": 0.06789857046144376,
+      "abs_corr_with_nonlinear": 0.06789857046144376
+    },
+    {
+      "source": "x_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.05397823628462132,
+      "corr_with_nonlinear_part": 0.05794348561621335,
+      "abs_corr_with_nonlinear": 0.05794348561621335
+    },
+    {
+      "source": "xptar",
+      "group": "truth_target",
+      "corr_with_ytar": -0.0377223893290501,
+      "corr_with_nonlinear_part": -0.040429571888301666,
+      "abs_corr_with_nonlinear": 0.040429571888301666
+    },
+    {
+      "source": "x_tar",
+      "group": "feature",
+      "corr_with_ytar": NaN,
+      "corr_with_nonlinear_part": NaN,
+      "abs_corr_with_nonlinear": NaN
+    },
+    {
+      "source": "p0",
+      "group": "feature",
+      "corr_with_ytar": NaN,
+      "corr_with_nonlinear_part": NaN,
+      "abs_corr_with_nonlinear": NaN
+    }
+  ],
+  "ytar_probe": null
+}

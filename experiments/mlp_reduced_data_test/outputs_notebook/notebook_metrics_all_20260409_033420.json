@@ -1,0 +1,170 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_extended_nosieve.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_extended_nosieve.inp",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "target_truth_branches": [
+    "psdeltai",
+    "psxptari",
+    "psyptari",
+    "psztari"
+  ],
+  "target_reco_branches": [
+    "psdelta",
+    "psxptar",
+    "psyptar",
+    "psztar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 60,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "prefix": "ps",
+  "p0_gev": 3.0,
+  "model": {
+    "hidden": 192,
+    "blocks": 3,
+    "dropout": 0.1
+  },
+  "optimization": {
+    "grad_clip_norm": 1.0,
+    "early_stopping_patience": 12,
+    "early_stopping_min_delta": 0.0001,
+    "scheduler_patience": 4,
+    "scheduler_factor": 0.5,
+    "min_lr": 1e-05,
+    "target_loss_weights": {
+      "delta": 1.0,
+      "xptar": 1.0,
+      "yptar": 1.0,
+      "ytar": 0.3499999940395355
+    }
+  },
+  "events": {
+    "all": 1864466,
+    "after_filter": 100000
+  },
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "best_epoch": 29,
+    "best_val_loss": 0.003517244243994355,
+    "best_val_loss_per_target": [
+      0.0005635928246192634,
+      0.007380987983196974,
+      0.003338049165904522,
+      0.007960991933941841
+    ],
+    "rmse": [
+      0.4768027365207672,
+      0.002747755032032728,
+      0.001591864274814725,
+      1.8557413816452026
+    ],
+    "mae": [
+      0.3456871509552002,
+      0.0015705367550253868,
+      0.0010590661549940705,
+      1.2626368999481201
+    ],
+    "bias": [
+      0.023696016520261765,
+      5.6495380704291165e-05,
+      4.262331276549958e-05,
+      0.039877329021692276
+    ],
+    "resid_std": [
+      0.4762147068977356,
+      0.0027471662033349276,
+      0.0015912933740764856,
+      1.8553130626678467
+    ],
+    "rel_rmse": [
+      0.038400061428546906,
+      0.13836441934108734,
+      0.09972517937421799,
+      0.14847005903720856
+    ],
+    "rel_mae": [
+      0.02784045971930027,
+      0.07908507436513901,
+      0.06634709239006042,
+      0.1010182648897171
+    ]
+  },
+  "ytar_feature_diag": [
+    {
+      "source": "yptar",
+      "group": "truth_target",
+      "pearson_r": 0.7282368589488531,
+      "abs_pearson_r": 0.7282368589488531
+    },
+    {
+      "source": "y_fp",
+      "group": "feature",
+      "pearson_r": 0.5564958189863586,
+      "abs_pearson_r": 0.5564958189863586
+    },
+    {
+      "source": "yp_fp",
+      "group": "feature",
+      "pearson_r": 0.2783593213241242,
+      "abs_pearson_r": 0.2783593213241242
+    },
+    {
+      "source": "xp_fp",
+      "group": "feature",
+      "pearson_r": 0.06808921754928889,
+      "abs_pearson_r": 0.06808921754928889
+    },
+    {
+      "source": "delta",
+      "group": "truth_target",
+      "pearson_r": 0.0645880467440525,
+      "abs_pearson_r": 0.0645880467440525
+    },
+    {
+      "source": "x_fp",
+      "group": "feature",
+      "pearson_r": 0.05397823628462132,
+      "abs_pearson_r": 0.05397823628462132
+    },
+    {
+      "source": "xptar",
+      "group": "truth_target",
+      "pearson_r": -0.0377223893290501,
+      "abs_pearson_r": 0.0377223893290501
+    },
+    {
+      "source": "x_tar",
+      "group": "feature",
+      "pearson_r": NaN,
+      "abs_pearson_r": NaN
+    },
+    {
+      "source": "p0",
+      "group": "feature",
+      "pearson_r": NaN,
+      "abs_pearson_r": NaN
+    }
+  ],
+  "ytar_probe": null
+}

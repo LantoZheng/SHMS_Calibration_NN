@@ -1,0 +1,74 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_extended_nosieve.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_extended_nosieve.inp",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "target_truth_branches": [
+    "psdeltai",
+    "psxptari",
+    "psyptari",
+    "psztari"
+  ],
+  "target_reco_branches": [
+    "psdelta",
+    "psxptar",
+    "psyptar",
+    "psztar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 40,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "weight_decay": 1e-05,
+  "prefix": "ps",
+  "p0_gev": 3.0,
+  "events": {
+    "all": 1864466,
+    "after_filter": 100000
+  },
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "rmse": [
+      0.5482972860336304,
+      0.002781311050057411,
+      0.0015690358122810721,
+      1.822725534439087
+    ],
+    "mae": [
+      0.4056302011013031,
+      0.0015966111095622182,
+      0.0010443871142342687,
+      1.24143385887146
+    ],
+    "rel_rmse": [
+      0.04415798559784889,
+      0.1400541514158249,
+      0.09829504787921906,
+      0.14582860469818115
+    ],
+    "rel_mae": [
+      0.03266806900501251,
+      0.0803980603814125,
+      0.0654274970293045,
+      0.09932190179824829
+    ]
+  }
+}
