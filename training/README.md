@@ -3,6 +3,12 @@
 Production-grade neural network training pipeline for SHMS (Super High Momentum
 Spectrometer) optics calibration at Jefferson Lab Hall C.
 
+## Current Planning Note
+
+For the latest setting-specific transfer-learning strategy and execution plan, see:
+
+- [`TARGETED_TRANSFER_LEARNING_PLAN.md`](TARGETED_TRANSFER_LEARNING_PLAN.md)
+
 ## Directory Structure
 
 ```
