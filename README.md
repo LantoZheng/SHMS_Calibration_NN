@@ -7,6 +7,7 @@ Repository name spelling has been corrected to **Calibration**.
 ## Structure
 
 - `training/` — two-stage training framework (SIMC pretraining + sieve/foil finetuning)
+- `training/TARGETED_TRANSFER_LEARNING_PLAN.md` — current setting-specific transfer-learning plan and next-step action list
 
 ## Quick start
 
