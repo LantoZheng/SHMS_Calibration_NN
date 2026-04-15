@@ -88,6 +88,7 @@ def main() -> None:
 
     # Build dataset
     dcfg = config.get("data", {})
+    fry_col = dcfg.get("fry_col", None)
     x_tar_col = dcfg.get("x_tar_col", "P_react_x")
     weight_col = dcfg.get("weight_col", None)
 
@@ -95,6 +96,7 @@ def main() -> None:
     dataset = SieveDataset(
         data_source=args.sieve_data,
         p0_value=p0,
+        fry_col=fry_col,
         x_tar_col=x_tar_col,
         weight_col=weight_col,
         scaler_X=scaler_bundle.scaler_X,
@@ -104,8 +106,13 @@ def main() -> None:
 
     # Build model (architecture must match pre-training)
     mcfg = config.get("model", {})
+    input_dim = dataset.X.shape[1]
+    if mcfg.get("input_dim", input_dim) != input_dim:
+        print(
+            f"Warning: config model.input_dim={mcfg.get('input_dim')} does not match dataset input_dim={input_dim}; using dataset value."
+        )
     model = ResidualMLP(
-        input_dim=mcfg.get("input_dim", 6),
+        input_dim=input_dim,
         hidden_dim=mcfg.get("hidden_dim", 256),
         n_residual_blocks=mcfg.get("n_residual_blocks", 4),
         branch_dim=mcfg.get("branch_dim", 64),

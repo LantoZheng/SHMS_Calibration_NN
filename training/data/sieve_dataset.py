@@ -16,6 +16,7 @@ P_dc_x_fp   → x_fp  (focal-plane x, cm)
 P_dc_y_fp   → y_fp  (focal-plane y, cm)
 P_dc_xp_fp  → xp_fp (focal-plane x′, rad)
 P_dc_yp_fp  → yp_fp (focal-plane y′, rad)
+[fry_col]   → fry   (beam raster y, optional)
 [P_react_x] → x_tar (optional, appended after DC columns)
 [p0 column] → central momentum (optional constant, appended last)
 
@@ -63,6 +64,7 @@ class SieveDataset(Dataset):
     input_cols    : input column names (DC focal-plane variables).
     target_cols   : target column names (reconstructed optics quantities).
     p0_value      : central momentum (GeV/c); appended as a constant column.
+    fry_col       : optional column name for beam raster y.
     x_tar_col     : column name for target-plane x (appended after DC cols).
                     Pass None to omit.
     weight_col    : optional column name for per-sample weights
@@ -77,6 +79,7 @@ class SieveDataset(Dataset):
         input_cols: Optional[List[str]] = None,
         target_cols: Optional[List[str]] = None,
         p0_value: Optional[float] = None,
+        fry_col: Optional[str] = None,
         x_tar_col: Optional[str] = "P_react_x",
         weight_col: Optional[str] = None,
         scaler_X: Optional[object] = None,
@@ -87,11 +90,18 @@ class SieveDataset(Dataset):
         self.input_cols = list(input_cols or _DEFAULT_INPUT_COLS)
         self.target_cols = list(target_cols or _DEFAULT_TARGET_COLS)
         self.p0_value = p0_value
+        self.fry_col = fry_col
         self.x_tar_col = x_tar_col
         self.weight_col = weight_col
 
         # Build raw input array
         X_raw = df[self.input_cols].to_numpy(dtype=np.float32)
+
+        if fry_col:
+            if fry_col not in df.columns:
+                raise KeyError(f"Requested fry column '{fry_col}' was not found in sieve dataset")
+            fry = df[fry_col].to_numpy(dtype=np.float32).reshape(-1, 1)
+            X_raw = np.concatenate([X_raw, fry], axis=1)
 
         if x_tar_col and x_tar_col in df.columns:
             x_tar = df[x_tar_col].to_numpy(dtype=np.float32)

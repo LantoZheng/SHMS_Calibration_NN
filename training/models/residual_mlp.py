@@ -38,8 +38,9 @@ class ResidualMLP(nn.Module):
     Parameters
     ----------
     input_dim : int
-        Number of input features. Default 6:
-        [x_fp, y_fp, xp_fp, yp_fp, x_tar, p0].
+        Number of input features. Legacy models use 6 inputs
+        [x_fp, y_fp, xp_fp, yp_fp, x_tar, p0]; fry-enabled models use 7 inputs
+        [x_fp, y_fp, xp_fp, yp_fp, fry, x_tar, p0].
     hidden_dim : int
         Width of all hidden layers. Default 256.
     n_residual_blocks : int

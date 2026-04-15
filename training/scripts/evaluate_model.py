@@ -45,6 +45,7 @@ def parse_args() -> argparse.Namespace:
         help="Path to scaler_bundle.json; auto-detected from checkpoint dir if omitted",
     )
     parser.add_argument("--p0", type=float, default=None, help="Central momentum GeV/c")
+    parser.add_argument("--fry-col", default=None, help="Optional test-data column containing fry / raster-y")
     parser.add_argument("--plot-dir", default=None, help="Directory to save resolution plots")
     parser.add_argument("--device", default="cpu", help="'cuda' or 'cpu'")
     return parser.parse_args()
@@ -63,9 +64,10 @@ def main() -> None:
     ckpt = torch.load(args.checkpoint, map_location=args.device)
     cfg = ckpt.get("config", {})
     mcfg = cfg.get("model", {})
+    input_dim = mcfg.get("input_dim", 6)
 
     model = ResidualMLP(
-        input_dim=mcfg.get("input_dim", 6),
+        input_dim=input_dim,
         hidden_dim=mcfg.get("hidden_dim", 256),
         n_residual_blocks=mcfg.get("n_residual_blocks", 4),
         branch_dim=mcfg.get("branch_dim", 64),
@@ -93,6 +95,7 @@ def main() -> None:
     dataset = SieveDataset(
         data_source=args.test_data,
         p0_value=args.p0,
+        fry_col=args.fry_col,
         scaler_X=scaler_bundle.scaler_X if scaler_bundle else None,
         scaler_Y=scaler_bundle.scaler_Y if scaler_bundle else None,
     )

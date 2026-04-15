@@ -1,5 +1,5 @@
 model:
-  input_dim: 6          # [x_fp, y_fp, xp_fp, yp_fp, x_tar, p0]
+  input_dim: 7          # [x_fp, y_fp, xp_fp, yp_fp, fry, x_tar, p0]
   hidden_dim: 256
   n_residual_blocks: 4
   branch_dim: 64
@@ -24,6 +24,8 @@ loss:
 
 data:
   simc_tree_name: "h10"
+  include_fry: true
+  fry_branch: "fry"
   x_tar_sigma_cm: 0.1    # Gaussian raster sigma for SIMC x_tar synthesis
   p0_values:             # list of p0 (GeV/c) to sample uniformly across
     - 2.7

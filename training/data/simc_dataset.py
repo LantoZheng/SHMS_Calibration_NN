@@ -7,6 +7,7 @@ hsxfp   → x_fp   (focal-plane x, cm)
 hsyfp   → y_fp   (focal-plane y, cm)
 hsxpfp  → xp_fp  (focal-plane x′, rad)
 hsypfp  → yp_fp  (focal-plane y′, rad)
+fry     → fry    (beam raster y, cm; optional)
 hsdeltai→ delta  (thrown δ = (p−p0)/p0, %)
 hsxptari→ xptar  (thrown θ at target, rad)
 hsyptari→ yptar  (thrown φ at target, rad)
@@ -24,11 +25,22 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from training.data.preprocessing import ScalerBundle, add_p0_feature, add_xtar_feature
+from training.data.preprocessing import add_p0_feature, add_xtar_feature
 
 # Default SIMC branch names ──────────────────────────────────────────────────
 _DEFAULT_INPUT_BRANCHES: List[str] = ["hsxfp", "hsyfp", "hsxpfp", "hsypfp"]
 _DEFAULT_TARGET_BRANCHES: List[str] = ["hsdeltai", "hsxptari", "hsyptari", "hsztari"]
+
+
+def _resolve_fry_branch(available_branches: List[str], requested_branch: Optional[str]) -> str:
+    candidates = [requested_branch] if requested_branch else ["fry", "hsfry", "psfry"]
+    for candidate in candidates:
+        if candidate and candidate in available_branches:
+            return candidate
+    raise KeyError(
+        "Requested fry feature, but no fry branch was found. Checked: "
+        + ", ".join([c for c in candidates if c])
+    )
 
 
 class SIMCDataset(Dataset):
@@ -50,6 +62,8 @@ class SIMCDataset(Dataset):
     scaler_Y          : pre-fitted StandardScaler for targets (optional).
     fit_scalers       : if True *and* scaler_X/scaler_Y are None, fit new
                         scalers on the loaded data.
+    include_fry       : if True, append the SIMC fry branch before x_tar.
+    fry_branch        : explicit fry branch name; defaults to auto-detect.
     x_tar_sigma_cm    : σ (cm) for the Gaussian raster model used to synthesise
                         x_tar (default: 0.1 cm).
     rng_seed          : seed for the x_tar RNG (reproducibility).
@@ -67,6 +81,8 @@ class SIMCDataset(Dataset):
         scaler_X: Optional[object] = None,
         scaler_Y: Optional[object] = None,
         fit_scalers: bool = False,
+        include_fry: bool = False,
+        fry_branch: Optional[str] = None,
         x_tar_sigma_cm: float = 0.1,
         rng_seed: int = 42,
     ) -> None:
@@ -83,17 +99,26 @@ class SIMCDataset(Dataset):
         self.input_branches = list(input_branches or _DEFAULT_INPUT_BRANCHES)
         self.target_branches = list(target_branches or _DEFAULT_TARGET_BRANCHES)
         self.p0_value = p0_value
+        self.include_fry = include_fry
+        self.fry_branch = fry_branch
         self.x_tar_sigma_cm = x_tar_sigma_cm
 
         all_branches = list(set(self.input_branches + self.target_branches))
+        if include_fry and fry_branch:
+            all_branches.append(fry_branch)
 
         frames: list = []
         for fpath in root_file_paths:
             with uproot.open(fpath) as root_file:
                 tree = root_file[tree_name]
                 # Only request branches that exist in this tree
-                available = set(tree.keys())
+                available = list(tree.keys())
+                resolved_fry_branch = None
+                if include_fry:
+                    resolved_fry_branch = _resolve_fry_branch(available, fry_branch)
                 wanted = [b for b in all_branches if b in available]
+                if resolved_fry_branch and resolved_fry_branch not in wanted:
+                    wanted.append(resolved_fry_branch)
                 arr = tree.arrays(wanted, library="pd")
             frames.append(arr)
 
@@ -111,11 +136,19 @@ class SIMCDataset(Dataset):
 
         # Build raw input array + synthesised x_tar
         X_raw = df[self.input_branches].to_numpy(dtype=np.float32)
+        self.feature_names = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+        if include_fry:
+            resolved_fry_branch = _resolve_fry_branch(df.columns.tolist(), fry_branch)
+            fry = df[resolved_fry_branch].to_numpy(dtype=np.float32).reshape(-1, 1)
+            X_raw = np.concatenate([X_raw, fry], axis=1)
+            self.feature_names.append("fry")
         x_tar = rng.normal(0.0, x_tar_sigma_cm, size=(len(df),)).astype(np.float32)
         X_raw = add_xtar_feature(X_raw, x_tar)
+        self.feature_names.append("x_tar")
 
         if p0_value is not None:
             X_raw = add_p0_feature(X_raw, float(p0_value))
+            self.feature_names.append("p0")
 
         # Build raw target array
         Y_raw = df[self.target_branches].to_numpy(dtype=np.float32)

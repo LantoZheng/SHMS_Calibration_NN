@@ -1,0 +1,248 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_extended_nosieve.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_extended_nosieve.inp",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "training_mode": "root-reco-correction",
+  "filter_stop_id": true,
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "fry",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "target_truth_branches": [
+    "psdeltai",
+    "psxptari",
+    "psyptari",
+    "psztari"
+  ],
+  "target_reco_branches": [
+    "psdelta",
+    "psxptar",
+    "psyptar",
+    "-psztar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 100,
+  "batch_size": 2048,
+  "lr": 0.0008,
+  "weight_decay": 0.0001,
+  "prefix": "ps",
+  "p0_gev": 3.0,
+  "model": {
+    "hidden": 192,
+    "blocks": 3,
+    "dropout": 0.1
+  },
+  "optimization": {
+    "grad_clip_norm": 1.0,
+    "early_stopping_patience": 12,
+    "early_stopping_min_delta": 0.0001,
+    "scheduler_patience": 4,
+    "scheduler_factor": 0.5,
+    "min_lr": 1e-05,
+    "target_loss_weights": {
+      "delta": 1.0,
+      "xptar": 1.0,
+      "yptar": 1.0,
+      "ytar": 0.4000000059604645
+    }
+  },
+  "events": {
+    "all": 1864466,
+    "after_filter": 100000
+  },
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "best_epoch": 87,
+    "best_val_loss": 0.1623857170343399,
+    "best_val_loss_per_target": [
+      0.10829594731330872,
+      0.148152694106102,
+      0.2984830141067505,
+      0.23652809858322144
+    ],
+    "baseline_rmse": [
+      0.31672176718711853,
+      0.0023002629168331623,
+      0.0015437505207955837,
+      2.006159543991089
+    ],
+    "baseline_mae": [
+      0.1473662555217743,
+      0.0011910701869055629,
+      0.0010478365002200007,
+      1.4434367418289185
+    ],
+    "baseline_bias": [
+      -0.017970813438296318,
+      -9.04836124391295e-05,
+      -5.8999259636038914e-05,
+      0.47051605582237244
+    ],
+    "baseline_resid_std": [
+      0.316211462020874,
+      0.0022984822280704975,
+      0.001542620942927897,
+      1.950203537940979
+    ],
+    "baseline_rel_rmse": [
+      0.025507686659693718,
+      0.11583076417446136,
+      0.09671100229024887,
+      0.16050438582897186
+    ],
+    "baseline_rel_mae": [
+      0.011868373490869999,
+      0.05997686833143234,
+      0.06564358621835709,
+      0.11548329889774323
+    ],
+    "rmse": [
+      0.20782245695590973,
+      0.0016956181498244405,
+      0.001367699122056365,
+      1.4802955389022827
+    ],
+    "mae": [
+      0.08918645977973938,
+      0.0008979812846519053,
+      0.0009417977998964489,
+      1.085761547088623
+    ],
+    "bias": [
+      0.003969909623265266,
+      2.6461433662916534e-05,
+      -2.924432192230597e-05,
+      -0.061080146580934525
+    ],
+    "resid_std": [
+      0.20778486132621765,
+      0.001695411978289485,
+      0.0013673887588083744,
+      1.479035496711731
+    ],
+    "rel_rmse": [
+      0.016737308353185654,
+      0.08538360148668289,
+      0.08568195253610611,
+      0.11843221634626389
+    ],
+    "rel_mae": [
+      0.007182772271335125,
+      0.045218247920274734,
+      0.05900060385465622,
+      0.08686721324920654
+    ],
+    "correction_rmse": [
+      0.20782247185707092,
+      0.0016956180334091187,
+      0.0013676990056410432,
+      1.4802954196929932
+    ],
+    "correction_mae": [
+      0.08918649703264236,
+      0.0008979812846519053,
+      0.0009417980327270925,
+      1.0857616662979126
+    ],
+    "rmse_improvement_pct": [
+      34.38327407836914,
+      26.285898208618164,
+      11.404135704040527,
+      26.21247100830078
+    ],
+    "mae_improvement_pct": [
+      39.47972869873047,
+      24.60719108581543,
+      10.119775772094727,
+      24.779417037963867
+    ]
+  },
+  "ytar_feature_diag": [
+    {
+      "source": "y_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.5564958189863586,
+      "corr_with_nonlinear_part": 0.0819293041090389,
+      "abs_corr_with_nonlinear": 0.0819293041090389
+    },
+    {
+      "source": "yp_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.2783593213241242,
+      "corr_with_nonlinear_part": 0.06756214327714928,
+      "abs_corr_with_nonlinear": 0.06756214327714928
+    },
+    {
+      "source": "xp_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.06808921754928889,
+      "corr_with_nonlinear_part": -0.05805412636320773,
+      "abs_corr_with_nonlinear": 0.05805412636320773
+    },
+    {
+      "source": "x_fp",
+      "group": "feature",
+      "corr_with_ytar": 0.05397823628462132,
+      "corr_with_nonlinear_part": -0.0523647315278275,
+      "abs_corr_with_nonlinear": 0.0523647315278275
+    },
+    {
+      "source": "yptar",
+      "group": "truth_target",
+      "corr_with_ytar": 0.7282368589488531,
+      "corr_with_nonlinear_part": 0.05163110024449567,
+      "abs_corr_with_nonlinear": 0.05163110024449567
+    },
+    {
+      "source": "delta",
+      "group": "truth_target",
+      "corr_with_ytar": 0.0645880467440525,
+      "corr_with_nonlinear_part": -0.04139932877156692,
+      "abs_corr_with_nonlinear": 0.04139932877156692
+    },
+    {
+      "source": "xptar",
+      "group": "truth_target",
+      "corr_with_ytar": -0.0377223893290501,
+      "corr_with_nonlinear_part": 0.03564746316205423,
+      "abs_corr_with_nonlinear": 0.03564746316205423
+    },
+    {
+      "source": "fry",
+      "group": "feature",
+      "corr_with_ytar": -0.00859502195009495,
+      "corr_with_nonlinear_part": 0.005185419824084456,
+      "abs_corr_with_nonlinear": 0.005185419824084456
+    },
+    {
+      "source": "x_tar",
+      "group": "feature",
+      "corr_with_ytar": NaN,
+      "corr_with_nonlinear_part": NaN,
+      "abs_corr_with_nonlinear": NaN
+    },
+    {
+      "source": "p0",
+      "group": "feature",
+      "corr_with_ytar": NaN,
+      "corr_with_nonlinear_part": NaN,
+      "abs_corr_with_nonlinear": NaN
+    }
+  ],
+  "ytar_probe": null
+}

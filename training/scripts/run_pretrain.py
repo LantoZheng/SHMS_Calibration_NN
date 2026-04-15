@@ -87,6 +87,8 @@ def main() -> None:
 
     p0 = args.p0 if args.p0 is not None else None
     tree_name = config.get("data", {}).get("simc_tree_name", "h10")
+    include_fry = config.get("data", {}).get("include_fry", False)
+    fry_branch = config.get("data", {}).get("fry_branch", None)
     x_tar_sigma = config.get("data", {}).get("x_tar_sigma_cm", 0.1)
 
     # Build dataset — fit scalers on this data
@@ -97,6 +99,8 @@ def main() -> None:
         p0_value=p0,
         max_events=args.max_events,
         fit_scalers=True,
+        include_fry=include_fry,
+        fry_branch=fry_branch,
         x_tar_sigma_cm=x_tar_sigma,
         rng_seed=config.get("training", {}).get("random_seed", 42),
     )
@@ -104,7 +108,12 @@ def main() -> None:
 
     # Save scaler bundle
     mcfg = config.get("model", {})
-    input_features = ["x_fp", "y_fp", "xp_fp", "yp_fp", "x_tar"] + (["p0"] if p0 is not None else [])
+    input_features = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+    if include_fry:
+        input_features.append("fry")
+    input_features.append("x_tar")
+    if p0 is not None:
+        input_features.append("p0")
     target_features = ["delta", "xptar", "yptar", "ytar"]
     bundle = ScalerBundle(input_features=input_features, target_features=target_features)
     if dataset.scaler_X is not None and dataset.scaler_Y is not None:
@@ -113,8 +122,13 @@ def main() -> None:
         print(f"Scaler bundle saved to: {scaler_path}")
 
     # Build model
+    input_dim = len(input_features)
+    if mcfg.get("input_dim", input_dim) != input_dim:
+        print(
+            f"Warning: config model.input_dim={mcfg.get('input_dim')} does not match derived input_dim={input_dim}; using derived value."
+        )
     model = ResidualMLP(
-        input_dim=mcfg.get("input_dim", 6),
+        input_dim=input_dim,
         hidden_dim=mcfg.get("hidden_dim", 256),
         n_residual_blocks=mcfg.get("n_residual_blocks", 4),
         branch_dim=mcfg.get("branch_dim", 64),

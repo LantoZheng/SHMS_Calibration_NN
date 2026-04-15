@@ -1,0 +1,181 @@
+{
+  "root_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\worksim\\shms_extended_nosieve.root",
+  "inp_file": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\mc-single-arm\\infiles\\shms_extended_nosieve.inp",
+  "tree_name": "h10",
+  "target_mode": "all",
+  "filter_stop_id": true,
+  "feature_config": {
+    "include_fry": true,
+    "fry_branch": "fry"
+  },
+  "x_tar_mode": "zero",
+  "feature_names": [
+    "x_fp",
+    "y_fp",
+    "xp_fp",
+    "yp_fp",
+    "fry",
+    "x_tar",
+    "p0"
+  ],
+  "target_names": [
+    "delta",
+    "xptar",
+    "yptar",
+    "ytar"
+  ],
+  "target_truth_branches": [
+    "psdeltai",
+    "psxptari",
+    "psyptari",
+    "psztari"
+  ],
+  "target_reco_branches": [
+    "psdelta",
+    "psxptar",
+    "psyptar",
+    "-psztar"
+  ],
+  "max_events": 100000,
+  "val_fraction": 0.2,
+  "epochs": 60,
+  "batch_size": 2048,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "prefix": "ps",
+  "p0_gev": 3.0,
+  "model": {
+    "hidden": 192,
+    "blocks": 3,
+    "dropout": 0.1
+  },
+  "optimization": {
+    "grad_clip_norm": 1.0,
+    "early_stopping_patience": 12,
+    "early_stopping_min_delta": 0.0001,
+    "scheduler_patience": 4,
+    "scheduler_factor": 0.5,
+    "min_lr": 1e-05,
+    "target_loss_weights": {
+      "delta": 1.0,
+      "xptar": 1.0,
+      "yptar": 1.0,
+      "ytar": 0.3499999940395355
+    }
+  },
+  "events": {
+    "all": 1864466,
+    "after_filter": 100000
+  },
+  "metrics": {
+    "n_train": 80000,
+    "n_val": 20000,
+    "best_epoch": 34,
+    "best_val_loss": 0.002447783714160323,
+    "best_val_loss_per_target": [
+      0.00022910215193405747,
+      0.004147068597376347,
+      0.003065423807129264,
+      0.00671297125518322
+    ],
+    "rmse": [
+      0.30399754643440247,
+      0.0020615768153220415,
+      0.001525481347925961,
+      1.7044023275375366
+    ],
+    "mae": [
+      0.18462571501731873,
+      0.001061906456016004,
+      0.00102072989102453,
+      1.1735470294952393
+    ],
+    "bias": [
+      -0.012835217639803886,
+      -6.801498966524377e-05,
+      1.0609624951030128e-05,
+      -0.075942762196064
+    ],
+    "resid_std": [
+      0.30372676253318787,
+      0.0020604575984179974,
+      0.0015254475874826312,
+      1.7027064561843872
+    ],
+    "rel_rmse": [
+      0.02448292262852192,
+      0.10381161421537399,
+      0.09556650370359421,
+      0.13636206090450287
+    ],
+    "rel_mae": [
+      0.01486912276595831,
+      0.05347277224063873,
+      0.06394544243812561,
+      0.09389056265354156
+    ]
+  },
+  "ytar_feature_diag": [
+    {
+      "source": "yptar",
+      "group": "truth_target",
+      "pearson_r": 0.7282368589488531,
+      "abs_pearson_r": 0.7282368589488531
+    },
+    {
+      "source": "y_fp",
+      "group": "feature",
+      "pearson_r": 0.5564958189863586,
+      "abs_pearson_r": 0.5564958189863586
+    },
+    {
+      "source": "yp_fp",
+      "group": "feature",
+      "pearson_r": 0.2783593213241242,
+      "abs_pearson_r": 0.2783593213241242
+    },
+    {
+      "source": "xp_fp",
+      "group": "feature",
+      "pearson_r": 0.06808921754928889,
+      "abs_pearson_r": 0.06808921754928889
+    },
+    {
+      "source": "delta",
+      "group": "truth_target",
+      "pearson_r": 0.0645880467440525,
+      "abs_pearson_r": 0.0645880467440525
+    },
+    {
+      "source": "x_fp",
+      "group": "feature",
+      "pearson_r": 0.05397823628462132,
+      "abs_pearson_r": 0.05397823628462132
+    },
+    {
+      "source": "xptar",
+      "group": "truth_target",
+      "pearson_r": -0.0377223893290501,
+      "abs_pearson_r": 0.0377223893290501
+    },
+    {
+      "source": "fry",
+      "group": "feature",
+      "pearson_r": -0.00859502195009495,
+      "abs_pearson_r": 0.00859502195009495
+    },
+    {
+      "source": "x_tar",
+      "group": "feature",
+      "pearson_r": NaN,
+      "abs_pearson_r": NaN
+    },
+    {
+      "source": "p0",
+      "group": "feature",
+      "pearson_r": NaN,
+      "abs_pearson_r": NaN
+    }
+  ],
+  "ytar_probe": null
+}

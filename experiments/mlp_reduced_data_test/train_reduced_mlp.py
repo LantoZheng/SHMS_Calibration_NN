@@ -77,6 +77,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--p0", type=float, default=None, help="Override central momentum (GeV/c)")
     parser.add_argument("--x-tar-mode", choices=["zero", "random"], default="zero")
     parser.add_argument("--x-tar-sigma", type=float, default=0.1, help="Gaussian sigma for synthesized x_tar [cm] when x-tar-mode=random")
+    parser.add_argument("--include-fry", dest="include_fry", action="store_true", help="Append fry as an additional input feature")
+    parser.add_argument("--no-include-fry", dest="include_fry", action="store_false", help="Do not append fry as an input feature")
     parser.add_argument("--target-mode", choices=["core3", "all", "delta-only"], default="core3")
     parser.add_argument("--filter-stop-id", action="store_true", default=True, help="Keep only stop_id == 0 events (default on)")
     parser.add_argument("--no-filter-stop-id", dest="filter_stop_id", action="store_false", help="Disable stop_id filtering")
@@ -92,6 +94,7 @@ def parse_args() -> argparse.Namespace:
         default="experiments/mlp_reduced_data_test/outputs",
         help="Where to write metrics/plots",
     )
+    parser.set_defaults(include_fry=False)
     return parser.parse_args()
 
 
@@ -107,6 +110,17 @@ def detect_prefix(branches: List[str]) -> str:
         if all(r in branches for r in required):
             return pref
     raise RuntimeError("Cannot detect branch prefix. Expected ps* or hs* branches.")
+
+
+def resolve_fry_branch(branches: List[str], prefix: str) -> str:
+    candidates = ["fry", f"{prefix}fry"]
+    for candidate in candidates:
+        if candidate in branches:
+            return candidate
+    raise RuntimeError(
+        "Requested fry feature, but no fry branch was found. Checked: "
+        + ", ".join(candidates)
+    )
 
 
 def infer_p0_from_inp(inp_file: Path | None) -> float | None:
@@ -126,6 +140,7 @@ def load_data(
     tree_name: str,
     target_mode: str,
     p0: float,
+    include_fry: bool,
     x_tar_mode: str,
     x_tar_sigma: float,
     max_events: int,
@@ -138,6 +153,7 @@ def load_data(
 
     pref = detect_prefix(branches)
     input_branches = [f"{pref}xfp", f"{pref}yfp", f"{pref}xpfp", f"{pref}ypfp"]
+    fry_branch = resolve_fry_branch(branches, pref) if include_fry else None
 
     if target_mode == "all":
         target_branches = [
@@ -158,7 +174,7 @@ def load_data(
         target_branches = [f"{pref}deltai"]
         target_names = ["delta"]
 
-    wanted = input_branches + target_branches + (["stop_id"] if filter_stop_id else [])
+    wanted = input_branches + ([fry_branch] if fry_branch else []) + target_branches + (["stop_id"] if filter_stop_id else [])
     arr = tree.arrays(wanted, library="np")
     rf.close()
 
@@ -168,6 +184,11 @@ def load_data(
         n = min(n, max_events)
 
     X_raw = np.column_stack([arr[b][:n].astype(np.float32) for b in input_branches])
+    feature_names = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+    if fry_branch is not None:
+        fry_col = arr[fry_branch][:n].astype(np.float32).reshape(-1, 1)
+        X_raw = np.concatenate([X_raw, fry_col], axis=1)
+        feature_names.append("fry")
     Y_raw = np.column_stack([arr[b][:n].astype(np.float32) for b in target_branches])
 
     mask = np.isfinite(X_raw).all(axis=1) & np.isfinite(Y_raw).all(axis=1)
@@ -186,11 +207,12 @@ def load_data(
     p0_col = np.full((n_after_filter, 1), p0, dtype=np.float32)
 
     X = np.concatenate([X_raw, x_tar, p0_col], axis=1)
+    feature_names.extend(["x_tar", "p0"])
 
     return DataBundle(
         X=X,
         Y=Y_raw,
-        feature_names=["x_fp", "y_fp", "xp_fp", "yp_fp", "x_tar", "p0"],
+        feature_names=feature_names,
         target_names=target_names,
         prefix=pref,
         n_all=n_all,
@@ -330,6 +352,7 @@ def main() -> None:
         tree_name=args.tree_name,
         target_mode=args.target_mode,
         p0=p0,
+        include_fry=args.include_fry,
         x_tar_mode=args.x_tar_mode,
         x_tar_sigma=args.x_tar_sigma,
         max_events=args.max_events,
@@ -364,6 +387,7 @@ def main() -> None:
         "prefix": bundle.prefix,
         "target_mode": args.target_mode,
         "filter_stop_id": args.filter_stop_id,
+        "include_fry": args.include_fry,
         "x_tar_mode": args.x_tar_mode,
         "p0_gev": p0,
         "feature_names": bundle.feature_names,
@@ -399,9 +423,11 @@ def main() -> None:
         f.write(f"prefix      : {bundle.prefix}\n")
         f.write(f"events      : all={bundle.n_all}, after_filter={bundle.n_after_filter}\n")
         f.write(f"filter_stop : {args.filter_stop_id}\n")
+        f.write(f"include_fry : {args.include_fry}\n")
         f.write(f"x_tar_mode  : {args.x_tar_mode}\n")
         f.write(f"p0_gev      : {p0}\n")
         f.write(f"target_mode : {args.target_mode}\n")
+        f.write(f"features    : {bundle.feature_names}\n")
         f.write(f"targets     : {bundle.target_names}\n")
         f.write(f"n_train     : {metric['n_train']}\n")
         f.write(f"n_val       : {metric['n_val']}\n")
