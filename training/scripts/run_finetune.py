@@ -57,7 +57,7 @@ def main() -> None:
     import yaml
     from training.data.sieve_dataset import SieveDataset
     from training.data.preprocessing import ScalerBundle
-    from training.models.residual_mlp import ResidualMLP
+    from training.models import build_model_from_config
     from training.models.physics_loss import PhysicsInformedLoss
     from training.trainers.finetune import FinetuneTrainer
 
@@ -91,10 +91,20 @@ def main() -> None:
     fry_col = dcfg.get("fry_col", None)
     x_tar_col = dcfg.get("x_tar_col", "P_react_x")
     weight_col = dcfg.get("weight_col", None)
+    feature_schema = dcfg.get("feature_schema", None)
+    if feature_schema is None:
+        feature_schema = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+        if fry_col:
+            feature_schema.append("fry")
+        if bool(dcfg.get("include_xtar", False)) and x_tar_col:
+            feature_schema.append("x_tar")
+        if p0 is not None and bool(dcfg.get("include_p0", False)):
+            feature_schema.append("p0")
 
     print(f"Loading sieve data from: {args.sieve_data}")
     dataset = SieveDataset(
         data_source=args.sieve_data,
+        feature_schema=feature_schema,
         p0_value=p0,
         fry_col=fry_col,
         x_tar_col=x_tar_col,
@@ -111,12 +121,7 @@ def main() -> None:
         print(
             f"Warning: config model.input_dim={mcfg.get('input_dim')} does not match dataset input_dim={input_dim}; using dataset value."
         )
-    model = ResidualMLP(
-        input_dim=input_dim,
-        hidden_dim=mcfg.get("hidden_dim", 256),
-        n_residual_blocks=mcfg.get("n_residual_blocks", 4),
-        branch_dim=mcfg.get("branch_dim", 64),
-    )
+    model = build_model_from_config(mcfg, input_dim=input_dim)
 
     # Build loss
     lcfg = config.get("loss", {})

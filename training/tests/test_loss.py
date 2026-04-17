@@ -93,3 +93,20 @@ def test_no_physics_penalty_without_transport_matrix():
 
     # Without transport_matrix, lambda doesn't matter
     assert abs(loss_no_phys.item() - loss_ref.item()) < 1e-6
+
+
+def test_target_weights_scale_data_loss():
+    preds = {k: torch.zeros(4, 1) for k in _TARGETS}
+    tgts = {k: torch.ones(4, 1) for k in _TARGETS}
+
+    loss_unweighted = PhysicsInformedLoss(lambda_physics=0.0, use_huber=False)
+    loss_weighted = PhysicsInformedLoss(
+        lambda_physics=0.0,
+        use_huber=False,
+        target_weights={"delta": 2.0, "xptar": 1.0, "yptar": 1.0, "ytar": 0.5},
+    )
+
+    base = loss_unweighted(preds, tgts)
+    weighted = loss_weighted(preds, tgts)
+
+    assert weighted.item() > base.item()

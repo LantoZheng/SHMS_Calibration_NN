@@ -1,9 +1,11 @@
-"""Unit tests for ResidualMLP architecture."""
+"""Unit tests for SHMS training backbones."""
 
 import pytest
 import torch
 
+from training.models import build_model_from_config
 from training.models.residual_mlp import ResidualMLP
+from training.models.residual_transport_mlp import ResidualTransportMLP
 
 
 @pytest.fixture
@@ -72,3 +74,43 @@ def test_gradient_flows(model):
     loss = sum(v.sum() for v in out.values())
     loss.backward()
     assert x.grad is not None and x.grad.shape == x.shape
+
+
+def test_transport_model_outputs():
+    model = ResidualTransportMLP(input_dim=4, hidden_dim=32, n_residual_blocks=1, branch_dim=8)
+    x = torch.randn(7, 4)
+    out = model(x)
+    assert {"delta", "xptar", "yptar", "ytar"}.issubset(set(out.keys()))
+    assert out["correction"].shape == (7, 4)
+    assert out["linear_output"].shape == (7, 4)
+
+
+def test_transport_freeze_correction_branch():
+    model = ResidualTransportMLP(input_dim=4, hidden_dim=32, n_residual_blocks=1, branch_dim=8)
+    model.freeze_correction_branch()
+    for param in model.linear_path.parameters():
+        assert param.requires_grad
+    for module in (model.input_projection, model.backbone, model.correction_head):
+        for param in module.parameters():
+            assert not param.requires_grad
+
+
+def test_model_factory_transport():
+    model = build_model_from_config({"name": "residual_transport_mlp", "hidden_dim": 64}, input_dim=4)
+    assert isinstance(model, ResidualTransportMLP)
+
+
+def test_model_factory_passes_dropout():
+    transport = build_model_from_config(
+        {"name": "residual_transport_mlp", "hidden_dim": 64, "dropout": 0.1},
+        input_dim=5,
+    )
+    baseline = build_model_from_config(
+        {"name": "residual_mlp", "hidden_dim": 64, "dropout": 0.2},
+        input_dim=5,
+    )
+
+    assert isinstance(transport, ResidualTransportMLP)
+    assert transport.dropout == 0.1
+    assert isinstance(baseline, ResidualMLP)
+    assert baseline.dropout == 0.2

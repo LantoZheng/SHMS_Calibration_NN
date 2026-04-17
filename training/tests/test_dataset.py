@@ -30,6 +30,7 @@ def test_from_dataframe():
     df = _make_df(40)
     ds = SieveDataset(df)
     assert len(ds) == 40
+    assert ds.X.shape[1] == 4
 
 
 def test_from_dict():
@@ -55,16 +56,47 @@ def test_target_shapes():
 
 def test_input_dim_with_xtar_and_p0():
     df = _make_df(10)
-    ds = SieveDataset(df, p0_value=4.4, x_tar_col="P_react_x")
+    ds = SieveDataset(
+        df,
+        feature_schema=["x_fp", "y_fp", "xp_fp", "yp_fp", "x_tar", "p0"],
+        p0_value=4.4,
+        x_tar_col="P_react_x",
+    )
     # 4 DC + 1 x_tar + 1 p0 = 6 features
     assert ds.X.shape[1] == 6
 
 
 def test_input_dim_without_xtar():
     df = _make_df(10)
-    ds = SieveDataset(df, p0_value=None, x_tar_col=None)
+    ds = SieveDataset(
+        df,
+        feature_schema=["x_fp", "y_fp", "xp_fp", "yp_fp"],
+        p0_value=None,
+        x_tar_col=None,
+    )
     # Only 4 DC features
     assert ds.X.shape[1] == 4
+
+
+def test_input_dim_with_fry_feature():
+    df = _make_df(12)
+    df["fry_value"] = np.linspace(-0.2, 0.2, len(df))
+    ds = SieveDataset(
+        df,
+        feature_schema=["x_fp", "y_fp", "xp_fp", "yp_fp", "fry"],
+        fry_col="fry_value",
+    )
+    assert ds.X.shape[1] == 5
+
+
+def test_missing_xtar_column_raises():
+    df = _make_df(8).drop(columns=["P_react_x"])
+    with pytest.raises(KeyError):
+        SieveDataset(
+            df,
+            feature_schema=["x_fp", "y_fp", "xp_fp", "yp_fp", "x_tar"],
+            x_tar_col="P_react_x",
+        )
 
 
 def test_weight_col():

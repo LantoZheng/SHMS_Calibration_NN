@@ -59,7 +59,7 @@ def main() -> None:
     import yaml
     from training.data.simc_dataset import SIMCDataset
     from training.data.preprocessing import ScalerBundle
-    from training.models.residual_mlp import ResidualMLP
+    from training.models import build_model_from_config
     from training.models.physics_loss import PhysicsInformedLoss
     from training.trainers.pretrain import PretrainTrainer
 
@@ -80,16 +80,39 @@ def main() -> None:
     print(f"Found {len(root_files)} SIMC ROOT file(s).")
 
     # Override config with CLI arguments
+    output_cfg = config.setdefault("output", {})
+    original_checkpoint_dir = output_cfg.get("checkpoint_dir", "checkpoints/pretrain/")
     if args.output_dir:
-        config.setdefault("output", {})["checkpoint_dir"] = args.output_dir
-    checkpoint_dir = config.get("output", {}).get("checkpoint_dir", "checkpoints/pretrain/")
-    scaler_path = config.get("output", {}).get("scaler_save_path", os.path.join(checkpoint_dir, "scaler_bundle.json"))
+        output_cfg["checkpoint_dir"] = args.output_dir
+    checkpoint_dir = output_cfg.get("checkpoint_dir", "checkpoints/pretrain/")
+
+    configured_scaler_path = output_cfg.get("scaler_save_path")
+    if configured_scaler_path:
+        configured_scaler_path_norm = os.path.normpath(configured_scaler_path)
+        original_default_scaler = os.path.normpath(os.path.join(original_checkpoint_dir, "scaler_bundle.json"))
+        if args.output_dir and configured_scaler_path_norm == original_default_scaler:
+            scaler_path = os.path.join(checkpoint_dir, "scaler_bundle.json")
+        else:
+            scaler_path = configured_scaler_path
+    else:
+        scaler_path = os.path.join(checkpoint_dir, "scaler_bundle.json")
 
     p0 = args.p0 if args.p0 is not None else None
     tree_name = config.get("data", {}).get("simc_tree_name", "h10")
     include_fry = config.get("data", {}).get("include_fry", False)
+    include_xtar = config.get("data", {}).get("include_xtar", False)
+    include_p0 = config.get("data", {}).get("include_p0", False)
     fry_branch = config.get("data", {}).get("fry_branch", None)
     x_tar_sigma = config.get("data", {}).get("x_tar_sigma_cm", 0.1)
+    feature_schema = config.get("data", {}).get("feature_schema", None)
+    if feature_schema is None:
+        feature_schema = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+        if include_fry:
+            feature_schema.append("fry")
+        if include_xtar:
+            feature_schema.append("x_tar")
+        if include_p0:
+            feature_schema.append("p0")
 
     # Build dataset — fit scalers on this data
     print("Loading SIMC data …")
@@ -99,6 +122,7 @@ def main() -> None:
         p0_value=p0,
         max_events=args.max_events,
         fit_scalers=True,
+        feature_schema=feature_schema,
         include_fry=include_fry,
         fry_branch=fry_branch,
         x_tar_sigma_cm=x_tar_sigma,
@@ -108,12 +132,7 @@ def main() -> None:
 
     # Save scaler bundle
     mcfg = config.get("model", {})
-    input_features = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
-    if include_fry:
-        input_features.append("fry")
-    input_features.append("x_tar")
-    if p0 is not None:
-        input_features.append("p0")
+    input_features = list(dataset.feature_names)
     target_features = ["delta", "xptar", "yptar", "ytar"]
     bundle = ScalerBundle(input_features=input_features, target_features=target_features)
     if dataset.scaler_X is not None and dataset.scaler_Y is not None:
@@ -127,12 +146,7 @@ def main() -> None:
         print(
             f"Warning: config model.input_dim={mcfg.get('input_dim')} does not match derived input_dim={input_dim}; using derived value."
         )
-    model = ResidualMLP(
-        input_dim=input_dim,
-        hidden_dim=mcfg.get("hidden_dim", 256),
-        n_residual_blocks=mcfg.get("n_residual_blocks", 4),
-        branch_dim=mcfg.get("branch_dim", 64),
-    )
+    model = build_model_from_config(mcfg, input_dim=input_dim)
     model.model_summary()
 
     # Build loss
@@ -143,6 +157,7 @@ def main() -> None:
         use_huber=lcfg.get("use_huber", True),
         huber_delta=lcfg.get("huber_delta", 1.0),
         transport_matrix=transport_matrix if transport_matrix else None,
+        target_weights=lcfg.get("target_weights", None),
     )
 
     # Train

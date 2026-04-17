@@ -37,7 +37,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-from training.data.preprocessing import ScalerBundle, add_p0_feature, add_xtar_feature
+from training.data.preprocessing import add_p0_feature, add_xtar_feature, resolve_feature_schema
 
 _DEFAULT_INPUT_COLS: List[str] = [
     "P_dc_x_fp",
@@ -63,7 +63,10 @@ class SieveDataset(Dataset):
     data_source   : pd.DataFrame, CSV/Parquet path (str), or dict.
     input_cols    : input column names (DC focal-plane variables).
     target_cols   : target column names (reconstructed optics quantities).
-    p0_value      : central momentum (GeV/c); appended as a constant column.
+    feature_schema: ordered input feature schema; defaults to the 4-D
+                    focal-plane features.
+    p0_value      : central momentum (GeV/c); appended only if `p0` is present
+                    in the feature schema.
     fry_col       : optional column name for beam raster y.
     x_tar_col     : column name for target-plane x (appended after DC cols).
                     Pass None to omit.
@@ -78,6 +81,7 @@ class SieveDataset(Dataset):
         data_source: Union[pd.DataFrame, str, dict],
         input_cols: Optional[List[str]] = None,
         target_cols: Optional[List[str]] = None,
+        feature_schema: Optional[List[str]] = None,
         p0_value: Optional[float] = None,
         fry_col: Optional[str] = None,
         x_tar_col: Optional[str] = "P_react_x",
@@ -89,6 +93,12 @@ class SieveDataset(Dataset):
 
         self.input_cols = list(input_cols or _DEFAULT_INPUT_COLS)
         self.target_cols = list(target_cols or _DEFAULT_TARGET_COLS)
+        self.feature_names = resolve_feature_schema(
+            feature_schema,
+            include_fry=bool(fry_col),
+            include_xtar=False,
+            include_p0=(p0_value is not None),
+        )
         self.p0_value = p0_value
         self.fry_col = fry_col
         self.x_tar_col = x_tar_col
@@ -97,18 +107,34 @@ class SieveDataset(Dataset):
         # Build raw input array
         X_raw = df[self.input_cols].to_numpy(dtype=np.float32)
 
-        if fry_col:
+        assembled_names = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+
+        if "fry" in self.feature_names:
             if fry_col not in df.columns:
                 raise KeyError(f"Requested fry column '{fry_col}' was not found in sieve dataset")
             fry = df[fry_col].to_numpy(dtype=np.float32).reshape(-1, 1)
             X_raw = np.concatenate([X_raw, fry], axis=1)
+            assembled_names.append("fry")
 
-        if x_tar_col and x_tar_col in df.columns:
+        if "x_tar" in self.feature_names:
+            if not x_tar_col or x_tar_col not in df.columns:
+                raise KeyError(
+                    "Feature schema requests 'x_tar' but the configured x_tar column was not found."
+                )
             x_tar = df[x_tar_col].to_numpy(dtype=np.float32)
             X_raw = add_xtar_feature(X_raw, x_tar)
+            assembled_names.append("x_tar")
 
-        if p0_value is not None:
+        if "p0" in self.feature_names:
+            if p0_value is None:
+                raise ValueError("Feature schema requests 'p0' but no p0_value was provided.")
             X_raw = add_p0_feature(X_raw, float(p0_value))
+            assembled_names.append("p0")
+
+        if assembled_names != self.feature_names:
+            raise RuntimeError(
+                f"Resolved feature assembly order {assembled_names} does not match requested schema {self.feature_names}."
+            )
 
         # Build raw target array
         Y_raw = df[self.target_cols].to_numpy(dtype=np.float32)

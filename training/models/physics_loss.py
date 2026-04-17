@@ -53,12 +53,17 @@ class PhysicsInformedLoss(nn.Module):
         use_huber: bool = True,
         huber_delta: float = 1.0,
         transport_matrix: Optional[Dict[str, float]] = None,
+        target_weights: Optional[Dict[str, float]] = None,
     ) -> None:
         super().__init__()
         self.lambda_physics = lambda_physics
         self.use_huber = use_huber
         self.huber_delta = huber_delta
         self.transport_matrix = transport_matrix or {}
+        self.target_weights = {
+            key: float((target_weights or {}).get(key, 1.0))
+            for key in self._TARGET_KEYS
+        }
 
     # ── Internal helpers ─────────────────────────────────────────────────
 
@@ -128,7 +133,7 @@ class PhysicsInformedLoss(nn.Module):
         Scalar total loss.
         """
         data_loss = sum(
-            self._data_loss_per_target(predictions[k], targets[k])
+            self.target_weights.get(k, 1.0) * self._data_loss_per_target(predictions[k], targets[k])
             for k in self._TARGET_KEYS
             if k in predictions and k in targets
         )

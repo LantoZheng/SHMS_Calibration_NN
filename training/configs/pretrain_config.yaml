@@ -1,8 +1,14 @@
 model:
-  input_dim: 7          # [x_fp, y_fp, xp_fp, yp_fp, fry, x_tar, p0]
+  name: "residual_transport_mlp"
+  input_dim: 4          # default mainline: [x_fp, y_fp, xp_fp, yp_fp]
   hidden_dim: 256
   n_residual_blocks: 4
   branch_dim: 64
+  init_linear_with_least_squares: true
+  linear_init_ridge: 1.0e-6
+  linear_warmup_epochs: 10
+  freeze_linear_after_warmup: true
+  correction_l2_weight: 1.0e-4
 
 training:
   epochs: 200
@@ -24,9 +30,12 @@ loss:
 
 data:
   simc_tree_name: "h10"
-  include_fry: true
+  feature_schema: ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+  include_fry: false
+  include_xtar: false
+  include_p0: false
   fry_branch: "fry"
-  x_tar_sigma_cm: 0.1    # Gaussian raster sigma for SIMC x_tar synthesis
+  x_tar_sigma_cm: 0.1    # Used only when legacy x_tar is enabled in feature_schema
   p0_values:             # list of p0 (GeV/c) to sample uniformly across
     - 2.7
     - 4.0

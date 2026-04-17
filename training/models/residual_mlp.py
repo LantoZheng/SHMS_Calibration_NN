@@ -15,18 +15,20 @@ import torch.nn as nn
 
 
 class ResidualBlock(nn.Module):
-    """Single residual block: Linear → SiLU → Linear → add skip → SiLU."""
+    """Single residual block: Linear → SiLU → Dropout → Linear → add skip → SiLU."""
 
-    def __init__(self, hidden_dim: int) -> None:
+    def __init__(self, hidden_dim: int, dropout: float = 0.0) -> None:
         super().__init__()
         self.fc1 = nn.Linear(hidden_dim, hidden_dim)
         self.act1 = nn.SiLU()
+        self.drop = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
         self.act2 = nn.SiLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         residual = x
         out = self.act1(self.fc1(x))
+        out = self.drop(out)
         out = self.fc2(out)
         return self.act2(out + residual)
 
@@ -60,17 +62,19 @@ class ResidualMLP(nn.Module):
         hidden_dim: int = 256,
         n_residual_blocks: int = 4,
         branch_dim: int = 64,
+        dropout: float = 0.0,
     ) -> None:
         super().__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.n_residual_blocks = n_residual_blocks
         self.branch_dim = branch_dim
+        self.dropout = dropout
 
         # ── Backbone ────────────────────────────────────────────────────
         self.input_layer = nn.Linear(input_dim, hidden_dim)
         self.backbone = nn.ModuleList(
-            [ResidualBlock(hidden_dim) for _ in range(n_residual_blocks)]
+            [ResidualBlock(hidden_dim, dropout=dropout) for _ in range(n_residual_blocks)]
         )
 
         # ── Multi-task output heads ──────────────────────────────────────

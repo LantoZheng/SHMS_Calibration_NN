@@ -9,16 +9,23 @@ Utility functions
 -----------------
 add_p0_feature(X, p0)          — append a constant p0 column to X
 add_xtar_feature(X, x_tar)     — append an x_tar column to X
+resolve_feature_schema(...)    — derive an ordered feature schema from config
 """
 
 from __future__ import annotations
 
 import json
 import os
-from typing import List
+from typing import Iterable, List, Optional
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+
+
+BASE_INPUT_FEATURES = ["x_fp", "y_fp", "xp_fp", "yp_fp"]
+OPTIONAL_INPUT_FEATURES = ["fry", "x_tar", "p0"]
+DEFAULT_INPUT_FEATURE_SCHEMA = list(BASE_INPUT_FEATURES)
+DEFAULT_TARGET_FEATURES = ["delta", "xptar", "yptar", "ytar"]
 
 
 class ScalerBundle:
@@ -126,6 +133,42 @@ class ScalerBundle:
         _restore(bundle.scaler_Y, payload["scaler_Y_mean"], payload["scaler_Y_scale"])
         bundle._fitted = True
         return bundle
+
+
+def resolve_feature_schema(
+    feature_schema: Optional[Iterable[str]] = None,
+    *,
+    include_fry: bool = False,
+    include_xtar: bool = False,
+    include_p0: bool = False,
+) -> List[str]:
+    """Resolve and validate an ordered input feature schema."""
+    if feature_schema is not None:
+        schema = [str(name) for name in feature_schema]
+    else:
+        schema = list(BASE_INPUT_FEATURES)
+        if include_fry:
+            schema.append("fry")
+        if include_xtar:
+            schema.append("x_tar")
+        if include_p0:
+            schema.append("p0")
+
+    unknown = [name for name in schema if name not in BASE_INPUT_FEATURES + OPTIONAL_INPUT_FEATURES]
+    if unknown:
+        raise ValueError("Unsupported input feature(s): " + ", ".join(unknown))
+
+    missing_base = [name for name in BASE_INPUT_FEATURES if name not in schema]
+    if missing_base:
+        raise ValueError(
+            "Feature schema must include all focal-plane base features: "
+            + ", ".join(missing_base)
+        )
+
+    if len(set(schema)) != len(schema):
+        raise ValueError("Feature schema contains duplicate feature names.")
+
+    return schema
 
 
 # ── Feature-engineering utilities ────────────────────────────────────────────
