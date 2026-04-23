@@ -1,0 +1,62 @@
+{
+  "n_labeled_events": 107839,
+  "foil_counts": {
+    "0": 26120,
+    "1": 38096,
+    "2": 43623
+  },
+  "hole_count_total": 221,
+  "cluster_count_per_foil": {
+    "0": 66,
+    "1": 77,
+    "2": 78
+  },
+  "cluster_count_before_post_per_foil": {
+    "0": 66,
+    "1": 77,
+    "2": 78
+  },
+  "grid_index_count_per_foil": {
+    "0": 66,
+    "1": 77,
+    "2": 78
+  },
+  "grid_params": {
+    "0": {
+      "grid_spacing": 1.6169130402938738,
+      "row_range": [
+        -3,
+        4
+      ],
+      "col_range": [
+        -8,
+        8
+      ],
+      "missing_positions": 70
+    },
+    "1": {
+      "grid_spacing": 1.619472147414187,
+      "row_range": [
+        -4,
+        4
+      ],
+      "col_range": [
+        -9,
+        8
+      ],
+      "missing_positions": 85
+    },
+    "2": {
+      "grid_spacing": 1.6061098638095068,
+      "row_range": [
+        -3,
+        4
+      ],
+      "col_range": [
+        -8,
+        8
+      ],
+      "missing_positions": 58
+    }
+  }
+}
