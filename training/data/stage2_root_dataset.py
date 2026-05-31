@@ -166,6 +166,7 @@ class Stage2RootDataset(Dataset):
             self.weights = None
 
         self.metadata = self._build_metadata_frame(self.df)
+        self._metadata_cache = self._build_metadata_cache(self.metadata)
 
     def _collect_required_columns(self) -> list[str]:
         columns = set()
@@ -364,6 +365,16 @@ class Stage2RootDataset(Dataset):
                 metadata[key] = -1
         return metadata.reset_index(drop=True)
 
+    def _build_metadata_cache(self, metadata: pd.DataFrame) -> Dict[str, object]:
+        cache: Dict[str, object] = {}
+        for key in metadata.columns:
+            values = metadata[key]
+            if pd.api.types.is_numeric_dtype(values):
+                cache[key] = torch.as_tensor(values.to_numpy())
+            else:
+                cache[key] = values.tolist()
+        return cache
+
     def __len__(self) -> int:
         return len(self.X)
 
@@ -374,10 +385,8 @@ class Stage2RootDataset(Dataset):
             "tolerances": {k: v[idx] for k, v in self.tolerances.items()},
             "target_mask": {k: v[idx] for k, v in self.target_mask.items()},
             "metadata": {
-                key: torch.tensor(self.metadata.iloc[idx][key])
-                if np.issubdtype(type(self.metadata.iloc[idx][key]), np.number)
-                else self.metadata.iloc[idx][key]
-                for key in self.metadata.columns
+                key: values[idx] if isinstance(values, torch.Tensor) else values[idx]
+                for key, values in self._metadata_cache.items()
             },
         }
         if self.weights is not None:

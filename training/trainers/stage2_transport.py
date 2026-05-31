@@ -14,7 +14,7 @@ import json
 import math
 import os
 import time
-from typing import Dict, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 import numpy as np
 import torch
@@ -155,6 +155,28 @@ class Stage2TransportTrainer:
         if keep_linear_path_frozen and hasattr(self.model, "freeze_linear_path"):
             self.model.freeze_linear_path()
 
+    @staticmethod
+    def _build_loader_kwargs(
+        *,
+        batch_size: int,
+        shuffle: bool,
+        num_workers: int,
+        pin_memory: bool,
+        persistent_workers: bool,
+        prefetch_factor: Optional[int],
+    ) -> Dict[str, Any]:
+        kwargs: Dict[str, Any] = {
+            "batch_size": batch_size,
+            "shuffle": shuffle,
+            "num_workers": max(int(num_workers), 0),
+            "pin_memory": pin_memory,
+        }
+        if kwargs["num_workers"] > 0:
+            kwargs["persistent_workers"] = bool(persistent_workers)
+            if prefetch_factor is not None:
+                kwargs["prefetch_factor"] = int(prefetch_factor)
+        return kwargs
+
     def train(
         self,
         *,
@@ -165,6 +187,7 @@ class Stage2TransportTrainer:
         tcfg = self.config.get("training", {})
         epochs = int(tcfg.get("epochs", 120))
         batch_size = int(tcfg.get("batch_size", 1024))
+        val_batch_size = int(tcfg.get("val_batch_size", batch_size * 2))
         weight_decay = float(tcfg.get("weight_decay", 1e-5))
         patience = int(tcfg.get("early_stopping_patience", 20))
         clip_norm = float(tcfg.get("gradient_clip_max_norm", 1.0))
@@ -174,22 +197,36 @@ class Stage2TransportTrainer:
         branch_lr = float(tcfg.get("branch_learning_rate", 5e-5))
         full_unfreeze_epoch = tcfg.get("full_unfreeze_epoch", None)
         full_lr = float(tcfg.get("full_learning_rate", 1e-5))
+        full_model_disabled_targets = set(tcfg.get("full_model_disabled_targets", []))
         keep_linear_path_frozen = bool(tcfg.get("keep_linear_path_frozen", True))
+        train_num_workers = int(tcfg.get("num_workers", 0))
+        val_num_workers = int(tcfg.get("val_num_workers", train_num_workers))
+        persistent_workers = bool(tcfg.get("persistent_workers", train_num_workers > 0))
+        prefetch_factor = tcfg.get("prefetch_factor", None)
 
         train_ds, val_ds, split_summary = self._split_dataset(dataset)
+        pin_memory = self.device.type == "cuda"
         train_loader = DataLoader(
             train_ds,
-            batch_size=batch_size,
-            shuffle=True,
-            num_workers=0,
-            pin_memory=(self.device.type == "cuda"),
+            **self._build_loader_kwargs(
+                batch_size=batch_size,
+                shuffle=True,
+                num_workers=train_num_workers,
+                pin_memory=pin_memory,
+                persistent_workers=persistent_workers,
+                prefetch_factor=prefetch_factor,
+            ),
         )
         val_loader = DataLoader(
             val_ds,
-            batch_size=batch_size * 2,
-            shuffle=False,
-            num_workers=0,
-            pin_memory=(self.device.type == "cuda"),
+            **self._build_loader_kwargs(
+                batch_size=val_batch_size,
+                shuffle=False,
+                num_workers=val_num_workers,
+                pin_memory=pin_memory,
+                persistent_workers=persistent_workers,
+                prefetch_factor=prefetch_factor,
+            ),
         )
 
         optimizer = self._make_optimizer(head_lr, weight_decay)
@@ -213,6 +250,8 @@ class Stage2TransportTrainer:
 
         phase = "head_only"
         phase_switches = [{"epoch": 1, "phase": phase, "lr": head_lr}]
+        pending_disable_targets: Optional[set] = None
+        pending_disable_epoch: int = -1
 
         for epoch in range(1, epochs + 1):
             start_time = time.time()
@@ -227,7 +266,23 @@ class Stage2TransportTrainer:
                 )
                 phase = "correction_branch"
                 phase_switches.append({"epoch": epoch, "phase": phase, "lr": branch_lr})
-                print(f"[Epoch {epoch}] Switched to correction-branch fine-tuning (lr={branch_lr})")
+                disabled = set(tcfg.get("correction_branch_disabled_targets", []))
+                delay = int(tcfg.get("correction_branch_disabled_targets_delay_epochs", 0))
+                if disabled and delay > 0:
+                    pending_disable_targets = disabled
+                    pending_disable_epoch = epoch + delay
+                    print(f"[Epoch {epoch}] Switched to correction-branch fine-tuning (lr={branch_lr})")
+                    print(f"[Epoch {epoch}] {', '.join(sorted(disabled))} will be disabled at epoch {pending_disable_epoch}")
+                elif disabled:
+                    self.loss_fn.set_disabled_targets(disabled)
+                    print(f"[Epoch {epoch}] Switched to correction-branch fine-tuning (lr={branch_lr})")
+                else:
+                    self.loss_fn.set_disabled_targets(set())
+                    print(f"[Epoch {epoch}] Switched to correction-branch fine-tuning (lr={branch_lr})")
+
+            if pending_disable_targets is not None and epoch >= pending_disable_epoch:
+                self.loss_fn.set_disabled_targets(pending_disable_targets)
+                pending_disable_targets = None
 
             if (
                 full_unfreeze_epoch is not None
@@ -243,6 +298,9 @@ class Stage2TransportTrainer:
                 )
                 phase = "full_model"
                 phase_switches.append({"epoch": epoch, "phase": phase, "lr": full_lr})
+                pending_disable_targets = None
+                pending_disable_epoch = -1
+                self.loss_fn.set_disabled_targets(full_model_disabled_targets)
                 print(f"[Epoch {epoch}] Switched to full-model fine-tuning (lr={full_lr})")
 
             self.model.train()

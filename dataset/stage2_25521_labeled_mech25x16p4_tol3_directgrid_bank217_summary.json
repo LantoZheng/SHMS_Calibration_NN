@@ -1,0 +1,39 @@
+{
+  "source_csv": "dataset\\stage2_25521_labeled_mech25x16p4_tol3_directgrid.csv",
+  "selection": "top-populated direct_grid holes per foil",
+  "target_counts": {
+    "0": 66,
+    "1": 76,
+    "2": 75
+  },
+  "n_labeled_events": 120691,
+  "foil_counts": {
+    "0": 29274,
+    "1": 42520,
+    "2": 48897
+  },
+  "hole_count_total": 217,
+  "cluster_count_per_foil": {
+    "0": 66,
+    "1": 76,
+    "2": 75
+  },
+  "per_foil_selection": {
+    "0": {
+      "selected_holes": 66,
+      "min_population_kept": 85,
+      "max_population_kept": 934
+    },
+    "1": {
+      "selected_holes": 76,
+      "min_population_kept": 85,
+      "max_population_kept": 1309
+    },
+    "2": {
+      "selected_holes": 75,
+      "min_population_kept": 144,
+      "max_population_kept": 1654
+    }
+  },
+  "resolved_hole_design_csv": "dataset\\stage2_25521_labeled_mech25x16p4_tol3_directgrid_bank217_resolved_hole_design.csv"
+}

@@ -14,6 +14,7 @@ import argparse
 import os
 import sys
 
+import numpy as np
 import yaml
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -30,6 +31,44 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default=None, help="cuda or cpu")
     parser.add_argument("--max-events", type=int, default=None, help="Optional event cap for smoke tests")
     return parser.parse_args()
+
+
+def build_mechanical_hole_center_bank(dataset, scaler_bundle, data_cfg: dict) -> dict[int, dict[str, list[list[float]]]]:
+    label_map = dict(data_cfg.get("label_map", {}))
+    metadata_cols = dict(data_cfg.get("metadata_cols", {}))
+    foil_col = str(metadata_cols.get("foil_position", "foil_position"))
+    row_col = str(metadata_cols.get("hole_row", "hole_row"))
+    col_col = str(metadata_cols.get("hole_col", "hole_col"))
+    x_center_col = str(label_map.get("xptar", {}).get("center_col", "weak_hole_xptar_center"))
+    y_center_col = str(label_map.get("yptar", {}).get("center_col", "weak_hole_yptar_center"))
+
+    required_cols = [foil_col, row_col, col_col, x_center_col, y_center_col]
+    df = dataset.df[required_cols].dropna().copy()
+    if df.empty:
+        return {}
+
+    df[foil_col] = df[foil_col].astype(int)
+    df[row_col] = df[row_col].astype(int)
+    df[col_col] = df[col_col].astype(int)
+    grouped = (
+        df.groupby([foil_col, row_col, col_col], as_index=False)[[x_center_col, y_center_col]]
+        .median()
+        .sort_values([foil_col, row_col, col_col])
+    )
+
+    center_xy = grouped[[x_center_col, y_center_col]].to_numpy(dtype=np.float32)
+    if scaler_bundle is not None:
+        center_xy[:, 0] = (center_xy[:, 0] - float(scaler_bundle.scaler_Y.mean_[1])) / float(scaler_bundle.scaler_Y.scale_[1])
+        center_xy[:, 1] = (center_xy[:, 1] - float(scaler_bundle.scaler_Y.mean_[2])) / float(scaler_bundle.scaler_Y.scale_[2])
+
+    bank: dict[int, dict[str, list[list[float]]]] = {}
+    for foil_value, sub in grouped.groupby(foil_col, sort=True):
+        foil_int = int(foil_value)
+        bank[foil_int] = {
+            "keys": sub[[row_col, col_col]].to_numpy(dtype=np.int64).tolist(),
+            "centers": center_xy[sub.index.to_numpy()].tolist(),
+        }
+    return bank
 
 
 def main() -> None:
@@ -72,6 +111,12 @@ def main() -> None:
     )
     print(f"Stage-2 dataset: raw={dataset.summary.raw_events}, kept={dataset.summary.kept_events}")
     print(f"Cutflow: {dataset.summary.cutflow}")
+    hole_center_bank = build_mechanical_hole_center_bank(dataset, scaler_bundle, dcfg)
+    if hole_center_bank:
+        print(
+            "Mechanical hole center bank: "
+            + ", ".join(f"foil {foil}: {len(payload['keys'])} holes" for foil, payload in sorted(hole_center_bank.items()))
+        )
 
     model_cfg = dict(config.get("model", {}))
     model = build_model_from_config(model_cfg, input_dim=dataset.X.shape[1])
@@ -82,6 +127,18 @@ def main() -> None:
         huber_delta=loss_cfg.get("huber_delta", 1.0),
         target_weights=loss_cfg.get("target_weights", {}),
         correction_l2_weight=loss_cfg.get("correction_l2_weight", 0.0),
+        hole_separation_weight=loss_cfg.get("hole_separation_weight", 0.0),
+        hole_separation_temperature=loss_cfg.get("hole_separation_temperature", 0.5),
+        hole_center_bank=hole_center_bank,
+        sieve_plane_weight=loss_cfg.get("sieve_plane_weight", 0.0),
+        sieve_plane_huber_delta_cm=loss_cfg.get("sieve_plane_huber_delta_cm", 0.3),
+        sieve_distance_cm=loss_cfg.get("sieve_distance_cm", 253.0),
+        target_scales={
+            "delta": float(scaler_bundle.scaler_Y.scale_[0]),
+            "xptar": float(scaler_bundle.scaler_Y.scale_[1]),
+            "yptar": float(scaler_bundle.scaler_Y.scale_[2]),
+            "ytar": float(scaler_bundle.scaler_Y.scale_[3]),
+        },
     )
 
     trainer = Stage2TransportTrainer(

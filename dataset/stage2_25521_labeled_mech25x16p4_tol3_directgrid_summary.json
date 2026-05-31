@@ -1,0 +1,106 @@
+{
+  "n_labeled_events": 123777,
+  "hole_label_source": "generated_from_spacing_direct_grid",
+  "hole_design_table": null,
+  "resolved_hole_design_csv": "dataset\\stage2_25521_labeled_mech25x16p4_tol3_directgrid_resolved_hole_design.csv",
+  "ytar_label_source": "strong_fixed_foil_centers",
+  "foil_centers_cm": {
+    "0": 10.0,
+    "1": 0.0,
+    "2": -10.0
+  },
+  "foil_counts": {
+    "0": 29785,
+    "1": 43405,
+    "2": 50587
+  },
+  "hole_count_total": 278,
+  "hole_spacing_mm": {
+    "x": 25.0,
+    "y": 16.4
+  },
+  "hole_tolerance_mm": 3.0,
+  "sieve_distance_cm": 253.0,
+  "cluster_count_per_foil": {
+    "0": 81,
+    "1": 95,
+    "2": 102
+  },
+  "cluster_count_before_post_per_foil": {
+    "0": 81,
+    "1": 95,
+    "2": 102
+  },
+  "mechanical_candidate_grid": {
+    "x_spacing_cm": 2.5,
+    "y_spacing_cm": 1.64,
+    "x_origin_cm": -0.14125503529088235,
+    "y_origin_cm": -0.041394555468756256,
+    "min_population": 15,
+    "per_foil": {
+      "0": {
+        "row_range": [
+          -5,
+          3
+        ],
+        "col_range": [
+          -5,
+          5
+        ],
+        "occupied_holes": 81
+      },
+      "1": {
+        "row_range": [
+          -5,
+          4
+        ],
+        "col_range": [
+          -6,
+          5
+        ],
+        "occupied_holes": 95
+      },
+      "2": {
+        "row_range": [
+          -4,
+          5
+        ],
+        "col_range": [
+          -7,
+          6
+        ],
+        "occupied_holes": 102
+      }
+    }
+  },
+  "cluster_to_mechanical_match": {
+    "per_foil": {
+      "0": {
+        "n_events": 29785,
+        "n_holes": 81,
+        "median_match_distance_cm": 0.3461122578101484,
+        "max_match_distance_cm": 1.4933236361532227,
+        "min_match_distance_cm": 0.003324730591610788
+      },
+      "1": {
+        "n_events": 43405,
+        "n_holes": 95,
+        "median_match_distance_cm": 0.38141446290351966,
+        "max_match_distance_cm": 1.4877172310188682,
+        "min_match_distance_cm": 0.0019438033073912418
+      },
+      "2": {
+        "n_events": 50587,
+        "n_holes": 102,
+        "median_match_distance_cm": 0.4302316966664031,
+        "max_match_distance_cm": 1.4893232027578467,
+        "min_match_distance_cm": 0.0035955899426806485
+      }
+    },
+    "min_population": 15,
+    "max_match_distance_cm": 1.4949581933953873,
+    "dropped_events_far_from_hole": 238,
+    "dropped_events_below_population": 0
+  },
+  "resolved_hole_count": 278
+}
