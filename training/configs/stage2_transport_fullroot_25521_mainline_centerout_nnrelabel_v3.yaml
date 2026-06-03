@@ -1,0 +1,157 @@
+model:
+  name: "residual_transport_mlp"
+  input_dim: 5
+  hidden_dim: 192
+  n_residual_blocks: 4
+  branch_dim: 64
+  dropout: 0.10
+
+pretrained:
+  checkpoint_path: "checkpoints/pretrain_25521_fry_cuda_5d_notebooklike/best_pretrain.pth"
+  scaler_bundle_path: "checkpoints/pretrain_25521_fry_cuda_5d_notebooklike/scaler_bundle.json"
+
+data:
+  tree_name: "T"
+  feature_schema: ["x_fp", "y_fp", "xp_fp", "yp_fp", "fry"]
+  branch_map:
+    x_fp: "P_dc_x_fp"
+    y_fp: "P_dc_y_fp"
+    xp_fp: "P_dc_xp_fp"
+    yp_fp: "P_dc_yp_fp"
+  direct_fry_branch: "P.rb.raster.fr_ybpm_tar"
+  fry_proxy_branches:
+    - "P_rb_raster_fryaRawAdc"
+    - "P_rb_raster_frybRawAdc"
+  fry_mode: "direct_or_proxy"
+
+  label_map:
+    delta:
+      enabled: true
+      center_col: "P_gtr_dp"
+      tolerance: 0.0
+      reference_branch: "P_gtr_dp"
+    xptar:
+      enabled: true
+      center_col: "weak_hole_xptar_center"
+      tol_col: "weak_hole_xptar_tol"
+      reference_branch: "P_gtr_th"
+    yptar:
+      enabled: true
+      center_col: "weak_hole_yptar_center"
+      tol_col: "weak_hole_yptar_tol"
+      reference_branch: "P_gtr_ph"
+    ytar:
+      enabled: true
+      center_col: "foil_ytar_center"
+      tol_col: "foil_ytar_tol"
+      tolerance: 0.0
+      reference_branch: "P_react_z"
+
+  metadata_cols:
+    run_id: "run_id"
+    foil_position: "foil_position"
+    hole_id: "hole_id"
+    hole_row: "hole_row"
+    hole_col: "hole_col"
+
+  weight_col: "weak_label_weight"
+
+  cuts:
+    use_pid: false
+    ngcer_min: 2.0
+    hgcer_min: 0.5
+    cal_etot_min: 0.6
+    cal_etot_max: 1.8
+    use_quality: false
+    dp_min: -25.0
+    dp_max: 22.0
+    xptar_abs_max: 0.08
+    yptar_abs_max: 0.06
+    ytar_abs_max: 120.0
+
+training:
+  epochs: 80
+  batch_size: 2048
+  val_batch_size: 4096
+  num_workers: 8
+  val_num_workers: 4
+  persistent_workers: true
+  prefetch_factor: 6
+  weight_decay: 1.0e-5
+  early_stopping_patience: 20
+  gradient_clip_max_norm: 1.0
+
+  head_learning_rate: 2.0e-4
+  branch_unfreeze_epoch: 20
+  branch_learning_rate: 5.0e-5
+  correction_branch_disabled_targets: []
+  correction_branch_disabled_targets_delay_epochs: 0
+
+  full_unfreeze_epoch: 999
+  full_learning_rate: 1.0e-5
+  full_model_disabled_targets: []
+  keep_linear_path_frozen: false
+
+  val_fraction: 0.2
+  random_seed: 42
+
+  loss_schedule:
+    - name: "stage2_warmup"
+      start_epoch: 1
+      target_weights:
+        delta: 0.25
+        xptar: 1.0
+        yptar: 1.0
+        ytar: 1.0
+      hole_separation_weight: 0.0
+      sieve_plane_weight: 0.0
+    - name: "stage2_geometry_bridge"
+      start_epoch: 21
+      target_weights:
+        delta: 0.20
+        xptar: 1.0
+        yptar: 1.0
+        ytar: 1.0
+      hole_separation_weight: 0.005
+      sieve_plane_weight: 0.0
+    - name: "stage2_ytar_refine"
+      start_epoch: 51
+      target_weights:
+        delta: 0.15
+        xptar: 0.80
+        yptar: 0.80
+        ytar: 2.0
+      hole_separation_weight: 0.008
+      sieve_plane_weight: 0.05
+
+validation:
+  strategy: "leave_some_holes_out"
+  hole_column: "hole_id"
+  n_holdout_holes: 5
+  random_seed: 42
+  selection_metric: "ytar_center_rmse"
+  selection_scope: "overall"
+  selection_mode: "min"
+
+loss:
+  use_huber: true
+  huber_delta: 1.0
+  correction_l2_weight: 1.0e-4
+  hole_separation_weight: 0.01
+  hole_separation_temperature: 1.00
+  sieve_plane_weight: 0.05
+  sieve_plane_huber_delta_cm: 0.30
+  sieve_distance_cm: 253.0
+  target_weights:
+    delta: 0.25
+    xptar: 1.0
+    yptar: 1.0
+    ytar: 1.0
+
+output:
+  checkpoint_dir: "checkpoints/stage2_transport_fullroot_25521_mainline_centerout_nnrelabel_v3/"
+
+postprocess:
+  output_dir: "outputs/stage2_transport_fullroot_25521_mainline_centerout_nnrelabel_v3_postprocess/"
+  batch_size: 4096
+  sieve_distance_cm: 253.0

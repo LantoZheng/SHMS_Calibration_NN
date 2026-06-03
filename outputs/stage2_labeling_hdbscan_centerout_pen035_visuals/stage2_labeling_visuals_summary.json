@@ -1,0 +1,42 @@
+{
+  "data": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\dataset\\stage2_25521_labeled_mech25x16p4_tol3_hdbscan_centerout_pen035.csv",
+  "n_events": 105223,
+  "n_clusters_total": 220,
+  "n_label_centers_total": 218,
+  "artifacts": {
+    "matrix_plot": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_labeling_hdbscan_centerout_pen035_visuals\\stage2_labeling_cluster_and_label_centers_3x2.png",
+    "summary_csv": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_labeling_hdbscan_centerout_pen035_visuals\\stage2_labeling_match_summary.csv"
+  },
+  "summary": [
+    {
+      "foil": 0,
+      "n_events": 27171,
+      "n_clusters": 66,
+      "n_label_centers": 66,
+      "median_match_distance_cm": 0.10325033075794363,
+      "mean_match_distance_cm": 0.1388704160752437,
+      "max_match_distance_cm": 0.6506360823948336,
+      "min_match_distance_cm": 0.007061930552727094
+    },
+    {
+      "foil": 1,
+      "n_events": 36912,
+      "n_clusters": 77,
+      "n_label_centers": 76,
+      "median_match_distance_cm": 0.12297050312864831,
+      "mean_match_distance_cm": 0.17758447444094044,
+      "max_match_distance_cm": 1.2906288161501127,
+      "min_match_distance_cm": 0.00329986916527953
+    },
+    {
+      "foil": 2,
+      "n_events": 41140,
+      "n_clusters": 77,
+      "n_label_centers": 76,
+      "median_match_distance_cm": 0.13050350832713362,
+      "mean_match_distance_cm": 0.2100680980207205,
+      "max_match_distance_cm": 1.3446932143364712,
+      "min_match_distance_cm": 0.019220585359529693
+    }
+  ]
+}

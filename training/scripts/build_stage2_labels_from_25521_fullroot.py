@@ -176,8 +176,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--clustering-method",
         choices=["hdbscan", "two_entry", "direct_grid"],
-        default="direct_grid",
+        default="hdbscan",
         help="Hole-assignment backend used to create sieve-hole weak labels",
+    )
+    parser.add_argument(
+        "--cluster-hole-assignment-mode",
+        choices=["nearest", "center_out_penalized"],
+        default="center_out_penalized",
+        help=(
+            "How clustered sieve-hole centers are matched onto the mechanical-hole grid. "
+            "'nearest' uses independent nearest-neighbor matching; 'center_out_penalized' "
+            "assigns inner clusters first and penalizes reusing an already-occupied hole."
+        ),
+    )
+    parser.add_argument(
+        "--cluster-hole-occupancy-penalty-cm",
+        type=float,
+        default=0.35,
+        help=(
+            "Penalty in cm added to a candidate hole's effective match cost for each cluster "
+            "already assigned to that hole when using center_out_penalized matching."
+        ),
     )
     parser.add_argument("--max-events", type=int, default=None, help="Optional event cap for smoke tests")
     parser.add_argument("--ngcer-min", type=float, default=6.0, help="PID cut: minimum P_ngcer_npeSum")
@@ -603,15 +622,53 @@ def build_cluster_to_mechanical_hole_map(
             raise RuntimeError(f"No mechanical-hole candidates found for foil {foil_pos_int}.")
         candidate_xy = candidates[["candidate_sieve_x_cm", "candidate_sieve_y_cm"]].to_numpy(dtype=np.float64)
         candidate_rowcol = candidates[["hole_row", "hole_col"]].to_numpy(dtype=np.int64)
+        center_idx = int(np.argmin(np.sqrt(candidate_xy[:, 0] ** 2 + candidate_xy[:, 1] ** 2)))
+        center_ref_x = float(candidate_xy[center_idx, 0])
+        center_ref_y = float(candidate_xy[center_idx, 1])
+        assignment_mode = str(getattr(args, "cluster_hole_assignment_mode", "nearest"))
+        occupancy_penalty_cm = float(max(getattr(args, "cluster_hole_occupancy_penalty_cm", 0.0), 0.0))
+        cluster_frame = df_foil.copy()
+        cluster_radius = np.sqrt(
+            (cluster_frame["cluster_center_x"].to_numpy(dtype=np.float64) - center_ref_x) ** 2
+            + (cluster_frame["cluster_center_y"].to_numpy(dtype=np.float64) - center_ref_y) ** 2
+        )
+        cluster_frame["__center_out_radius"] = cluster_radius
+        if assignment_mode == "center_out_penalized":
+            cluster_frame = cluster_frame.sort_values(
+                ["__center_out_radius", "cluster_center_x", "cluster_center_y", "cluster"],
+                ascending=[True, True, True, True],
+            ).reset_index(drop=True)
+
         distances: list[float] = []
-        for row in df_foil.itertuples(index=False):
+        effective_costs: list[float] = []
+        occupancies_before: list[int] = []
+        reassigned_from_nearest = 0
+        hole_usage_counts: dict[tuple[int, int], int] = {}
+        for row in cluster_frame.itertuples(index=False):
             cluster_id = int(cast(Any, row.cluster))
             cluster_center_x = float(cast(Any, row.cluster_center_x))
             cluster_center_y = float(cast(Any, row.cluster_center_y))
             delta = candidate_xy - np.array([cluster_center_x, cluster_center_y], dtype=np.float64)
             dist = np.sqrt(np.sum(delta * delta, axis=1))
-            best_idx = int(np.argmin(dist))
+            nearest_idx = int(np.argmin(dist))
+            if assignment_mode == "center_out_penalized":
+                occupancy_counts = np.array(
+                    [hole_usage_counts.get((int(rc[0]), int(rc[1])), 0) for rc in candidate_rowcol],
+                    dtype=np.float64,
+                )
+                effective_cost = dist + occupancy_penalty_cm * occupancy_counts
+                best_idx = int(np.argmin(effective_cost))
+                occupancies_before.append(int(occupancy_counts[best_idx]))
+                effective_costs.append(float(effective_cost[best_idx]))
+            else:
+                best_idx = nearest_idx
+                occupancies_before.append(int(hole_usage_counts.get((int(candidate_rowcol[best_idx, 0]), int(candidate_rowcol[best_idx, 1])), 0)))
+                effective_costs.append(float(dist[best_idx]))
+            if best_idx != nearest_idx:
+                reassigned_from_nearest += 1
             distances.append(float(dist[best_idx]))
+            chosen_key = (int(candidate_rowcol[best_idx, 0]), int(candidate_rowcol[best_idx, 1]))
+            hole_usage_counts[chosen_key] = hole_usage_counts.get(chosen_key, 0) + 1
             assignments.append(
                 {
                     "foil_position": foil_pos_int,
@@ -625,6 +682,10 @@ def build_cluster_to_mechanical_hole_map(
                     "match_dx_cm": float(cluster_center_x - candidate_xy[best_idx, 0]),
                     "match_dy_cm": float(cluster_center_y - candidate_xy[best_idx, 1]),
                     "match_distance_cm": float(dist[best_idx]),
+                    "nearest_match_distance_cm": float(dist[nearest_idx]),
+                    "effective_match_cost_cm": float(effective_costs[-1]),
+                    "hole_occupancy_before_assignment": int(occupancies_before[-1]),
+                    "assignment_mode": assignment_mode,
                 }
             )
         per_foil_stats[str(foil_pos_int)] = {
@@ -632,6 +693,9 @@ def build_cluster_to_mechanical_hole_map(
             "median_match_distance_cm": float(np.median(distances)) if distances else None,
             "max_match_distance_cm": float(np.max(distances)) if distances else None,
             "min_match_distance_cm": float(np.min(distances)) if distances else None,
+            "median_effective_match_cost_cm": float(np.median(effective_costs)) if effective_costs else None,
+            "reassigned_from_nearest_count": int(reassigned_from_nearest),
+            "max_hole_occupancy": int(max(hole_usage_counts.values())) if hole_usage_counts else 0,
         }
 
     assignment_df = pd.DataFrame(assignments).sort_values(["foil_position", "cluster"]).reset_index(drop=True)
@@ -639,10 +703,24 @@ def build_cluster_to_mechanical_hole_map(
         assignment_df.groupby(["foil_position", "hole_row", "hole_col"]).size().reset_index(name="assigned_clusters")
     )
     summary = {
+        "assignment_mode": str(getattr(args, "cluster_hole_assignment_mode", "nearest")),
+        "occupancy_penalty_cm": float(max(getattr(args, "cluster_hole_occupancy_penalty_cm", 0.0), 0.0)),
         "per_foil": per_foil_stats,
         "duplicate_mechanical_holes": int((duplicate_assignments["assigned_clusters"] > 1).sum()),
     }
     return assignment_df, summary
+
+
+def describe_cluster_hole_assignment_source(
+    args: argparse.Namespace,
+    *,
+    generated_from_spacing: bool,
+) -> str:
+    assignment_mode = str(getattr(args, "cluster_hole_assignment_mode", "nearest"))
+    prefix = "generated_from_spacing" if generated_from_spacing else "table"
+    if assignment_mode == "center_out_penalized":
+        return f"{prefix}_center_out_penalized_cluster_match"
+    return f"{prefix}_nearest_cluster_match"
 
 
 def assign_events_to_mechanical_holes(
@@ -817,7 +895,7 @@ def resolve_mechanical_hole_design(
             "per_foil": {},
         }
         cluster_hole_map, match_summary = build_cluster_to_mechanical_hole_map(clustering_results, design, args)
-        return design, "table_nearest_cluster_match", str(args.hole_design_table), cluster_hole_map, design_meta, match_summary
+        return design, describe_cluster_hole_assignment_source(args, generated_from_spacing=False), str(args.hole_design_table), cluster_hole_map, design_meta, match_summary
 
     design, design_meta = build_full_candidate_mechanical_hole_design_from_clusters(clustering_results, args)
     resolved_path = Path(args.resolved_hole_design_csv) if args.resolved_hole_design_csv else output_csv.with_name(
@@ -826,7 +904,7 @@ def resolve_mechanical_hole_design(
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
     design.to_csv(resolved_path, index=False)
     cluster_hole_map, match_summary = build_cluster_to_mechanical_hole_map(clustering_results, design, args)
-    return design, "generated_from_spacing_nearest_cluster_match", str(resolved_path), cluster_hole_map, design_meta, match_summary
+    return design, describe_cluster_hole_assignment_source(args, generated_from_spacing=True), str(resolved_path), cluster_hole_map, design_meta, match_summary
 
 
 def resolve_direct_grid_hole_design(

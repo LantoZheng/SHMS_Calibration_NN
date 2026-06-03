@@ -1,0 +1,53 @@
+[
+  {
+    "epoch": 56,
+    "val_loss": 0.024495847523212433,
+    "select_metric": 0.0831339880824089,
+    "select_name": "ytar_center_rmse",
+    "foil0_sieve_rmse": 0.3646836298074479,
+    "foil1_sieve_rmse": 0.4020973292838186,
+    "foil2_sieve_rmse": 0.4331907601234692,
+    "all_nn_rmse_cm": 1.3566605054846037,
+    "foil0_nn_rmse_cm": 0.9268566324120338,
+    "foil1_nn_rmse_cm": 1.8496511849908783,
+    "foil2_nn_rmse_cm": 1.0416759181579784,
+    "n_labeled": 100561,
+    "n_holes": 215,
+    "duplicate_holes": 0,
+    "iteration": 1
+  },
+  {
+    "epoch": 42,
+    "val_loss": 0.01573970355093479,
+    "select_metric": 0.09734195470809937,
+    "select_name": "ytar_center_rmse",
+    "foil0_sieve_rmse": 0.3521320128648941,
+    "foil1_sieve_rmse": 0.4087324387890569,
+    "foil2_sieve_rmse": 0.4289003102075549,
+    "all_nn_rmse_cm": 1.3848759238053143,
+    "foil0_nn_rmse_cm": 0.961142455349343,
+    "foil1_nn_rmse_cm": 1.7947326426504644,
+    "foil2_nn_rmse_cm": 1.1865818887865025,
+    "n_labeled": 99238,
+    "n_holes": 214,
+    "duplicate_holes": 1,
+    "iteration": 2
+  },
+  {
+    "epoch": 52,
+    "val_loss": 0.026523033156991005,
+    "select_metric": 0.09346295893192291,
+    "select_name": "ytar_center_rmse",
+    "foil0_sieve_rmse": 0.3422953412822145,
+    "foil1_sieve_rmse": 0.3897903331954259,
+    "foil2_sieve_rmse": 0.4138742624327816,
+    "all_nn_rmse_cm": 1.34251423852669,
+    "foil0_nn_rmse_cm": 0.8675167066610592,
+    "foil1_nn_rmse_cm": 1.798148956983876,
+    "foil2_nn_rmse_cm": 1.1019412753416788,
+    "n_labeled": 98048,
+    "n_holes": 212,
+    "duplicate_holes": 1,
+    "iteration": 3
+  }
+]

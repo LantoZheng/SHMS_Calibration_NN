@@ -1,0 +1,19 @@
+[
+  {
+    "epoch": 68,
+    "val_loss": 0.02430891804397106,
+    "select_metric": 0.083904929459095,
+    "select_name": "ytar_center_rmse",
+    "foil0_sieve_rmse": 0.3633373022476303,
+    "foil1_sieve_rmse": 0.4008195685832439,
+    "foil2_sieve_rmse": 0.4303006470050639,
+    "all_nn_rmse_cm": 1.3335626805864331,
+    "foil0_nn_rmse_cm": 0.8872481032091579,
+    "foil1_nn_rmse_cm": 1.8395404151372912,
+    "foil2_nn_rmse_cm": 1.0035788120348743,
+    "n_labeled": 100561,
+    "n_holes": 215,
+    "duplicate_holes": 0,
+    "iteration": 1
+  }
+]

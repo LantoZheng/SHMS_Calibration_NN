@@ -315,6 +315,8 @@ def test_build_cluster_to_mechanical_hole_map_matches_nearest_spacing_grid():
         sieve_distance_cm=253.0,
         hole_origin_xptar=0.0,
         hole_origin_yptar=0.0,
+        cluster_hole_assignment_mode="nearest",
+        cluster_hole_occupancy_penalty_cm=0.0,
     )
 
     design, meta = build_full_candidate_mechanical_hole_design_from_clusters(clustering_results, args)
@@ -329,6 +331,59 @@ def test_build_cluster_to_mechanical_hole_map_matches_nearest_spacing_grid():
     assert matched.loc[0, "hole_row"] == -1
     assert matched.loc[1, "hole_row"] == 0
     assert matched.loc[2, "hole_row"] == 1
+
+
+def test_build_cluster_to_mechanical_hole_map_penalizes_reusing_occupied_hole():
+    df_clusters = pd.DataFrame(
+        {
+            "cluster": [20, 21],
+            "cluster_center_x": [0.10, 1.15],
+            "cluster_center_y": [0.00, 0.00],
+            "foil_position": [0, 0],
+        }
+    )
+    clustering_results = {
+        0: {
+            "df": df_clusters.assign(is_noise=False),
+            "params": {},
+            "n_clusters": 2,
+            "n_clusters_before_post": 2,
+            "postprocess_report": {},
+        }
+    }
+    design = pd.DataFrame(
+        {
+            "foil_position": [0, 0],
+            "hole_row": [0, 0],
+            "hole_col": [0, 1],
+            "candidate_sieve_x_cm": [0.0, 2.5],
+            "candidate_sieve_y_cm": [0.0, 0.0],
+            "weak_hole_xptar_center": [0.0 / 253.0, 2.5 / 253.0],
+            "weak_hole_yptar_center": [0.0, 0.0],
+            "weak_hole_xptar_tol": [3.0 / 253.0 / 10.0, 3.0 / 253.0 / 10.0],
+            "weak_hole_yptar_tol": [3.0 / 253.0 / 10.0, 3.0 / 253.0 / 10.0],
+        }
+    )
+    args = SimpleNamespace(
+        hole_x_spacing_mm=25.0,
+        hole_y_spacing_mm=16.4,
+        hole_tolerance_mm=3.0,
+        sieve_distance_cm=253.0,
+        hole_origin_xptar=0.0,
+        hole_origin_yptar=0.0,
+        cluster_hole_assignment_mode="center_out_penalized",
+        cluster_hole_occupancy_penalty_cm=0.35,
+    )
+
+    assignments, match_summary = build_cluster_to_mechanical_hole_map(clustering_results, design, args)
+
+    matched = assignments.sort_values("cluster").reset_index(drop=True)
+    assert matched.loc[0, "hole_col"] == 0
+    assert matched.loc[1, "hole_col"] == 1
+    assert matched.loc[1, "hole_occupancy_before_assignment"] == 0
+    assert matched.loc[1, "match_distance_cm"] > matched.loc[1, "nearest_match_distance_cm"]
+    assert match_summary["duplicate_mechanical_holes"] == 0
+    assert match_summary["per_foil"]["0"]["reassigned_from_nearest_count"] == 1
 
 
 def test_direct_grid_builds_observed_design_and_filters_sparse_holes():

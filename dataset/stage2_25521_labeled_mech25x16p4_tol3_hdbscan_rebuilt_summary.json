@@ -1,0 +1,99 @@
+{
+  "n_labeled_events": 105223,
+  "hole_label_source": "generated_from_spacing_nearest_cluster_match",
+  "hole_design_table": null,
+  "resolved_hole_design_csv": "SHMS_Calibration_NN\\dataset\\stage2_25521_labeled_mech25x16p4_tol3_hdbscan_rebuilt_resolved_hole_design.csv",
+  "ytar_label_source": "strong_fixed_foil_centers",
+  "foil_centers_cm": {
+    "0": 10.0,
+    "1": 0.0,
+    "2": -10.0
+  },
+  "foil_counts": {
+    "0": 27171,
+    "1": 36912,
+    "2": 41140
+  },
+  "hole_count_total": 220,
+  "hole_spacing_mm": {
+    "x": 25.0,
+    "y": 16.4
+  },
+  "hole_tolerance_mm": 3.0,
+  "sieve_distance_cm": 253.0,
+  "cluster_count_per_foil": {
+    "0": 66,
+    "1": 77,
+    "2": 77
+  },
+  "cluster_count_before_post_per_foil": {
+    "0": 66,
+    "1": 77,
+    "2": 77
+  },
+  "mechanical_candidate_grid": {
+    "x_spacing_cm": 2.5,
+    "y_spacing_cm": 1.64,
+    "x_origin_cm": -0.14173209995092328,
+    "y_origin_cm": -0.07034337964319338,
+    "per_foil": {
+      "0": {
+        "row_range": [
+          -4,
+          3
+        ],
+        "col_range": [
+          -5,
+          5
+        ],
+        "candidate_count": 88
+      },
+      "1": {
+        "row_range": [
+          -4,
+          4
+        ],
+        "col_range": [
+          -6,
+          5
+        ],
+        "candidate_count": 108
+      },
+      "2": {
+        "row_range": [
+          -3,
+          4
+        ],
+        "col_range": [
+          -5,
+          5
+        ],
+        "candidate_count": 88
+      }
+    }
+  },
+  "cluster_to_mechanical_match": {
+    "per_foil": {
+      "0": {
+        "n_clusters": 66,
+        "median_match_distance_cm": 0.10325033075794385,
+        "max_match_distance_cm": 0.6506360823948336,
+        "min_match_distance_cm": 0.007061930552727094
+      },
+      "1": {
+        "n_clusters": 77,
+        "median_match_distance_cm": 0.1229705031286484,
+        "max_match_distance_cm": 1.2906288161501127,
+        "min_match_distance_cm": 0.00329986916527953
+      },
+      "2": {
+        "n_clusters": 77,
+        "median_match_distance_cm": 0.13050350832713362,
+        "max_match_distance_cm": 1.3047114369523252,
+        "min_match_distance_cm": 0.019220585359529963
+      }
+    },
+    "duplicate_mechanical_holes": 3
+  },
+  "weighting_scheme": "equal_hole_total_weight"
+}

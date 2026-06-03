@@ -30,6 +30,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default=None, help="Override checkpoint output directory")
     parser.add_argument("--device", default=None, help="cuda or cpu")
     parser.add_argument("--max-events", type=int, default=None, help="Optional event cap for smoke tests")
+    parser.add_argument("--skip-postprocess", action="store_true", help="Skip automatic post-training reconstruction visuals")
+    parser.add_argument("--postprocess-output-dir", default=None, help="Override post-training visualization output directory")
     return parser.parse_args()
 
 
@@ -56,7 +58,7 @@ def build_mechanical_hole_center_bank(dataset, scaler_bundle, data_cfg: dict) ->
         .sort_values([foil_col, row_col, col_col])
     )
 
-    center_xy = grouped[[x_center_col, y_center_col]].to_numpy(dtype=np.float32)
+    center_xy = grouped[[x_center_col, y_center_col]].to_numpy(dtype=np.float32, copy=True)
     if scaler_bundle is not None:
         center_xy[:, 0] = (center_xy[:, 0] - float(scaler_bundle.scaler_Y.mean_[1])) / float(scaler_bundle.scaler_Y.scale_[1])
         center_xy[:, 1] = (center_xy[:, 1] - float(scaler_bundle.scaler_Y.mean_[2])) / float(scaler_bundle.scaler_Y.scale_[2])
@@ -77,6 +79,7 @@ def main() -> None:
     from training.data.stage2_root_dataset import Stage2RootDataset
     from training.losses import Stage2WeakLabelLoss
     from training.models import build_model_from_config
+    from training.scripts.analyze_stage2_reconstruction_visuals import run_post_training_visuals
     from training.trainers.stage2_transport import Stage2TransportTrainer
 
     args = parse_args()
@@ -121,6 +124,7 @@ def main() -> None:
     model_cfg = dict(config.get("model", {}))
     model = build_model_from_config(model_cfg, input_dim=dataset.X.shape[1])
 
+    tcfg = dict(config.get("training", {}))
     loss_cfg = dict(config.get("loss", {}))
     loss_fn = Stage2WeakLabelLoss(
         use_huber=loss_cfg.get("use_huber", True),
@@ -150,6 +154,34 @@ def main() -> None:
     )
     trainer.load_pretrained()
     trainer.train(dataset=dataset, checkpoint_dir=output_dir)
+
+    if not args.skip_postprocess:
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        output_dir_abs = output_dir if os.path.isabs(output_dir) else os.path.join(repo_root, output_dir)
+        checkpoint_path = os.path.join(output_dir_abs, "best_finetune.pth")
+        if not os.path.exists(checkpoint_path):
+            raise FileNotFoundError(f"Expected best checkpoint not found after training: {checkpoint_path}")
+
+        pcfg = dict(config.get("postprocess", {}))
+        post_dir = args.postprocess_output_dir or pcfg.get("output_dir")
+        if not post_dir:
+            ckpt_name = os.path.basename(os.path.normpath(output_dir_abs))
+            post_dir = os.path.join(repo_root, "outputs", f"{ckpt_name}_postprocess")
+
+        print("\nRunning automatic post-training reconstruction visuals...")
+        payload = run_post_training_visuals(
+            checkpoint=checkpoint_path,
+            data=args.root_file,
+            output_dir=post_dir,
+            scaler_bundle=scaler_path,
+            device=args.device,
+            batch_size=int(pcfg.get("batch_size", tcfg.get("val_batch_size", tcfg.get("batch_size", 4096)))),
+            max_events=args.max_events,
+            sieve_distance_cm=float(pcfg.get("sieve_distance_cm", loss_cfg.get("sieve_distance_cm", 253.0))),
+        )
+        print("Post-training visuals complete:")
+        for name, artifact in payload.get("artifacts", {}).items():
+            print(f"  {name}: {artifact}")
 
 
 if __name__ == "__main__":

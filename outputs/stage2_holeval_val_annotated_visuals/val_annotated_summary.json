@@ -1,0 +1,21 @@
+{
+  "holdout_holes": [
+    29,
+    1003,
+    1064,
+    1067,
+    2068
+  ],
+  "n_val_events": 2470,
+  "n_train_events": 102753,
+  "val_events_per_foil": {
+    "0": 27171,
+    "1": 36912,
+    "2": 41140
+  },
+  "artifacts": {
+    "labeling_plot": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_holeval_val_annotated_visuals\\labeling_results_3x2_val_annotated.png",
+    "sieve_plot": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_holeval_val_annotated_visuals\\sieve_pattern_3x2_val_annotated.png",
+    "ztar_plot": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_holeval_val_annotated_visuals\\ztar_val_annotated.png"
+  }
+}

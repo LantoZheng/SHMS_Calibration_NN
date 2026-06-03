@@ -50,14 +50,17 @@ class Stage2WeakLabelLoss(nn.Module):
         super().__init__()
         self.use_huber = bool(use_huber)
         self.huber_delta = float(huber_delta)
-        self.target_weights = {
+        self.base_target_weights = {
             key: float((target_weights or {}).get(key, 1.0))
             for key in _TARGET_KEYS
         }
+        self.target_weights = dict(self.base_target_weights)
         self.correction_l2_weight = float(correction_l2_weight)
+        self.base_hole_separation_weight = float(hole_separation_weight)
         self.hole_separation_weight = float(hole_separation_weight)
         self.hole_separation_temperature = float(max(hole_separation_temperature, 1e-6))
         self.hole_center_bank = self._normalize_hole_center_bank(hole_center_bank)
+        self.base_sieve_plane_weight = float(max(sieve_plane_weight, 0.0))
         self.sieve_plane_weight = float(max(sieve_plane_weight, 0.0))
         self.sieve_plane_huber_delta_cm = float(max(sieve_plane_huber_delta_cm, 1e-6))
         self.sieve_distance_cm = float(max(sieve_distance_cm, 1e-6))
@@ -95,6 +98,37 @@ class Stage2WeakLabelLoss(nn.Module):
         if self._disabled_targets:
             disabled_str = ", ".join(sorted(self._disabled_targets))
             print(f"[loss] disabled targets: {disabled_str}")
+
+    def set_target_weights(self, weights: Optional[Dict[str, float]] = None) -> None:
+        updated = dict(self.base_target_weights)
+        if weights:
+            for key, value in weights.items():
+                if key in updated:
+                    updated[key] = float(value)
+        self.target_weights = updated
+        pretty = ", ".join(f"{k}={v:.3f}" for k, v in self.target_weights.items())
+        print(f"[loss] target weights: {pretty}")
+
+    def set_auxiliary_weights(
+        self,
+        *,
+        hole_separation_weight: Optional[float] = None,
+        sieve_plane_weight: Optional[float] = None,
+    ) -> None:
+        self.hole_separation_weight = (
+            self.base_hole_separation_weight
+            if hole_separation_weight is None
+            else float(hole_separation_weight)
+        )
+        self.sieve_plane_weight = (
+            self.base_sieve_plane_weight
+            if sieve_plane_weight is None
+            else float(sieve_plane_weight)
+        )
+        print(
+            "[loss] auxiliary weights: "
+            f"hole_sep={self.hole_separation_weight:.4f}, sieve={self.sieve_plane_weight:.4f}"
+        )
 
     def _deadzone_loss(
         self,
@@ -315,6 +349,7 @@ class Stage2WeakLabelLoss(nn.Module):
         self,
         predictions: Dict[str, torch.Tensor],
         batch: Dict[str, object],
+        sample_mask: Optional[torch.Tensor] = None,
     ) -> Dict[str, float]:
         """Return simple validation metrics in scaled space."""
         targets = batch["targets"]
@@ -330,6 +365,8 @@ class Stage2WeakLabelLoss(nn.Module):
             tgt = targets[key].to(pred.device).squeeze(-1)
             tol = tolerances[key].to(pred.device).squeeze(-1).clamp_min(0.0)
             mask = masks[key].to(pred.device).squeeze(-1) > 0.5
+            if sample_mask is not None:
+                mask = mask & sample_mask.to(pred.device).reshape(-1).bool()
             if mask.sum().item() == 0:
                 metrics[f"{key}_center_rmse"] = float("nan")
                 metrics[f"{key}_deadzone_rmse"] = float("nan")

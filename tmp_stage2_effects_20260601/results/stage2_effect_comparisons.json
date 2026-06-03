@@ -1,0 +1,86 @@
+[
+  {
+    "comparison":"weak_to_hard_label_package",
+    "base":"weaklabel_tolerant_base",
+    "candidate":"nearest_base",
+    "note":"move from cluster-centered weak labels + tolerant ytar to mechanical-hole labels + hard ytar",
+    "delta_foil1_nn_rmse_cm":0.4228863238,
+    "delta_all_nn_rmse_cm":-0.1370933674,
+    "delta_foil1_nn_sigma68_cm":0.0631215807,
+    "delta_val_xy_deadzone_mean":0.0074509799,
+    "impact_on_foil1_rmse":"strong",
+    "direction":"worse"
+  },
+  {
+    "comparison":"sep_only_vs_base",
+    "base":"nearest_base",
+    "candidate":"nearest_sep_only",
+    "note":"isolate sep on same labels\/split",
+    "delta_foil1_nn_rmse_cm":-0.0293151336,
+    "delta_all_nn_rmse_cm":-0.0224262515,
+    "delta_foil1_nn_sigma68_cm":0.0256873034,
+    "delta_val_xy_deadzone_mean":0.0031507854,
+    "impact_on_foil1_rmse":"small",
+    "direction":"better"
+  },
+  {
+    "comparison":"noytar_vs_sep_only",
+    "base":"nearest_sep_only",
+    "candidate":"nearest_sep_noytar",
+    "note":"isolate noytar after sep on same labels\/split",
+    "delta_foil1_nn_rmse_cm":1.8805021145,
+    "delta_all_nn_rmse_cm":5.1632708419,
+    "delta_foil1_nn_sigma68_cm":2.3775702879,
+    "delta_val_xy_deadzone_mean":-0.0105839767,
+    "impact_on_foil1_rmse":"strong",
+    "direction":"worse"
+  },
+  {
+    "comparison":"delay2_vs_noytar",
+    "base":"nearest_sep_noytar",
+    "candidate":"nearest_sep_noytar_delay2",
+    "note":"isolate delay2 after noytar on same labels\/split",
+    "delta_foil1_nn_rmse_cm":-1.0169250942,
+    "delta_all_nn_rmse_cm":-3.5568587174,
+    "delta_foil1_nn_sigma68_cm":-1.5741224323,
+    "delta_val_xy_deadzone_mean":-0.0003034158,
+    "impact_on_foil1_rmse":"strong",
+    "direction":"better"
+  },
+  {
+    "comparison":"allfoils_random_vs_holdout",
+    "base":"nearest_sep_noytar_delay2",
+    "candidate":"nearest_sep_noytar_delay2_allfoils",
+    "note":"isolate removing foil holdout \/ using random all-foils split on same labels and training flow",
+    "delta_foil1_nn_rmse_cm":0.72982287,
+    "delta_all_nn_rmse_cm":1.101873474,
+    "delta_foil1_nn_sigma68_cm":0.8207280998,
+    "delta_val_xy_deadzone_mean":-0.0064526193,
+    "impact_on_foil1_rmse":"strong",
+    "direction":"worse"
+  },
+  {
+    "comparison":"sieveloss_vs_fullnoytar",
+    "base":"directgrid_max80_eqholeweight_fullnoytar",
+    "candidate":"directgrid_max80_eqholeweight_sieveloss",
+    "note":"isolate sieve-plane loss on same labels\/split",
+    "delta_foil1_nn_rmse_cm":-0.123367659,
+    "delta_all_nn_rmse_cm":-0.2327267874,
+    "delta_foil1_nn_sigma68_cm":-0.0920297728,
+    "delta_val_xy_deadzone_mean":-0.0029359165,
+    "impact_on_foil1_rmse":"moderate",
+    "direction":"better"
+  },
+  {
+    "comparison":"compound_directgrid_vs_base",
+    "base":"nearest_base",
+    "candidate":"directgrid_max80_eqholeweight_fullnoytar",
+    "note":"compound effect of label\/split\/weighting\/noytar",
+    "delta_foil1_nn_rmse_cm":-0.8616910025,
+    "delta_all_nn_rmse_cm":0.2877428097,
+    "delta_foil1_nn_sigma68_cm":-0.3898699491,
+    "delta_val_xy_deadzone_mean":-0.0045831505,
+    "impact_on_foil1_rmse":"strong",
+    "direction":"better"
+  }
+]

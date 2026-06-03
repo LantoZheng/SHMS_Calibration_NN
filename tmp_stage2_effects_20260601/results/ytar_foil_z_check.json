@@ -1,0 +1,631 @@
+[
+  {
+    "dataset": "original_weak_labels",
+    "path": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\dataset\\stage2_25521_labeled.csv",
+    "label_kind": "weak-centers",
+    "n_events": 107839,
+    "hard_foil_centers_cm": {
+      "0": 10.0,
+      "1": 0.0,
+      "2": -10.0
+    },
+    "label_center_report": {
+      "label_columns_present": [
+        "weak_foil_ytar_center"
+      ],
+      "tol_columns_present": [
+        "weak_foil_ytar_tol"
+      ],
+      "per_foil": [
+        {
+          "foil": 0,
+          "expected_center_cm": 10.0,
+          "weak_foil_ytar_center_unique": [
+            9.651158200889428
+          ],
+          "weak_foil_ytar_center_matches_expected": false,
+          "weak_foil_ytar_tol_unique": [
+            1.3026565336273397
+          ]
+        },
+        {
+          "foil": 1,
+          "expected_center_cm": 0.0,
+          "weak_foil_ytar_center_unique": [
+            -0.4819453055410506
+          ],
+          "weak_foil_ytar_center_matches_expected": false,
+          "weak_foil_ytar_tol_unique": [
+            1.631122218341066
+          ]
+        },
+        {
+          "foil": 2,
+          "expected_center_cm": -10.0,
+          "weak_foil_ytar_center_unique": [
+            -10.398864654270197
+          ],
+          "weak_foil_ytar_center_matches_expected": false,
+          "weak_foil_ytar_tol_unique": [
+            2.065426408193936
+          ]
+        }
+      ]
+    },
+    "alignment": [
+      {
+        "sign_mode": "P_react_z",
+        "all_rmse_cm": 1.8851487041157935,
+        "all_mae_cm": 1.43539570709936,
+        "all_bias_cm": -0.4722397030913069,
+        "nearest_center_accuracy": 0.9990355993657212,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 26120,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": 9.632226362749687,
+            "median_value_cm": 9.651158200889425,
+            "std_value_cm": 1.281136110980089,
+            "rmse_to_center_cm": 1.3328792830236018,
+            "mae_to_center_cm": 1.0662194687691788,
+            "bias_to_center_cm": -0.36777363725031237
+          },
+          {
+            "foil": 1,
+            "n_events": 38096,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": -0.5532417597343735,
+            "median_value_cm": -0.48194530554105053,
+            "std_value_cm": 1.6329967059886257,
+            "rmse_to_center_cm": 1.7241678243383642,
+            "mae_to_center_cm": 1.3542754629386728,
+            "bias_to_center_cm": -0.5532417597343735
+          },
+          {
+            "foil": 2,
+            "n_events": 43623,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": -10.464051345800257,
+            "median_value_cm": -10.398864654270197,
+            "std_value_cm": 2.2158510795295356,
+            "rmse_to_center_cm": 2.263921301236251,
+            "mae_to_center_cm": 1.7272885197607977,
+            "bias_to_center_cm": -0.4640513458002564
+          }
+        ]
+      },
+      {
+        "sign_mode": "-P_react_z",
+        "all_rmse_cm": 16.315402924437862,
+        "all_mae_cm": 13.511712297860498,
+        "all_bias_cm": 3.718375145741925,
+        "nearest_center_accuracy": 0.3528779013158505,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 26120,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": -9.632226362749687,
+            "median_value_cm": -9.651158200889425,
+            "std_value_cm": 1.281136110980089,
+            "rmse_to_center_cm": 19.673983371272353,
+            "mae_to_center_cm": 19.632226362749687,
+            "bias_to_center_cm": -19.632226362749687
+          },
+          {
+            "foil": 1,
+            "n_events": 38096,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": 0.5532417597343735,
+            "median_value_cm": 0.48194530554105053,
+            "std_value_cm": 1.6329967059886257,
+            "rmse_to_center_cm": 1.7241678243383642,
+            "mae_to_center_cm": 1.3542754629386728,
+            "bias_to_center_cm": 0.5532417597343735
+          },
+          {
+            "foil": 2,
+            "n_events": 43623,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": 10.464051345800257,
+            "median_value_cm": 10.398864654270197,
+            "std_value_cm": 2.2158510795295356,
+            "rmse_to_center_cm": 20.58366812524438,
+            "mae_to_center_cm": 20.46405134580026,
+            "bias_to_center_cm": 20.46405134580026
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "mech25x16p4_tol3",
+    "path": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\dataset\\stage2_25521_labeled_mech25x16p4_tol3.csv",
+    "label_kind": "hard-centers",
+    "n_events": 105223,
+    "hard_foil_centers_cm": {
+      "0": 10.0,
+      "1": 0.0,
+      "2": -10.0
+    },
+    "label_center_report": {
+      "label_columns_present": [
+        "foil_ytar_center",
+        "weak_foil_ytar_center"
+      ],
+      "tol_columns_present": [
+        "foil_ytar_tol",
+        "weak_foil_ytar_tol"
+      ],
+      "per_foil": [
+        {
+          "foil": 0,
+          "expected_center_cm": 10.0,
+          "foil_ytar_center_unique": [
+            10.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            10.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        },
+        {
+          "foil": 1,
+          "expected_center_cm": 0.0,
+          "foil_ytar_center_unique": [
+            0.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        },
+        {
+          "foil": 2,
+          "expected_center_cm": -10.0,
+          "foil_ytar_center_unique": [
+            -10.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            -10.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        }
+      ]
+    },
+    "alignment": [
+      {
+        "sign_mode": "P_react_z",
+        "all_rmse_cm": 1.832444154571017,
+        "all_mae_cm": 1.4104286095859206,
+        "all_bias_cm": -0.38598762809064635,
+        "nearest_center_accuracy": 0.9996768767284719,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 27171,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": 9.486001005765551,
+            "median_value_cm": 9.61771138959298,
+            "std_value_cm": 1.4205693782748772,
+            "rmse_to_center_cm": 1.5106992833010462,
+            "mae_to_center_cm": 1.1816142729025654,
+            "bias_to_center_cm": -0.5139989942344478
+          },
+          {
+            "foil": 1,
+            "n_events": 36912,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": -0.3784312685248123,
+            "median_value_cm": -0.32884133284932404,
+            "std_value_cm": 1.6249104178580513,
+            "rmse_to_center_cm": 1.668395663822262,
+            "mae_to_center_cm": 1.3206184204492426,
+            "bias_to_center_cm": -0.3784312685248123
+          },
+          {
+            "foil": 2,
+            "n_events": 41140,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": -10.30822203535367,
+            "median_value_cm": -10.248016577499435,
+            "std_value_cm": 2.1186184876207,
+            "rmse_to_center_cm": 2.1409215583868977,
+            "mae_to_center_cm": 1.6421298260039208,
+            "bias_to_center_cm": -0.30822203535367093
+          }
+        ]
+      },
+      {
+        "sign_mode": "-P_react_z",
+        "all_rmse_cm": 16.20339472987493,
+        "all_mae_cm": 13.435095511416023,
+        "all_bias_cm": 3.041110557488211,
+        "nearest_center_accuracy": 0.3507503112437395,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 27171,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": -9.486001005765551,
+            "median_value_cm": -9.61771138959298,
+            "std_value_cm": 1.4205693782748772,
+            "rmse_to_center_cm": 19.537713595894182,
+            "mae_to_center_cm": 19.48600100576555,
+            "bias_to_center_cm": -19.48600100576555
+          },
+          {
+            "foil": 1,
+            "n_events": 36912,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": 0.3784312685248123,
+            "median_value_cm": 0.32884133284932404,
+            "std_value_cm": 1.6249104178580513,
+            "rmse_to_center_cm": 1.668395663822262,
+            "mae_to_center_cm": 1.3206184204492426,
+            "bias_to_center_cm": 0.3784312685248123
+          },
+          {
+            "foil": 2,
+            "n_events": 41140,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": 10.30822203535367,
+            "median_value_cm": 10.248016577499435,
+            "std_value_cm": 2.1186184876207,
+            "rmse_to_center_cm": 20.41843349851581,
+            "mae_to_center_cm": 20.308222035353673,
+            "bias_to_center_cm": 20.308222035353673
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "directgrid",
+    "path": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\dataset\\stage2_25521_labeled_mech25x16p4_tol3_directgrid.csv",
+    "label_kind": "hard-centers",
+    "n_events": 123777,
+    "hard_foil_centers_cm": {
+      "0": 10.0,
+      "1": 0.0,
+      "2": -10.0
+    },
+    "label_center_report": {
+      "label_columns_present": [
+        "foil_ytar_center",
+        "weak_foil_ytar_center"
+      ],
+      "tol_columns_present": [
+        "foil_ytar_tol",
+        "weak_foil_ytar_tol"
+      ],
+      "per_foil": [
+        {
+          "foil": 0,
+          "expected_center_cm": 10.0,
+          "foil_ytar_center_unique": [
+            10.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            10.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        },
+        {
+          "foil": 1,
+          "expected_center_cm": 0.0,
+          "foil_ytar_center_unique": [
+            0.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        },
+        {
+          "foil": 2,
+          "expected_center_cm": -10.0,
+          "foil_ytar_center_unique": [
+            -10.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            -10.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        }
+      ]
+    },
+    "alignment": [
+      {
+        "sign_mode": "P_react_z",
+        "all_rmse_cm": 1.9215773987669866,
+        "all_mae_cm": 1.493938627970265,
+        "all_bias_cm": -0.36601914921072687,
+        "nearest_center_accuracy": 0.9995556525041002,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 29785,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": 9.452680254569811,
+            "median_value_cm": 9.588058067883242,
+            "std_value_cm": 1.4614221848230027,
+            "rmse_to_center_cm": 1.5605491680913504,
+            "mae_to_center_cm": 1.2251609513115367,
+            "bias_to_center_cm": -0.5473197454301894
+          },
+          {
+            "foil": 1,
+            "n_events": 43405,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": -0.3778795664253137,
+            "median_value_cm": -0.3372020661528282,
+            "std_value_cm": 1.6888505725652718,
+            "rmse_to_center_cm": 1.730609494708679,
+            "mae_to_center_cm": 1.383152122179065,
+            "bias_to_center_cm": -0.3778795664253137
+          },
+          {
+            "foil": 2,
+            "n_events": 50587,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": -10.249095044844074,
+            "median_value_cm": -10.205202860861135,
+            "std_value_cm": 2.2291331383671547,
+            "rmse_to_center_cm": 2.2430075545865806,
+            "mae_to_center_cm": 1.7472493873184625,
+            "bias_to_center_cm": -0.24909504484407477
+          }
+        ]
+      },
+      {
+        "sign_mode": "-P_react_z",
+        "all_rmse_cm": 16.19345759474139,
+        "all_mae_cm": 13.441711871180198,
+        "all_bias_cm": 3.727225189105052,
+        "nearest_center_accuracy": 0.35061441140114885,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 29785,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": -9.452680254569811,
+            "median_value_cm": -9.588058067883242,
+            "std_value_cm": 1.4614221848230027,
+            "rmse_to_center_cm": 19.507499170545234,
+            "mae_to_center_cm": 19.45268025456981,
+            "bias_to_center_cm": -19.45268025456981
+          },
+          {
+            "foil": 1,
+            "n_events": 43405,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": 0.3778795664253137,
+            "median_value_cm": 0.3372020661528282,
+            "std_value_cm": 1.6888505725652718,
+            "rmse_to_center_cm": 1.730609494708679,
+            "mae_to_center_cm": 1.383152122179065,
+            "bias_to_center_cm": 0.3778795664253137
+          },
+          {
+            "foil": 2,
+            "n_events": 50587,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": 10.249095044844074,
+            "median_value_cm": 10.205202860861135,
+            "std_value_cm": 2.2291331383671547,
+            "rmse_to_center_cm": 20.37142323657568,
+            "mae_to_center_cm": 20.249095044844076,
+            "bias_to_center_cm": 20.249095044844076
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "directgrid_max80_eqholeweight",
+    "path": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\dataset\\stage2_25521_labeled_mech25x16p4_tol3_directgrid_max80_eqholeweight.csv",
+    "label_kind": "hard-centers",
+    "n_events": 122133,
+    "hard_foil_centers_cm": {
+      "0": 10.0,
+      "1": 0.0,
+      "2": -10.0
+    },
+    "label_center_report": {
+      "label_columns_present": [
+        "foil_ytar_center",
+        "weak_foil_ytar_center"
+      ],
+      "tol_columns_present": [
+        "foil_ytar_tol",
+        "weak_foil_ytar_tol"
+      ],
+      "per_foil": [
+        {
+          "foil": 0,
+          "expected_center_cm": 10.0,
+          "foil_ytar_center_unique": [
+            10.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            10.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        },
+        {
+          "foil": 1,
+          "expected_center_cm": 0.0,
+          "foil_ytar_center_unique": [
+            0.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        },
+        {
+          "foil": 2,
+          "expected_center_cm": -10.0,
+          "foil_ytar_center_unique": [
+            -10.0
+          ],
+          "foil_ytar_center_matches_expected": true,
+          "weak_foil_ytar_center_unique": [
+            -10.0
+          ],
+          "weak_foil_ytar_center_matches_expected": true,
+          "foil_ytar_tol_unique": [
+            0.0
+          ],
+          "weak_foil_ytar_tol_unique": [
+            0.0
+          ]
+        }
+      ]
+    },
+    "alignment": [
+      {
+        "sign_mode": "P_react_z",
+        "all_rmse_cm": 1.9143510290283097,
+        "all_mae_cm": 1.4878359045599021,
+        "all_bias_cm": -0.37030529455276523,
+        "nearest_center_accuracy": 0.999574234645837,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 29769,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": 9.451667337855561,
+            "median_value_cm": 9.588014579768386,
+            "std_value_cm": 1.4601794473395395,
+            "rmse_to_center_cm": 1.5597412371310855,
+            "mae_to_center_cm": 1.2245677790151421,
+            "bias_to_center_cm": -0.548332662144438
+          },
+          {
+            "foil": 1,
+            "n_events": 42824,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": -0.37981753956609554,
+            "median_value_cm": -0.3371923507024755,
+            "std_value_cm": 1.6844974652015117,
+            "rmse_to_center_cm": 1.7267869218963756,
+            "mae_to_center_cm": 1.3792964959729364,
+            "bias_to_center_cm": -0.37981753956609554
+          },
+          {
+            "foil": 2,
+            "n_events": 49540,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": -10.255104465196945,
+            "median_value_cm": -10.210923679990486,
+            "std_value_cm": 2.2204302500646036,
+            "rmse_to_center_cm": 2.235036640318314,
+            "mae_to_center_cm": 1.7398609441777895,
+            "bias_to_center_cm": -0.25510446519694446
+          }
+        ]
+      },
+      {
+        "sign_mode": "-P_react_z",
+        "all_rmse_cm": 16.192716168003876,
+        "all_mae_cm": 13.440769925655015,
+        "all_bias_cm": 3.6079233011521272,
+        "nearest_center_accuracy": 0.35058501797221064,
+        "per_foil": [
+          {
+            "foil": 0,
+            "n_events": 29769,
+            "expected_center_cm": 10.0,
+            "mean_value_cm": -9.451667337855561,
+            "median_value_cm": -9.588014579768386,
+            "std_value_cm": 1.4601794473395395,
+            "rmse_to_center_cm": 19.506396034148125,
+            "mae_to_center_cm": 19.451667337855564,
+            "bias_to_center_cm": -19.451667337855564
+          },
+          {
+            "foil": 1,
+            "n_events": 42824,
+            "expected_center_cm": 0.0,
+            "mean_value_cm": 0.37981753956609554,
+            "median_value_cm": 0.3371923507024755,
+            "std_value_cm": 1.6844974652015117,
+            "rmse_to_center_cm": 1.7267869218963756,
+            "mae_to_center_cm": 1.3792964959729364,
+            "bias_to_center_cm": 0.37981753956609554
+          },
+          {
+            "foil": 2,
+            "n_events": 49540,
+            "expected_center_cm": -10.0,
+            "mean_value_cm": 10.255104465196945,
+            "median_value_cm": 10.210923679990486,
+            "std_value_cm": 2.2204302500646036,
+            "rmse_to_center_cm": 20.37644638771548,
+            "mae_to_center_cm": 20.255104465196943,
+            "bias_to_center_cm": 20.255104465196943
+          }
+        ]
+      }
+    ]
+  }
+]

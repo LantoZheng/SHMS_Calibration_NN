@@ -370,7 +370,7 @@ class Stage2RootDataset(Dataset):
         for key in metadata.columns:
             values = metadata[key]
             if pd.api.types.is_numeric_dtype(values):
-                cache[key] = torch.as_tensor(values.to_numpy())
+                cache[key] = torch.as_tensor(values.to_numpy(copy=True))
             else:
                 cache[key] = values.tolist()
         return cache

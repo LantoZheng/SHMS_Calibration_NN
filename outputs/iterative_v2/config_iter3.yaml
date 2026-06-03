@@ -1,0 +1,147 @@
+data:
+  branch_map:
+    x_fp: P_dc_x_fp
+    xp_fp: P_dc_xp_fp
+    y_fp: P_dc_y_fp
+    yp_fp: P_dc_yp_fp
+  cuts:
+    cal_etot_max: 1.8
+    cal_etot_min: 0.6
+    dp_max: 22.0
+    dp_min: -25.0
+    hgcer_min: 0.5
+    ngcer_min: 2.0
+    use_pid: false
+    use_quality: false
+    xptar_abs_max: 0.08
+    yptar_abs_max: 0.06
+    ytar_abs_max: 120.0
+  direct_fry_branch: P.rb.raster.fr_ybpm_tar
+  feature_schema:
+  - x_fp
+  - y_fp
+  - xp_fp
+  - yp_fp
+  - fry
+  fry_mode: direct_or_proxy
+  fry_proxy_branches:
+  - P_rb_raster_fryaRawAdc
+  - P_rb_raster_frybRawAdc
+  label_map:
+    delta:
+      center_col: P_gtr_dp
+      enabled: true
+      reference_branch: P_gtr_dp
+      tolerance: 0.0
+    xptar:
+      center_col: weak_hole_xptar_center
+      enabled: true
+      reference_branch: P_gtr_th
+      tol_col: weak_hole_xptar_tol
+    yptar:
+      center_col: weak_hole_yptar_center
+      enabled: true
+      reference_branch: P_gtr_ph
+      tol_col: weak_hole_yptar_tol
+    ytar:
+      center_col: foil_ytar_center
+      enabled: true
+      reference_branch: P_react_z
+      tol_col: foil_ytar_tol
+      tolerance: 0.0
+  metadata_cols:
+    foil_position: foil_position
+    hole_col: hole_col
+    hole_id: hole_id
+    hole_row: hole_row
+    run_id: run_id
+  tree_name: T
+  weight_col: weak_label_weight
+loss:
+  correction_l2_weight: 0.0001
+  hole_separation_temperature: 1.0
+  hole_separation_weight: 0.01
+  huber_delta: 1.0
+  sieve_distance_cm: 253.0
+  sieve_plane_huber_delta_cm: 0.3
+  sieve_plane_weight: 0.05
+  target_weights:
+    delta: 0.25
+    xptar: 1.0
+    yptar: 1.0
+    ytar: 1.0
+  use_huber: true
+model:
+  branch_dim: 64
+  dropout: 0.1
+  hidden_dim: 192
+  input_dim: 5
+  n_residual_blocks: 4
+  name: residual_transport_mlp
+output:
+  checkpoint_dir: outputs\iterative_v2\checkpoints\iter3
+postprocess:
+  batch_size: 4096
+  output_dir: outputs\iterative_v2\postprocess\iter3
+  sieve_distance_cm: 253.0
+pretrained:
+  checkpoint_path: checkpoints/pretrain_25521_fry_cuda_5d_notebooklike/best_pretrain.pth
+  scaler_bundle_path: checkpoints/pretrain_25521_fry_cuda_5d_notebooklike/scaler_bundle.json
+training:
+  batch_size: 2048
+  branch_learning_rate: 5.0e-05
+  branch_unfreeze_epoch: 20
+  correction_branch_disabled_targets: []
+  correction_branch_disabled_targets_delay_epochs: 0
+  early_stopping_patience: 20
+  epochs: 80
+  full_learning_rate: 1.0e-05
+  full_model_disabled_targets: []
+  full_unfreeze_epoch: 999
+  gradient_clip_max_norm: 1.0
+  head_learning_rate: 0.0002
+  keep_linear_path_frozen: false
+  loss_schedule:
+  - hole_separation_weight: 0.0
+    name: stage2_warmup
+    sieve_plane_weight: 0.0
+    start_epoch: 1
+    target_weights:
+      delta: 0.25
+      xptar: 1.0
+      yptar: 1.0
+      ytar: 1.0
+  - hole_separation_weight: 0.005
+    name: stage2_geometry_bridge
+    sieve_plane_weight: 0.0
+    start_epoch: 21
+    target_weights:
+      delta: 0.2
+      xptar: 1.0
+      yptar: 1.0
+      ytar: 1.0
+  - hole_separation_weight: 0.008
+    name: stage2_ytar_refine
+    sieve_plane_weight: 0.05
+    start_epoch: 51
+    target_weights:
+      delta: 0.15
+      xptar: 0.8
+      yptar: 0.8
+      ytar: 2.0
+  num_workers: 8
+  persistent_workers: true
+  prefetch_factor: 6
+  random_seed: 42
+  val_batch_size: 4096
+  val_fraction: 0.2
+  val_num_workers: 4
+  weight_decay: 1.0e-05
+validation:
+  hole_column: hole_id
+  n_holdout_holes: 5
+  random_seed: 42
+  selection_metric: ytar_center_rmse
+  selection_mode: min
+  selection_scope: overall
+  strategy: leave_some_holes_out

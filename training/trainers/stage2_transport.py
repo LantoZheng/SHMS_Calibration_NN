@@ -44,7 +44,79 @@ class Stage2TransportTrainer:
         self.pretrained_checkpoint = pretrained_checkpoint
         self.device = self._resolve_device(device)
         self.model.to(self.device)
+        self._last_loss_schedule_start_epoch: Optional[int] = None
         self._print_device_summary()
+
+    @staticmethod
+    def _normalize_loss_schedule(raw_schedule: Optional[Sequence[dict]]) -> list[dict]:
+        schedule: list[dict] = []
+        if not raw_schedule:
+            return schedule
+        for entry in raw_schedule:
+            start_epoch = int(entry.get("start_epoch", 1))
+            schedule.append(
+                {
+                    "start_epoch": start_epoch,
+                    "target_weights": dict(entry.get("target_weights", {})),
+                    "hole_separation_weight": entry.get("hole_separation_weight", None),
+                    "sieve_plane_weight": entry.get("sieve_plane_weight", None),
+                    "name": str(entry.get("name", f"schedule@{start_epoch}")),
+                }
+            )
+        schedule.sort(key=lambda item: item["start_epoch"])
+        return schedule
+
+    def _apply_loss_schedule(self, epoch: int, schedule: Sequence[dict]) -> Optional[dict]:
+        active: Optional[dict] = None
+        for entry in schedule:
+            if epoch >= int(entry["start_epoch"]):
+                active = entry
+            else:
+                break
+        if active is None:
+            return None
+        start_epoch = int(active["start_epoch"])
+        if self._last_loss_schedule_start_epoch == start_epoch:
+            return active
+        self.loss_fn.set_target_weights(active.get("target_weights", {}))
+        self.loss_fn.set_auxiliary_weights(
+            hole_separation_weight=active.get("hole_separation_weight", None),
+            sieve_plane_weight=active.get("sieve_plane_weight", None),
+        )
+        self._last_loss_schedule_start_epoch = start_epoch
+        print(f"[Epoch {epoch}] Applied loss schedule '{active.get('name', f'schedule@{start_epoch}')}'")
+        return active
+
+    @staticmethod
+    def _select_metric_value(
+        *,
+        val_loss: float,
+        aggregated_metrics: Dict[str, float],
+        per_foil_metrics: Dict[str, Dict[str, float]],
+        split_summary: dict,
+        validation_cfg: dict,
+    ) -> tuple[float, str]:
+        metric_name = str(validation_cfg.get("selection_metric", "val_loss"))
+        scope = str(validation_cfg.get("selection_scope", "overall"))
+        if metric_name == "val_loss":
+            return float(val_loss), "val_loss"
+
+        if scope == "holdout_foil":
+            holdout_foil = split_summary.get("holdout_foil")
+            if holdout_foil is None:
+                raise ValueError("validation.selection_scope='holdout_foil' requires a holdout foil split.")
+            foil_metrics = per_foil_metrics.get(str(int(holdout_foil)), {})
+            value = foil_metrics.get(metric_name, float("nan"))
+            return float(value), f"holdout_foil.{holdout_foil}.{metric_name}"
+
+        if scope == "per_foil_mean":
+            values = [metrics.get(metric_name, float("nan")) for metrics in per_foil_metrics.values()]
+            finite = [float(v) for v in values if not math.isnan(v)]
+            value = float(np.mean(finite)) if finite else float("nan")
+            return value, f"per_foil_mean.{metric_name}"
+
+        value = aggregated_metrics.get(metric_name, float("nan"))
+        return float(value), metric_name
 
     @staticmethod
     def _resolve_device(device: Optional[str]) -> torch.device:
@@ -114,10 +186,18 @@ class Stage2TransportTrainer:
 
         elif strategy == "leave_some_holes_out":
             hole_col = str(vcfg.get("hole_column", "hole_id"))
-            hole_fraction = float(vcfg.get("hole_fraction", 0.1))
+            n_holdout_holes = vcfg.get("n_holdout_holes")
+            if n_holdout_holes is not None:
+                n_holdout = max(1, int(n_holdout_holes))
+            else:
+                hole_fraction = float(vcfg.get("hole_fraction", 0.1))
+                rng = np.random.default_rng(seed)
+                unique_holes = metadata[hole_col].dropna().unique()
+                n_holdout = max(1, int(len(unique_holes) * hole_fraction))
             rng = np.random.default_rng(seed)
             unique_holes = metadata[hole_col].dropna().unique()
-            n_holdout = max(1, int(len(unique_holes) * hole_fraction))
+            if n_holdout >= len(unique_holes):
+                n_holdout = max(1, int(len(unique_holes) * 0.5))
             holdout_holes = set(rng.choice(unique_holes, size=n_holdout, replace=False).tolist())
             val_mask = metadata[hole_col].isin(holdout_holes)
         else:
@@ -141,6 +221,7 @@ class Stage2TransportTrainer:
             summary["holdout_run"] = holdout_run
         elif strategy == "leave_some_holes_out":
             summary["n_holdout_holes"] = n_holdout
+            summary["holdout_holes"] = sorted(int(h) for h in holdout_holes)
         return train_ds, val_ds, summary
 
     def _switch_to_correction_branch_phase(self) -> None:
@@ -203,6 +284,11 @@ class Stage2TransportTrainer:
         val_num_workers = int(tcfg.get("val_num_workers", train_num_workers))
         persistent_workers = bool(tcfg.get("persistent_workers", train_num_workers > 0))
         prefetch_factor = tcfg.get("prefetch_factor", None)
+        loss_schedule = self._normalize_loss_schedule(tcfg.get("loss_schedule", []))
+        vcfg = self.config.get("validation", {})
+        selection_mode = str(vcfg.get("selection_mode", "min")).lower()
+        if selection_mode not in {"min", "max"}:
+            raise ValueError(f"Unsupported validation.selection_mode: {selection_mode}")
 
         train_ds, val_ds, split_summary = self._split_dataset(dataset)
         pin_memory = self.device.type == "cuda"
@@ -237,15 +323,19 @@ class Stage2TransportTrainer:
         )
 
         best_val_loss = math.inf
+        best_selection_metric = math.inf if selection_mode == "min" else -math.inf
         epochs_without_improvement = 0
         best_ckpt_path = os.path.join(checkpoint_dir, "best_finetune.pth")
         history: dict = {
             "train_loss": [],
             "val_loss": [],
             "split_summary": split_summary,
+            "selection_metric_name": None,
+            "selection_metric_values": [],
             **{f"val_center_rmse_{k}": [] for k in _TARGET_KEYS},
             **{f"val_deadzone_rmse_{k}": [] for k in _TARGET_KEYS},
             **{f"val_within_tol_{k}": [] for k in _TARGET_KEYS},
+            "val_per_foil": [],
         }
 
         phase = "head_only"
@@ -255,6 +345,7 @@ class Stage2TransportTrainer:
 
         for epoch in range(1, epochs + 1):
             start_time = time.time()
+            active_loss_schedule = self._apply_loss_schedule(epoch, loss_schedule)
 
             if epoch == branch_unfreeze_epoch + 1 and phase == "head_only":
                 self._switch_to_correction_branch_phase()
@@ -320,11 +411,22 @@ class Stage2TransportTrainer:
                 train_count += len(inputs)
 
             train_loss = train_loss_accum / max(train_count, 1)
-            val_loss, val_metrics = self._evaluate(val_loader)
+            val_loss, val_metrics, per_foil_metrics = self._evaluate(val_loader)
             scheduler.step(val_loss)
+
+            selection_metric_value, selection_metric_name = self._select_metric_value(
+                val_loss=val_loss,
+                aggregated_metrics=val_metrics,
+                per_foil_metrics=per_foil_metrics,
+                split_summary=split_summary,
+                validation_cfg=vcfg,
+            )
 
             history["train_loss"].append(train_loss)
             history["val_loss"].append(val_loss)
+            history["selection_metric_name"] = selection_metric_name
+            history["selection_metric_values"].append(selection_metric_value)
+            history["val_per_foil"].append(per_foil_metrics)
             for key in _TARGET_KEYS:
                 history[f"val_center_rmse_{key}"].append(val_metrics.get(f"{key}_center_rmse", float("nan")))
                 history[f"val_deadzone_rmse_{key}"].append(val_metrics.get(f"{key}_deadzone_rmse", float("nan")))
@@ -335,23 +437,46 @@ class Stage2TransportTrainer:
                 f"{key}_dead={val_metrics.get(f'{key}_deadzone_rmse', float('nan')):.4f}"
                 for key in _TARGET_KEYS
             )
+            holdout_note = ""
+            if split_summary.get("strategy") == "leave_one_foil_out":
+                holdout_foil = str(split_summary.get("holdout_foil"))
+                holdout_metrics = per_foil_metrics.get(holdout_foil, {})
+                holdout_note = (
+                    f"  holdout foil{holdout_foil}: "
+                    f"ytar={holdout_metrics.get('ytar_center_rmse', float('nan')):.4f}, "
+                    f"x={holdout_metrics.get('xptar_deadzone_rmse', float('nan')):.4f}, "
+                    f"y={holdout_metrics.get('yptar_deadzone_rmse', float('nan')):.4f}"
+                )
             print(
                 f"[Epoch {epoch:>4}/{epochs}] phase={phase:<17} "
-                f"train={train_loss:.5f}  val={val_loss:.5f}  {metric_line}  ({elapsed:.1f}s)"
+                f"train={train_loss:.5f}  val={val_loss:.5f}  select={selection_metric_value:.5f}({selection_metric_name})  "
+                f"{metric_line}{holdout_note}  ({elapsed:.1f}s)"
             )
 
-            if val_loss < best_val_loss:
+            is_better = (
+                selection_metric_value < best_selection_metric
+                if selection_mode == "min"
+                else selection_metric_value > best_selection_metric
+            )
+
+            if is_better:
                 best_val_loss = val_loss
+                best_selection_metric = selection_metric_value
                 epochs_without_improvement = 0
                 torch.save(
                     {
                         "epoch": epoch,
                         "val_loss": val_loss,
+                        "selection_metric_name": selection_metric_name,
+                        "selection_metric_value": selection_metric_value,
                         "model_state_dict": self.model.state_dict(),
                         "optimizer_state_dict": optimizer.state_dict(),
                         "config": self.config,
                         "split_summary": split_summary,
                         "phase_switches": phase_switches,
+                        "active_loss_schedule": active_loss_schedule,
+                        "val_metrics": val_metrics,
+                        "val_per_foil_metrics": per_foil_metrics,
                     },
                     best_ckpt_path,
                 )
@@ -367,15 +492,19 @@ class Stage2TransportTrainer:
         with open(os.path.join(checkpoint_dir, "split_summary.json"), "w", encoding="utf-8") as fh:
             json.dump(split_summary, fh, ensure_ascii=False, indent=2)
 
-        print(f"\nBest val loss: {best_val_loss:.6f} -> {best_ckpt_path}")
+        print(
+            f"\nBest checkpoint metric: {best_selection_metric:.6f} "
+            f"({history.get('selection_metric_name', 'val_loss')}) | val_loss={best_val_loss:.6f} -> {best_ckpt_path}"
+        )
         return history
 
     @torch.no_grad()
-    def _evaluate(self, loader: DataLoader) -> tuple[float, Dict[str, float]]:
+    def _evaluate(self, loader: DataLoader) -> tuple[float, Dict[str, float], Dict[str, Dict[str, float]]]:
         self.model.eval()
         total_loss = 0.0
         total_count = 0
         per_target: Dict[str, list[float]] = {f"{k}_{m}": [] for k in _TARGET_KEYS for m in ["center_rmse", "deadzone_rmse", "within_tol"]}
+        per_foil_metrics: Dict[str, Dict[str, list[float]]] = {}
 
         for batch in loader:
             inputs = batch["inputs"].to(self.device, non_blocking=(self.device.type == "cuda"))
@@ -389,9 +518,29 @@ class Stage2TransportTrainer:
                 if not math.isnan(value):
                     per_target.setdefault(key, []).append(value)
 
+            metadata = batch.get("metadata", None)
+            if isinstance(metadata, dict) and "foil_position" in metadata:
+                foil_position = torch.as_tensor(metadata["foil_position"]).reshape(-1)
+                for foil_value in torch.unique(foil_position).tolist():
+                    foil_key = str(int(foil_value))
+                    sample_mask = foil_position == foil_value
+                    foil_metrics = self.loss_fn.compute_metrics(preds, batch, sample_mask=sample_mask)
+                    bucket = per_foil_metrics.setdefault(foil_key, {})
+                    for key, value in foil_metrics.items():
+                        if math.isnan(value):
+                            continue
+                        bucket.setdefault(key, []).append(value)
+
         val_loss = total_loss / max(total_count, 1)
         aggregated = {
             key: float(np.mean(values)) if values else float("nan")
             for key, values in per_target.items()
         }
-        return val_loss, aggregated
+        aggregated_per_foil = {
+            foil: {
+                key: float(np.mean(values)) if values else float("nan")
+                for key, values in metric_map.items()
+            }
+            for foil, metric_map in per_foil_metrics.items()
+        }
+        return val_loss, aggregated, aggregated_per_foil

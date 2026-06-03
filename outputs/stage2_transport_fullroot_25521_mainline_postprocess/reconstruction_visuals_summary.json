@@ -1,0 +1,139 @@
+{
+  "checkpoint": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\checkpoints\\stage2_transport_fullroot_25521_mainline\\best_finetune.pth",
+  "checkpoint_epoch": 7,
+  "checkpoint_val_loss": 0.016976651947543275,
+  "data": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\dataset\\stage2_25521_labeled_mech25x16p4_tol3.csv",
+  "scaler_bundle": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\checkpoints\\pretrain_25521_fry_cuda_5d_notebooklike\\scaler_bundle.json",
+  "device": "cpu",
+  "dataset_summary": {
+    "raw_events": 105223,
+    "kept_events": 105223,
+    "cutflow": {
+      "raw": 105223,
+      "finite": 105223,
+      "pid": 105223,
+      "quality": 105223
+    }
+  },
+  "sieve_distance_cm": 253.0,
+  "sieve_summary": [
+    {
+      "foil": 0,
+      "method": "nn",
+      "n_events": 27171,
+      "rmse_x_cm": 0.4075002885543603,
+      "rmse_y_cm": 0.6157695291271732,
+      "rmse_radial_cm": 0.738395962999113,
+      "sigma68_radial_cm": 0.34721341208522005,
+      "bias_x_cm": -0.08074284721523484,
+      "bias_y_cm": 0.3075708752343507
+    },
+    {
+      "foil": 0,
+      "method": "root",
+      "n_events": 27171,
+      "rmse_x_cm": 0.44657587738502047,
+      "rmse_y_cm": 2.104574735784804,
+      "rmse_radial_cm": 2.151433204346786,
+      "sigma68_radial_cm": 0.560808991976448,
+      "bias_x_cm": -0.12962786552299083,
+      "bias_y_cm": 2.0292810815036355
+    },
+    {
+      "foil": 1,
+      "method": "nn",
+      "n_events": 36912,
+      "rmse_x_cm": 0.514162972990873,
+      "rmse_y_cm": 0.5816039548309949,
+      "rmse_radial_cm": 0.7762903600263674,
+      "sigma68_radial_cm": 0.37313387133333936,
+      "bias_x_cm": -0.02155880973382754,
+      "bias_y_cm": 0.1333521150136664
+    },
+    {
+      "foil": 1,
+      "method": "root",
+      "n_events": 36912,
+      "rmse_x_cm": 0.3741064965934798,
+      "rmse_y_cm": 0.6351086570447096,
+      "rmse_radial_cm": 0.7371015378131984,
+      "sigma68_radial_cm": 0.40123814957538373,
+      "bias_x_cm": -0.08145566788285917,
+      "bias_y_cm": -0.28598237628182516
+    },
+    {
+      "foil": 2,
+      "method": "nn",
+      "n_events": 41140,
+      "rmse_x_cm": 0.5648383680843013,
+      "rmse_y_cm": 0.5757794444091654,
+      "rmse_radial_cm": 0.806575694317814,
+      "sigma68_radial_cm": 0.39240536964268846,
+      "bias_x_cm": 0.056783714152364315,
+      "bias_y_cm": -0.2210266342621243
+    },
+    {
+      "foil": 2,
+      "method": "root",
+      "n_events": 41140,
+      "rmse_x_cm": 0.4608072221784425,
+      "rmse_y_cm": 2.599008974404215,
+      "rmse_radial_cm": 2.6395437001583177,
+      "sigma68_radial_cm": 0.6484505083921825,
+      "bias_x_cm": -0.029005419876219577,
+      "bias_y_cm": -2.521839623194107
+    }
+  ],
+  "ztar_summary": [
+    {
+      "slice": "all",
+      "nn_rmse_cm": 2.3240776322100816,
+      "root_rmse_cm": 1.832444154571017,
+      "nn_sigma68_cm": 1.9128497425959758,
+      "root_sigma68_cm": 1.701747649277804,
+      "nn_bias_cm": -0.3181327125762469,
+      "root_bias_cm": -0.38598762809064635,
+      "nn_within_tol": 0.0,
+      "root_within_tol": 0.0
+    },
+    {
+      "slice": "foil0",
+      "nn_rmse_cm": 2.313016558158575,
+      "root_rmse_cm": 1.5106992833010462,
+      "nn_sigma68_cm": 1.878038752019091,
+      "root_sigma68_cm": 1.4649083362101443,
+      "nn_bias_cm": -0.5715952940412815,
+      "root_bias_cm": -0.5139989942344478,
+      "nn_within_tol": 0.0,
+      "root_within_tol": 0.0
+    },
+    {
+      "slice": "foil1",
+      "nn_rmse_cm": 2.534788583048657,
+      "root_rmse_cm": 1.668395663822262,
+      "nn_sigma68_cm": 1.9976072360993888,
+      "root_sigma68_cm": 1.636537534428107,
+      "nn_bias_cm": -1.045167795198413,
+      "root_bias_cm": -0.3784312685248123,
+      "nn_within_tol": 0.0,
+      "root_within_tol": 0.0
+    },
+    {
+      "slice": "foil2",
+      "nn_rmse_cm": 2.1252328303370307,
+      "root_rmse_cm": 2.1409215583868977,
+      "nn_sigma68_cm": 1.6233443030933787,
+      "root_sigma68_cm": 2.006249130616059,
+      "nn_bias_cm": 0.5015841267707597,
+      "root_bias_cm": -0.30822203535367093,
+      "nn_within_tol": 0.0,
+      "root_within_tol": 0.0
+    }
+  ],
+  "artifacts": {
+    "sieve_matrix_plot": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_transport_fullroot_25521_mainline_postprocess\\sieve_pattern_foil_matrix_3x2.png",
+    "ztar_plot": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_transport_fullroot_25521_mainline_postprocess\\ztar_distribution_by_foil.png",
+    "sieve_summary_csv": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_transport_fullroot_25521_mainline_postprocess\\sieve_pattern_summary.csv",
+    "ztar_summary_csv": "C:\\Users\\Lanto\\Desktop\\AI_ML R-SIDIS\\SHMS_Calibration_NN\\outputs\\stage2_transport_fullroot_25521_mainline_postprocess\\ztar_summary.csv"
+  }
+}
