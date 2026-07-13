@@ -1,0 +1,47 @@
+{
+  "n_events": 18000,
+  "features_for_clustering": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp"
+  ],
+  "weak_prior": [
+    "sieve_x",
+    "sieve_y"
+  ],
+  "coarse_conditioning": "three-component GMM on reconstructed P_gtr_y",
+  "not_used_to_construct_clusters": [
+    "foil_position",
+    "cluster",
+    "hole_id",
+    "hole_row",
+    "hole_col"
+  ],
+  "reference_evaluation_only": "existing sieve-plane HDBSCAN cluster identity",
+  "gmm_means_p_gtr_y": [
+    -2.119455695221751,
+    0.1440530008521912,
+    2.3157181008066132
+  ],
+  "best_reference_ami_diagnostic": {
+    "prior_weight": 0.02,
+    "eps": 0.08843411187631217,
+    "min_samples": 8,
+    "clusters": 14,
+    "noise_fraction": 0.026833333333333376,
+    "max_cluster_fraction": 0.38666666666666666,
+    "reference_ami": 0.34544350357984155,
+    "reference_ari": 0.026601363776915625
+  },
+  "best_reference_ari_diagnostic": {
+    "prior_weight": 0.05,
+    "eps": 0.11151117092379613,
+    "min_samples": 32,
+    "clusters": 9,
+    "noise_fraction": 0.11983333333333335,
+    "max_cluster_fraction": 0.37122222222222223,
+    "reference_ami": 0.33996941054583996,
+    "reference_ari": 0.028880184660334093
+  }
+}

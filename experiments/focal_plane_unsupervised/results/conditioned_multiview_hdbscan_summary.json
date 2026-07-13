@@ -1,0 +1,34 @@
+{
+  "n_events": 15000,
+  "features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp"
+  ],
+  "weak_prior": "sqrt(lambda) * robust-scaled sieve_x/y appended to FP",
+  "conditioning": "3-component GMM on reconstructed P_gtr_y",
+  "reference_evaluation_only": "existing sieve-plane HDBSCAN cluster identity",
+  "best_ami": {
+    "prior_weight": 1.0,
+    "min_cluster_size": 15,
+    "selection": "eom",
+    "clusters": 262,
+    "noise_fraction": 0.32620000000000005,
+    "median_cluster_size": 30.0,
+    "max_cluster_fraction": 0.016733333333333333,
+    "reference_ami": 0.6147703254243647,
+    "reference_ari": 0.033235903401208966
+  },
+  "best_ari": {
+    "prior_weight": 1.0,
+    "min_cluster_size": 15,
+    "selection": "eom",
+    "clusters": 262,
+    "noise_fraction": 0.32620000000000005,
+    "median_cluster_size": 30.0,
+    "max_cluster_fraction": 0.016733333333333333,
+    "reference_ami": 0.6147703254243647,
+    "reference_ari": 0.033235903401208966
+  }
+}

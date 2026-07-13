@@ -1,0 +1,36 @@
+{
+  "n_events": 30000,
+  "read_columns": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "sieve_x",
+    "sieve_y"
+  ],
+  "not_read": [
+    "hole_id",
+    "hole_row",
+    "hole_col",
+    "foil_position",
+    "P_gtr_dp",
+    "P_gtr_th",
+    "P_gtr_ph",
+    "P_gtr_y"
+  ],
+  "fp_pca_variance": [
+    0.6114180859867423,
+    0.3430315303839835,
+    0.028231992573704606,
+    0.017318391055569513
+  ],
+  "fp_pc12_cumulative_variance": 0.9544496163707258,
+  "median_fp_20th_neighbor_distance": 0.05707508312641575,
+  "median_sieve_distance_on_fp_edges": 0.07629597381625577,
+  "p90_sieve_distance_on_fp_edges": 0.16715218115425423,
+  "plots": [
+    "01_multiview_density.png",
+    "02_dependence_and_dimension.png",
+    "03_neighborhood_agreement.png"
+  ]
+}

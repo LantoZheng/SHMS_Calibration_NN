@@ -1,0 +1,10 @@
+{
+  "relabel_mode": "preserve_holes",
+  "n_events": 121334,
+  "n_holes": 227,
+  "foil_counts": {
+    "0": 29925,
+    "1": 42780,
+    "2": 48629
+  }
+}

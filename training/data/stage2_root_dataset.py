@@ -275,8 +275,8 @@ class Stage2RootDataset(Dataset):
             z_branch = self.label_map.get("ytar", {}).get("reference_branch", "P_react_z")
             quality_mask = (
                 df[dp_branch].between(float(self.cuts.get("dp_min", -25.0)), float(self.cuts.get("dp_max", 22.0)))
-                & (df[th_branch].abs() <= float(self.cuts.get("xptar_abs_max", 0.08)))
-                & (df[ph_branch].abs() <= float(self.cuts.get("yptar_abs_max", 0.06)))
+                & (df[th_branch].abs() <= float(self.cuts.get("xptar_abs_max", 0.07)))
+                & (df[ph_branch].abs() <= float(self.cuts.get("yptar_abs_max", 0.04)))
                 & (df[z_branch].abs() <= float(self.cuts.get("ytar_abs_max", 120.0)))
             )
             df.drop(index=df.index[~quality_mask], inplace=True)

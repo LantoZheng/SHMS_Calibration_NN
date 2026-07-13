@@ -1,0 +1,108 @@
+{
+  "n_labeled_events": 114702,
+  "hole_label_source": "nn_predicted_sieve_generated_from_spacing_center_out_penalized_cluster_match",
+  "resolved_hole_design_csv": "outputs/iterative_gui_v3/dataset/iter1/stage2_nnrelabel_resolved_hole_design.csv",
+  "ytar_label_source": "strong_fixed_foil_centers",
+  "foil_centers_cm": {
+    "0": 10.0,
+    "1": 0.0,
+    "2": -10.0
+  },
+  "foil_counts": {
+    "0": 29448,
+    "1": 40712,
+    "2": 44542
+  },
+  "hole_count_total": 64,
+  "hole_spacing_mm": {
+    "x": 25.0,
+    "y": 16.4
+  },
+  "hole_tolerance_mm": 3.0,
+  "sieve_distance_cm": 253.0,
+  "cluster_count_per_foil": {
+    "0": 16,
+    "1": 22,
+    "2": 26
+  },
+  "mechanical_candidate_grid": {
+    "x_spacing_cm": 2.5,
+    "y_spacing_cm": 1.64,
+    "x_origin_cm": -0.1632105998858382,
+    "y_origin_cm": -0.06564279410149343,
+    "tolerance_mm": 3.0,
+    "tolerance_rad": 0.0011857707509881422,
+    "sieve_distance_cm": 253.0,
+    "spacing_source": "explicit",
+    "per_foil": {
+      "0": {
+        "row_range": [
+          -5,
+          1
+        ],
+        "col_range": [
+          -5,
+          5
+        ],
+        "candidate_count": 77
+      },
+      "1": {
+        "row_range": [
+          -3,
+          4
+        ],
+        "col_range": [
+          -5,
+          5
+        ],
+        "candidate_count": 88
+      },
+      "2": {
+        "row_range": [
+          -2,
+          6
+        ],
+        "col_range": [
+          -5,
+          5
+        ],
+        "candidate_count": 99
+      }
+    }
+  },
+  "cluster_to_mechanical_match": {
+    "assignment_mode": "center_out_penalized",
+    "occupancy_penalty_cm": 0.35,
+    "per_foil": {
+      "0": {
+        "n_clusters": 16,
+        "median_match_distance_cm": 0.5269334986487598,
+        "max_match_distance_cm": 0.8213796840256611,
+        "min_match_distance_cm": 0.05734355191092364,
+        "median_effective_match_cost_cm": 0.5269334986487598,
+        "reassigned_from_nearest_count": 0,
+        "max_hole_occupancy": 1
+      },
+      "1": {
+        "n_clusters": 22,
+        "median_match_distance_cm": 0.3469917545989831,
+        "max_match_distance_cm": 0.786315668617755,
+        "min_match_distance_cm": 0.088006580808508,
+        "median_effective_match_cost_cm": 0.3469917545989831,
+        "reassigned_from_nearest_count": 0,
+        "max_hole_occupancy": 1
+      },
+      "2": {
+        "n_clusters": 26,
+        "median_match_distance_cm": 0.6475889724081015,
+        "max_match_distance_cm": 0.8983012445127556,
+        "min_match_distance_cm": 0.0655133310389822,
+        "median_effective_match_cost_cm": 0.6475889724081015,
+        "reassigned_from_nearest_count": 1,
+        "max_hole_occupancy": 1
+      }
+    },
+    "duplicate_mechanical_holes": 0
+  },
+  "weighting_scheme": "equal_hole_total_weight"
+}

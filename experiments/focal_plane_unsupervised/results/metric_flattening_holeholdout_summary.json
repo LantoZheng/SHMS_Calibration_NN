@@ -1,0 +1,38 @@
+{
+  "n_events": 60000,
+  "train_events": 47467,
+  "test_events": 12533,
+  "held_out_sieve_clusters": 44,
+  "input_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "fry_proxy"
+  ],
+  "weak_targets": [
+    "cluster_center_x",
+    "cluster_center_y",
+    "foil_ytar_center"
+  ],
+  "split": "all events from held-out sieve clusters excluded from training",
+  "metrics": {
+    "raw_fp_fry": {
+      "target_knn_overlap_k20": 0.024954121120242558,
+      "same_cluster_fraction_k20": 0.3982047394877523,
+      "silhouette": -0.1664183001366258
+    },
+    "linear_metric": {
+      "target_knn_overlap_k20": 0.062108034788159266,
+      "same_cluster_fraction_k20": 0.8953283332003511,
+      "silhouette": 0.1987812092025907,
+      "target_rmse_scaled": 0.580879177590761
+    },
+    "nonlinear_metric": {
+      "target_knn_overlap_k20": 0.07043006462937844,
+      "same_cluster_fraction_k20": 0.9909798132929067,
+      "silhouette": 0.5552784197363221,
+      "target_rmse_scaled": 0.13526539804941234
+    }
+  }
+}

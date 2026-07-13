@@ -1,0 +1,23 @@
+{
+  "n_events": 30000,
+  "anchor": "existing sieve-plane HDBSCAN cluster; used to train FP cross-check only",
+  "fp_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp"
+  ],
+  "cross_fitting": "5-fold stratified out-of-fold KNN, k=25, distance weighted",
+  "coverage": {
+    "rank_at_most_1": 0.8012333333333334,
+    "rank_at_most_2": 0.9095333333333333,
+    "rank_at_most_3": 0.9494333333333334,
+    "rank_at_most_5": 0.9771333333333333
+  },
+  "mean_anchor_probability": 0.5009382367134094,
+  "high_confidence_consensus": {
+    "definition": "anchor ranked first by out-of-fold FP model and probability >= 0.50",
+    "coverage": 0.5279666666666667
+  },
+  "use": "retain high-confidence events as strong weak-label anchors; keep rank 2-3 as soft labels; flag the rest for exclusion or manual diagnostics."
+}

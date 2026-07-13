@@ -1,0 +1,27 @@
+{
+  "focal_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp"
+  ],
+  "weak_prior_features": [
+    "sieve_x",
+    "sieve_y"
+  ],
+  "not_read": [
+    "hole_id",
+    "hole_row",
+    "hole_col",
+    "foil_position",
+    "P_gtr_dp",
+    "P_gtr_th",
+    "P_gtr_ph",
+    "P_gtr_y"
+  ],
+  "n_events": 12000,
+  "method": "FP-kNN sparse graph; sieve can only penalize existing FP-neighbor edges",
+  "selection_rule": "noise<0.50, no cluster>50%, FP silhouette>0.10, then maximize bootstrap overlap ARI",
+  "chosen_candidate": null,
+  "verdict": "no usable weak-prior candidate in this scan"
+}

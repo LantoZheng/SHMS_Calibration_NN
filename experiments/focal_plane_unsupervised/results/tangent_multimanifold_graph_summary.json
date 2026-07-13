@@ -1,0 +1,37 @@
+{
+  "n_events": 9000,
+  "features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "P_rb_raster_frybRawAdc"
+  ],
+  "graph": "45-NN in robust-scaled raw 5D; symmetric local Mahalanobis affinity with self-tuned local scale",
+  "tangent": "4D local PCA tangent projector; mismatch downweights, never creates, FP-neighbor edges",
+  "clustering": "weighted Louvain graph partition; no foil/hole/sieve/reconstructed-target features",
+  "evaluation_only": "existing sieve-plane cluster and foil labels",
+  "best_tangent_aware": {
+    "tangent_weight": 6.0,
+    "resolution": 8.0,
+    "edges": 241290,
+    "clusters": 81,
+    "median_cluster_size": 107.0,
+    "max_cluster_fraction": 0.029,
+    "reference_hole_ami": 0.24374290703497026,
+    "reference_hole_ari": 0.036922735479357795,
+    "reference_foil_ami": 0.03771490526856252
+  },
+  "best_distance_only_baseline": {
+    "tangent_weight": 0.0,
+    "resolution": 12.0,
+    "edges": 241290,
+    "clusters": 109,
+    "median_cluster_size": 83.0,
+    "max_cluster_fraction": 0.017555555555555557,
+    "reference_hole_ami": 0.24223802019432072,
+    "reference_hole_ari": 0.0395406693113011,
+    "reference_foil_ami": 0.04567300669727122
+  },
+  "verdict": "compare best_tangent_aware against the tangent_weight=0 graph baseline; this is an exploratory same-run diagnostic, not external validation."
+}

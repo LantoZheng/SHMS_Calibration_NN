@@ -1,0 +1,7 @@
+{
+  "checkpoint": "/Users/zhengxiaoyang/Desktop/AI_ML R-SIDIS/SHMS_Calibration_NN/checkpoints/stage2_transport_fullroot_25521_mainline_centerout_nnrelabel_v3/best_finetune.pth",
+  "checkpoint_epoch": 66,
+  "checkpoint_val_loss": 0.024279015138745308,
+  "data": "/Users/zhengxiaoyang/Desktop/AI_ML R-SIDIS/SHMS_Calibration_NN/dataset/stage2_25521_labeled_mech25x16p4_tol3_hdbscan_centerout_nnrelabel_perfoiltol.csv",
+  "device": "cpu"
+}

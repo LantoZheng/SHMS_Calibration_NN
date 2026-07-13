@@ -41,12 +41,14 @@ from training.models import build_model_from_config
 from training.scripts.build_stage2_labels_from_25521_fullroot import (
     HDBSCANConfig,
     build_event_level_labels,
-    build_full_candidate_mechanical_hole_design_from_clusters,
     cluster_each_foil,
     compute_equal_hole_total_weights,
     describe_cluster_hole_assignment_source,
     resolve_mechanical_hole_design,
 )
+
+# Use the full NN→sieve projection (with δ corrections) from the optics tools.
+from SHMS_Optics_calibration_tools import nn_project_to_sieve
 
 _TARGET_KEYS = ["delta", "xptar", "yptar", "ytar"]
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -76,6 +78,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scaler-bundle", default=None, help="Optional override for scaler bundle path")
     parser.add_argument("--ytar-foil-check-margin-cm", type=float, default=3.0,
                         help="Margin in cm for NN ytar-based foil reassignment (default 3.0, 0=disable)")
+    parser.add_argument("--preserve-holes", action="store_true",
+                        help="Keep original hole assignments, only update xptar/ypart centers from NN")
     return parser.parse_args()
 
 
@@ -158,13 +162,41 @@ def correct_foil_assignment_by_nn_ytar(
     return df
 
 
-def add_nn_sieve_columns(df: pd.DataFrame, pred_phys: np.ndarray, sieve_distance_cm: float) -> pd.DataFrame:
+def add_nn_sieve_columns(
+    df: pd.DataFrame,
+    pred_phys: np.ndarray,
+    sieve_distance_cm: float = 253.0,
+) -> pd.DataFrame:
+    """Add NN-predicted physics columns and NN→sieve projection.
+
+    Uses the **full** SHMS optics formula (not the linear θ×253 / φ×253
+    approximation).  Requires ``P_gtr_x`` and ``P_gtr_y`` columns in *df*
+    for the target-plane coordinate offsets; falls back to zero if missing.
+    """
     df = df.copy()
-    df["nn_xptar"] = pred_phys[:, 1]
-    df["nn_yptar"] = pred_phys[:, 2]
-    df["nn_ytar"] = pred_phys[:, 3]
-    df["nn_sieve_x"] = df["nn_xptar"].to_numpy(dtype=np.float64) * sieve_distance_cm
-    df["nn_sieve_y"] = df["nn_yptar"].to_numpy(dtype=np.float64) * sieve_distance_cm
+    nn_delta = pred_phys[:, 0]
+    nn_xptar = pred_phys[:, 1]
+    nn_yptar = pred_phys[:, 2]
+    nn_ytar  = pred_phys[:, 3]
+
+    df["nn_delta"] = nn_delta
+    df["nn_xptar"] = nn_xptar
+    df["nn_yptar"] = nn_yptar
+    df["nn_ytar"]  = nn_ytar
+
+    # Target-plane coordinates for the full projection formula.
+    x_tar = df["P_gtr_x"].to_numpy(dtype=np.float64) if "P_gtr_x" in df.columns else None
+    y_tar = df["P_gtr_y"].to_numpy(dtype=np.float64) if "P_gtr_y" in df.columns else None
+
+    nn_sx, nn_sy = nn_project_to_sieve(
+        nn_delta=nn_delta,
+        nn_xptar=nn_xptar,
+        nn_yptar=nn_yptar,
+        x_tar=x_tar,
+        y_tar=y_tar,
+    )
+    df["nn_sieve_x"] = nn_sx
+    df["nn_sieve_y"] = nn_sy
     return df
 
 
@@ -174,6 +206,52 @@ def prepare_clustering_input_from_nn(df: pd.DataFrame) -> pd.DataFrame:
     df_cluster["sieve_x"] = df_cluster["nn_sieve_x"]
     df_cluster["sieve_y"] = df_cluster["nn_sieve_y"]
     return df_cluster
+
+
+def build_nn_hole_preserved_labels(df: pd.DataFrame, pred_phys: np.ndarray) -> pd.DataFrame:
+    """Update weak_hole_xptar/yptar_center using NN predictions, preserving original hole assignments.
+
+    No re-clustering — uses the existing hole_id/hole_row/hole_col from the input CSV.
+    """
+    labeled = df.copy()
+    nn_delta = pred_phys[:, 0]
+    nn_xptar = pred_phys[:, 1]
+    nn_yptar = pred_phys[:, 2]
+    # nn_ytar = pred_phys[:, 3]  # not needed for hole center update
+
+    labeled["nn_xptar"] = nn_xptar
+    labeled["nn_yptar"] = nn_yptar
+    labeled["nn_delta"] = nn_delta
+
+    # Per-hole median NN predictions
+    hole_stats = labeled.groupby(["foil_position", "hole_row", "hole_col"], sort=True).agg(
+        nn_xptar_med=("nn_xptar", "median"),
+        nn_yptar_med=("nn_yptar", "median"),
+        nn_delta_med=("nn_delta", "median"),
+    ).reset_index()
+
+    # Update weak hole centers from NN predictions
+    sieve_dist = _SIEVE_DISTANCE_CM
+    for _, row in hole_stats.iterrows():
+        mask = (
+            (labeled["foil_position"] == row["foil_position"])
+            & (labeled["hole_row"] == row["hole_row"])
+            & (labeled["hole_col"] == row["hole_col"])
+        )
+        labeled.loc[mask, "weak_hole_xptar_center"] = float(row["nn_xptar_med"])
+        labeled.loc[mask, "weak_hole_yptar_center"] = float(row["nn_yptar_med"])
+        # Recompute candidate sieve positions from NN
+        labeled.loc[mask, "candidate_sieve_x_cm"] = float(row["nn_xptar_med"]) * sieve_dist
+        labeled.loc[mask, "candidate_sieve_y_cm"] = float(row["nn_yptar_med"]) * sieve_dist
+        # Recompute hole population
+        labeled.loc[mask, "hole_population"] = mask.sum()
+
+    # Drop temporary NN columns
+    for c in ["nn_xptar", "nn_yptar", "nn_delta"]:
+        if c in labeled.columns:
+            labeled = labeled.drop(columns=[c])
+
+    return labeled
 
 
 def build_nn_relabelled_event_labels(
@@ -343,7 +421,33 @@ def main() -> None:
 
     print(f"Events after foil classification: {len(df)} ({df['foil_position'].value_counts().sort_index().to_dict()})")
 
-    # ---- Re-cluster using NN sieve positions ----
+    # ── Preserve-holes mode: no re-clustering ──
+    if getattr(args, "preserve_holes", False):
+        print("Preserving original hole assignments — updating xptar/ypart centers from NN...")
+        df = df.dropna(subset=["hole_id", "hole_row", "hole_col"])
+        labeled = build_nn_hole_preserved_labels(df, pred_phys)
+
+        # Build summary
+        summary = {
+            "relabel_mode": "preserve_holes",
+            "n_events": int(len(labeled)),
+            "n_holes": int(labeled["hole_id"].nunique()),
+            "foil_counts": labeled["foil_position"].value_counts().sort_index().to_dict(),
+        }
+
+        labeled = labeled.sort_values(["foil_position", "hole_row", "hole_col"]).reset_index(drop=True)
+        labeled.to_csv(output_csv_path, index=False)
+        with open(summary_json, "w", encoding="utf-8") as fh:
+            json.dump(summary, fh, ensure_ascii=False, indent=2)
+
+        print(f"\nNN-relabelled Stage-2 CSV saved: {output_csv_path}")
+        print(f"Summary JSON saved: {summary_json}")
+        print(f"Labeled events: {len(labeled):,}")
+        print(f"Unique hole_id: {labeled['hole_id'].nunique():,}")
+        print(f"Foil counts: {labeled['foil_position'].value_counts().sort_index().to_dict()}")
+        return
+
+    # ---- Re-cluster using NN sieve positions (original mode) ----
     df_cluster = prepare_clustering_input_from_nn(df)
     print(f"Re-clustering with NN-predicted sieve positions (method={args.clustering_method})...")
 

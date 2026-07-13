@@ -1,0 +1,75 @@
+{
+  "space": [
+    "xfp",
+    "yfp",
+    "xpfp",
+    "ypfp",
+    "fr_ybpm"
+  ],
+  "n_events": 75000,
+  "metric": "global robust-scaled Euclidean, no embedding or target coordinates",
+  "foil_silhouette": -0.01904,
+  "foil_pairs": [
+    {
+      "foils": "0-1",
+      "centroid_distance": 0.26307,
+      "distance_over_mean_radius": 0.20749
+    },
+    {
+      "foils": "0-2",
+      "centroid_distance": 0.53555,
+      "distance_over_mean_radius": 0.40301
+    },
+    {
+      "foils": "1-2",
+      "centroid_distance": 0.3021,
+      "distance_over_mean_radius": 0.21376
+    }
+  ],
+  "per_foil": [
+    {
+      "foil": 0,
+      "events": 25000,
+      "median_same_foil_k20": 0.80504,
+      "median_same_hole_k20": 0.3911,
+      "local_effective_dimension_median": 3.66358,
+      "local_pc1_fraction_median": 0.37447,
+      "local_pc1_pc2_fraction_median": 0.65018,
+      "local_flow_condition_median": 1.94548
+    },
+    {
+      "foil": 1,
+      "events": 25000,
+      "median_same_foil_k20": 0.66339,
+      "median_same_hole_k20": 0.30327,
+      "local_effective_dimension_median": 3.80992,
+      "local_pc1_fraction_median": 0.36048,
+      "local_pc1_pc2_fraction_median": 0.62877,
+      "local_flow_condition_median": 1.85117
+    },
+    {
+      "foil": 2,
+      "events": 25000,
+      "median_same_foil_k20": 0.75939,
+      "median_same_hole_k20": 0.29588,
+      "local_effective_dimension_median": 3.69308,
+      "local_pc1_fraction_median": 0.37208,
+      "local_pc1_pc2_fraction_median": 0.64554,
+      "local_flow_condition_median": 1.92765
+    }
+  ],
+  "hole_silhouette_within_foil": {
+    "0": -0.17983,
+    "1": -0.22671,
+    "2": -0.26764
+  },
+  "all_events_k20_same_foil": 0.74261,
+  "all_events_k20_same_reference_hole": 0.33008,
+  "local_effective_dimension_median": 3.72145,
+  "local_effective_dimension_iqr": [
+    3.49778,
+    3.94523
+  ],
+  "local_pc1_plus_pc2_median": 0.64154,
+  "note": "foil_position and cluster were not used to build neighbours; they only interpret the resulting 5D geometry."
+}

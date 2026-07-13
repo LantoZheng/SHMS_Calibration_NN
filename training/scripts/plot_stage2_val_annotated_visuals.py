@@ -49,6 +49,9 @@ def _load_inference(checkpoint: str, data: str, device: str = "cpu") -> tuple[pd
     from training.models import build_model_from_config
     from torch.utils.data import DataLoader
 
+    # Full SHMS projection formula for NN→sieve (δ-corrected).
+    from SHMS_Optics_calibration_tools import nn_project_to_sieve
+
     ckpt = torch.load(checkpoint, map_location=device, weights_only=False)
     cfg = ckpt.get("config", {})
     model_cfg = dict(cfg.get("model", {}))
@@ -95,10 +98,20 @@ def _load_inference(checkpoint: str, data: str, device: str = "cpu") -> tuple[pd
     df["root_xptar"] = df["P_gtr_th"].to_numpy(dtype=np.float64)
     df["root_yptar"] = df["P_gtr_ph"].to_numpy(dtype=np.float64)
     df["root_ztar"] = df["P_react_z"].to_numpy(dtype=np.float64)
-    df["nn_sieve_x_cm"] = df["nn_xptar"] * 253.0
-    df["nn_sieve_y_cm"] = df["nn_yptar"] * 253.0
-    # Use the project_to_sieve output (already computed in the labelled table)
-    # instead of the simplified P_gtr_th/ph * 253 approximation.
+
+    # NN → sieve: full SHMS formula (δ-corrected, not linear ×253).
+    x_tar = df["P_gtr_x"].to_numpy(dtype=np.float64) if "P_gtr_x" in df.columns else None
+    y_tar = df["P_gtr_y"].to_numpy(dtype=np.float64) if "P_gtr_y" in df.columns else None
+    nn_sx, nn_sy = nn_project_to_sieve(
+        nn_delta=pred_phys[:, 0],
+        nn_xptar=pred_phys[:, 1],
+        nn_yptar=pred_phys[:, 2],
+        x_tar=x_tar,
+        y_tar=y_tar,
+    )
+    df["nn_sieve_x_cm"] = nn_sx
+    df["nn_sieve_y_cm"] = nn_sy
+    # ROOT → sieve: already computed via full formula into sieve_x/sieve_y.
     df["root_sieve_x_cm"] = df["sieve_x"].to_numpy(dtype=np.float64)
     df["root_sieve_y_cm"] = df["sieve_y"].to_numpy(dtype=np.float64)
     return df, pred_phys

@@ -13,8 +13,8 @@ data:
     ngcer_min: 2.0
     use_pid: false
     use_quality: false
-    xptar_abs_max: 0.08
-    yptar_abs_max: 0.06
+    xptar_abs_max: 0.07
+    yptar_abs_max: 0.04
     ytar_abs_max: 120.0
   direct_fry_branch: P.rb.raster.fr_ybpm_tar
   feature_schema:

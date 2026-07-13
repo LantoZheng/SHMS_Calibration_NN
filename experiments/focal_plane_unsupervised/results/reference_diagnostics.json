@@ -1,0 +1,62 @@
+{
+  "n_events": 30000,
+  "reference": "existing per-foil sieve-plane HDBSCAN clusters; used only after the fact",
+  "reference_cluster_count": 220,
+  "per_foil": {
+    "0": {
+      "n_events": 7759,
+      "clusters": 66,
+      "silhouette": {
+        "fp": -0.22787739895090775,
+        "sieve": 0.6943351619059992
+      },
+      "k20_same_cluster": {
+        "fp": {
+          "mean": 0.5631331357133652,
+          "median": 0.55
+        },
+        "sieve": {
+          "mean": 0.9928212398504962,
+          "median": 1.0
+        }
+      }
+    },
+    "1": {
+      "n_events": 10609,
+      "clusters": 77,
+      "silhouette": {
+        "fp": -0.3039094594587361,
+        "sieve": 0.6649770682655227
+      },
+      "k20_same_cluster": {
+        "fp": {
+          "mean": 0.5423178433405599,
+          "median": 0.55
+        },
+        "sieve": {
+          "mean": 0.9920539164860025,
+          "median": 1.0
+        }
+      }
+    },
+    "2": {
+      "n_events": 11632,
+      "clusters": 77,
+      "silhouette": {
+        "fp": -0.3397394999127635,
+        "sieve": 0.6329885974318596
+      },
+      "k20_same_cluster": {
+        "fp": {
+          "mean": 0.4923830811554333,
+          "median": 0.5
+        },
+        "sieve": {
+          "mean": 0.9909301925722146,
+          "median": 1.0
+        }
+      }
+    }
+  },
+  "interpretation": "The FP numbers quantify how much information the existing sieve clusters leave locally visible in measured focal-plane coordinates."
+}

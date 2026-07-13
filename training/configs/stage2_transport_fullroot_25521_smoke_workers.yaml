@@ -61,8 +61,8 @@ data:
     use_quality: false
     dp_min: -25.0
     dp_max: 22.0
-    xptar_abs_max: 0.08
-    yptar_abs_max: 0.06
+    xptar_abs_max: 0.07
+    yptar_abs_max: 0.04
     ytar_abs_max: 120.0
 
 training:

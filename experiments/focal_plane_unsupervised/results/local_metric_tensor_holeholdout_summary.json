@@ -1,0 +1,39 @@
+{
+  "dimension": 5,
+  "method": "12 piecewise SPD 5x5 metric tensors, candidate graph from raw 120-NN",
+  "input_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "fry_proxy"
+  ],
+  "weak_target_distance": [
+    "cluster_center_x",
+    "cluster_center_y",
+    "foil_ytar_center"
+  ],
+  "split": "44 entire sieve clusters held out",
+  "raw": {
+    "target_knn_overlap_k20": 0.024954121120242558,
+    "same_cluster_fraction_k20": 0.3982047394877523
+  },
+  "local_metric_tensor": {
+    "target_knn_overlap_k20": 0.022955397749940157,
+    "same_cluster_fraction_k20": 0.3664525652277986
+  },
+  "patch_train_sizes": [
+    2462,
+    3167,
+    5213,
+    5982,
+    5177,
+    3575,
+    2000,
+    2749,
+    3375,
+    3215,
+    3850,
+    6702
+  ]
+}

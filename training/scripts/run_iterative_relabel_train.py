@@ -30,6 +30,8 @@ def parse_args():
     p.add_argument("--device", default="cuda")
     p.add_argument("--max-events", type=int, default=None)
     p.add_argument("--ytar-foil-check-margin-cm", type=float, default=3.0)
+    p.add_argument("--preserve-holes", action="store_true",
+                   help="Keep original hole assignments, only update xptar/ypart centers")
     return p.parse_args()
 
 
@@ -117,15 +119,20 @@ def main():
             relabel_cmd += ["--max-events", str(args.max_events)]
         if float(args.ytar_foil_check_margin_cm) > 0:
             relabel_cmd += ["--ytar-foil-check-margin-cm", str(args.ytar_foil_check_margin_cm)]
+        if getattr(args, "preserve_holes", False):
+            relabel_cmd += ["--preserve-holes"]
 
         ok = run_cmd(relabel_cmd, f"Relabel iteration {it}")
         if not ok: break
 
         if relabel_sum.exists():
             rs = json.load(open(relabel_sum))
-            cm = rs.get("cluster_to_mechanical_match", {})
-            print(f"  Labeled={rs.get('n_labeled_events')}, holes={rs.get('hole_count_total')}, "
-                  f"dups={cm.get('duplicate_mechanical_holes')}")
+            if rs.get("relabel_mode") == "preserve_holes":
+                print(f"  Labeled={rs.get('n_events')}, holes={rs.get('n_holes')} (holes preserved)")
+            else:
+                cm = rs.get("cluster_to_mechanical_match", {})
+                print(f"  Labeled={rs.get('n_labeled_events')}, holes={rs.get('hole_count_total')}, "
+                      f"dups={cm.get('duplicate_mechanical_holes')}")
 
         # Step 2: Train
         iter_cfg_path = base / f"config_iter{it}.yaml"

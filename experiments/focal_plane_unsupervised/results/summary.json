@@ -1,0 +1,37 @@
+{
+  "feature_columns": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp"
+  ],
+  "forbidden_columns_not_read": [
+    "sieve_x",
+    "sieve_y",
+    "hole_id",
+    "foil_position",
+    "P_gtr_dp",
+    "P_gtr_th",
+    "P_gtr_ph",
+    "P_gtr_y"
+  ],
+  "n_events": 15000,
+  "robust_scaler_quantiles": [
+    5,
+    95
+  ],
+  "pca_explained_variance_ratio": [
+    0.6125341125966117,
+    0.34175966896355336,
+    0.02822955627240327,
+    0.017476662167431576
+  ],
+  "k20_distance_quantiles": {
+    "0.5": 0.07096807018282628,
+    "0.8": 0.08771925866826193,
+    "0.95": 0.11151551055118977
+  },
+  "selection_rule": "require no giant cluster, noise<0.50, silhouette>0.10; then maximize overlap ARI. No desired cluster count is used.",
+  "chosen_candidate": null,
+  "verdict": "no parameter set met the label-free discrete-cluster criteria"
+}

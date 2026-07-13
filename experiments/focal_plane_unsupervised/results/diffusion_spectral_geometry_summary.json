@@ -1,0 +1,47 @@
+{
+  "n_events": 6000,
+  "features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "P_rb_raster_frybRawAdc"
+  ],
+  "graph": "55-NN, self-tuned local Gaussian affinity, alpha=1 density normalization in raw robust-scaled 5D",
+  "clustering": "diffusion-operator eigensystem used internally for normalized-cut k-means; no persisted low-dimensional feature space",
+  "evaluation_only": "existing sieve cluster / foil labels",
+  "best_scan": {
+    "diffusion_time": 1,
+    "clusters": 80,
+    "median_cluster_size": 74.0,
+    "max_cluster_fraction": 0.02,
+    "reference_hole_ami": 0.20011636595210408,
+    "reference_hole_ari": 0.033267447184527205,
+    "reference_foil_ami": 0.027391975056686727
+  },
+  "largest_eigengap_candidate_counts": [
+    11,
+    16,
+    9,
+    4,
+    5,
+    19,
+    28,
+    3
+  ],
+  "top_eigenvalues": [
+    0.9999999999999947,
+    0.986923597545247,
+    0.9813205210541807,
+    0.9715463375321686,
+    0.9614905592271623,
+    0.9514411354629035,
+    0.945279421260068,
+    0.9400563228066924,
+    0.9346777329472624,
+    0.9237142767302019,
+    0.9172761497356285,
+    0.9037278688864326
+  ],
+  "verdict": "same-run diagnostic; compare only against the existing 5D graph baselines before treating as a clustering candidate."
+}

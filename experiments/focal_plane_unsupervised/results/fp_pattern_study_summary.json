@@ -1,0 +1,29 @@
+{
+  "per_foil": {
+    "0": {
+      "clusters": 66,
+      "median_fp_separation_ratio": 0.13098360235860756,
+      "fraction_fp_separated_ratio_gt_1": 0.0,
+      "median_fp_local_purity": 0.800374184943687,
+      "nearest_neighbor_topology_match_fraction": 0.07575757575757576,
+      "median_neighbor_jaccard4": 0.3333333333333333
+    },
+    "1": {
+      "clusters": 77,
+      "median_fp_separation_ratio": 0.1424782330826537,
+      "fraction_fp_separated_ratio_gt_1": 0.0,
+      "median_fp_local_purity": 0.7425335570469799,
+      "nearest_neighbor_topology_match_fraction": 0.025974025974025976,
+      "median_neighbor_jaccard4": 0.3333333333333333
+    },
+    "2": {
+      "clusters": 77,
+      "median_fp_separation_ratio": 0.10301049626523934,
+      "fraction_fp_separated_ratio_gt_1": 0.012987012987012988,
+      "median_fp_local_purity": 0.7272865853658537,
+      "nearest_neighbor_topology_match_fraction": 0.0,
+      "median_neighbor_jaccard4": 0.3333333333333333
+    }
+  },
+  "interpretation": "Clusters and foil assignments are used only to observe the already-built sieve reference; all FP statistics describe their observed detector-space behaviour."
+}

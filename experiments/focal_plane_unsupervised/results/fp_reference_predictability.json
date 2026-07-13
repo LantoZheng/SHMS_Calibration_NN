@@ -1,0 +1,14 @@
+{
+  "n_events": 30000,
+  "features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp"
+  ],
+  "target_used_only_for_post_hoc_diagnostic": "existing sieve-plane HDBSCAN cluster identity",
+  "random_event_holdout_note": "This is a local-overlap ceiling, not a cross-run generalization claim.",
+  "top1_accuracy": 0.7998666666666666,
+  "top3_accuracy": 0.9490666666666666,
+  "top5_accuracy": 0.9793333333333333
+}

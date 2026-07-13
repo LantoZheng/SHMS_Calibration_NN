@@ -63,8 +63,19 @@ def predict_sieve(checkpoint: str, data: str, scaler_path: str, device: str, bat
     pred_phys = scaler.inverse_transform_Y(np.concatenate(blocks, axis=0).astype(np.float64))
 
     df = ds.df.reset_index(drop=True).copy()
-    df["nn_sieve_x"] = pred_phys[:,1] * _SIEVE_DISTANCE_CM
-    df["nn_sieve_y"] = pred_phys[:,2] * _SIEVE_DISTANCE_CM
+
+    # NN → sieve: full SHMS formula (δ-corrected).
+    from SHMS_Optics_calibration_tools import nn_project_to_sieve
+    x_tar = df["P_gtr_x"].to_numpy(dtype=np.float64) if "P_gtr_x" in df.columns else None
+    y_tar = df["P_gtr_y"].to_numpy(dtype=np.float64) if "P_gtr_y" in df.columns else None
+    nn_sx, nn_sy = nn_project_to_sieve(
+        nn_delta=pred_phys[:, 0],
+        nn_xptar=pred_phys[:, 1],
+        nn_yptar=pred_phys[:, 2],
+        x_tar=x_tar, y_tar=y_tar,
+    )
+    df["nn_sieve_x"] = nn_sx
+    df["nn_sieve_y"] = nn_sy
     df["root_sieve_x"] = df["sieve_x"].to_numpy(dtype=np.float64)
     df["root_sieve_y"] = df["sieve_y"].to_numpy(dtype=np.float64)
     df["foil_position"] = df["foil_position"].astype(int)

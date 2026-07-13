@@ -35,7 +35,7 @@ import uproot
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 import SHMS_Optics_calibration_tools as soc
-from SHMS_Optics_calibration_tools import DBSCANConfig, EdgeClusteringConfig, HDBSCANConfig
+from SHMS_Optics_calibration_tools import DBSCANConfig, EdgeClusteringConfig, HDBSCANConfig, MechanicalGridConfig
 from physical_constraint_postprocess import merge_over_split_clusters
 
 
@@ -265,17 +265,6 @@ def _load_table(path: str) -> pd.DataFrame:
     raise ValueError(f"Unsupported table format for: {path}")
 
 
-def mm_to_target_angle(mm_value: float, sieve_distance_cm: float) -> float:
-    sieve_distance_cm = float(sieve_distance_cm)
-    if sieve_distance_cm <= 0:
-        raise ValueError(f"sieve_distance_cm must be positive, got {sieve_distance_cm}")
-    return float((float(mm_value) / 10.0) / sieve_distance_cm)
-
-
-def target_angle_to_sieve_cm(angle_value: float, sieve_distance_cm: float) -> float:
-    return float(angle_value) * float(sieve_distance_cm)
-
-
 def infer_run_id(root_file: str) -> int:
     matches = re.findall(r"(\d{4,})", str(root_file))
     if matches:
@@ -323,16 +312,6 @@ def extract_cluster_centers(clustering_results: dict[int, dict[str, Any]]) -> pd
     if not frames:
         return pd.DataFrame(columns=["foil_position", "cluster", "cluster_center_x", "cluster_center_y"])
     return pd.concat(frames, ignore_index=True)
-
-
-def infer_lattice_origin_cm(values_cm: pd.Series, spacing_cm: float, initial_origin_cm: float = 0.0) -> float:
-    values = values_cm.to_numpy(dtype=np.float64)
-    values = values[np.isfinite(values)]
-    if values.size == 0:
-        return float(initial_origin_cm)
-    nearest_index = np.rint((values - float(initial_origin_cm)) / float(spacing_cm))
-    residual = values - (float(initial_origin_cm) + nearest_index * float(spacing_cm))
-    return float(initial_origin_cm + np.median(residual))
 
 
 def load_mechanical_hole_design(args: argparse.Namespace) -> pd.DataFrame:
@@ -426,12 +405,12 @@ def build_observed_mechanical_hole_design_from_event_grid(
 
     x_spacing_cm = float(x_spacing_mm) / 10.0
     y_spacing_cm = float(y_spacing_mm) / 10.0
-    tolerance_rad = mm_to_target_angle(float(tolerance_mm), float(args.sieve_distance_cm))
-    initial_x_origin_cm = target_angle_to_sieve_cm(float(args.hole_origin_xptar), float(args.sieve_distance_cm))
-    initial_y_origin_cm = target_angle_to_sieve_cm(float(args.hole_origin_yptar), float(args.sieve_distance_cm))
+    tolerance_rad = soc.mm_to_target_angle(float(tolerance_mm), float(args.sieve_distance_cm))
+    initial_x_origin_cm = float(args.hole_origin_xptar) * float(args.sieve_distance_cm)
+    initial_y_origin_cm = float(args.hole_origin_yptar) * float(args.sieve_distance_cm)
 
-    x_origin_cm = infer_lattice_origin_cm(df["sieve_x"], x_spacing_cm, initial_x_origin_cm)
-    y_origin_cm = infer_lattice_origin_cm(df["sieve_y"], y_spacing_cm, initial_y_origin_cm)
+    x_origin_cm = soc.infer_lattice_origin_cm(df["sieve_x"], x_spacing_cm, initial_x_origin_cm)
+    y_origin_cm = soc.infer_lattice_origin_cm(df["sieve_y"], y_spacing_cm, initial_y_origin_cm)
 
     grid = df[["foil_position", "sieve_x", "sieve_y"]].copy()
     grid["hole_col"] = np.rint((grid["sieve_x"] - x_origin_cm) / x_spacing_cm).astype(int)
@@ -508,9 +487,9 @@ def build_mechanical_hole_design_from_grid(
     if grid_index.empty:
         raise RuntimeError("Grid index is empty; cannot auto-generate mechanical hole weak labels.")
 
-    x_spacing_rad = mm_to_target_angle(float(x_spacing_mm), float(args.sieve_distance_cm))
-    y_spacing_rad = mm_to_target_angle(float(y_spacing_mm), float(args.sieve_distance_cm))
-    tolerance_rad = mm_to_target_angle(float(tolerance_mm), float(args.sieve_distance_cm))
+    x_spacing_rad = soc.mm_to_target_angle(float(x_spacing_mm), float(args.sieve_distance_cm))
+    y_spacing_rad = soc.mm_to_target_angle(float(y_spacing_mm), float(args.sieve_distance_cm))
+    tolerance_rad = soc.mm_to_target_angle(float(tolerance_mm), float(args.sieve_distance_cm))
 
     design = grid_index[["foil_position", "row", "col"]].drop_duplicates().copy()
     design = design.rename(columns={"row": "hole_row", "col": "hole_col"})
@@ -528,194 +507,12 @@ def build_mechanical_hole_design_from_grid(
     return design.sort_values(["foil_position", "hole_row", "hole_col"]).reset_index(drop=True)
 
 
-def build_full_candidate_mechanical_hole_design_from_clusters(
-    clustering_results: dict[int, dict[str, Any]],
-    args: argparse.Namespace,
-) -> tuple[pd.DataFrame, dict[str, Any]]:
-    x_spacing_mm = getattr(args, "hole_x_spacing_mm", None)
-    y_spacing_mm = getattr(args, "hole_y_spacing_mm", None)
-    tolerance_mm = getattr(args, "hole_tolerance_mm", None)
-    if x_spacing_mm is None or y_spacing_mm is None:
-        raise ValueError(
-            "Auto-generated hole weak labels require both --hole-x-spacing-mm and --hole-y-spacing-mm."
-        )
-    if tolerance_mm is None:
-        raise ValueError("Auto-generated hole weak labels require --hole-tolerance-mm.")
-
-    cluster_centers = extract_cluster_centers(clustering_results)
-    if cluster_centers.empty:
-        raise RuntimeError("No valid cluster centres found; cannot build mechanical hole candidates.")
-
-    x_spacing_cm = float(x_spacing_mm) / 10.0
-    y_spacing_cm = float(y_spacing_mm) / 10.0
-    tolerance_rad = mm_to_target_angle(float(tolerance_mm), float(args.sieve_distance_cm))
-
-    x_origin_cm = infer_lattice_origin_cm(
-        cluster_centers["cluster_center_x"],
-        x_spacing_cm,
-        target_angle_to_sieve_cm(float(args.hole_origin_xptar), float(args.sieve_distance_cm)),
-    )
-    y_origin_cm = infer_lattice_origin_cm(
-        cluster_centers["cluster_center_y"],
-        y_spacing_cm,
-        target_angle_to_sieve_cm(float(args.hole_origin_yptar), float(args.sieve_distance_cm)),
-    )
-
-    cluster_centers = cluster_centers.copy()
-    cluster_centers["hole_col_est"] = np.rint((cluster_centers["cluster_center_x"] - x_origin_cm) / x_spacing_cm).astype(int)
-    cluster_centers["hole_row_est"] = np.rint((cluster_centers["cluster_center_y"] - y_origin_cm) / y_spacing_cm).astype(int)
-
-    design_frames: list[pd.DataFrame] = []
-    per_foil_summary: dict[str, Any] = {}
-    for foil_pos, df_foil in cluster_centers.groupby("foil_position"):
-        foil_pos_int = int(cast(Any, foil_pos))
-        min_col = int(df_foil["hole_col_est"].min())
-        max_col = int(df_foil["hole_col_est"].max())
-        min_row = int(df_foil["hole_row_est"].min())
-        max_row = int(df_foil["hole_row_est"].max())
-
-        candidate = pd.MultiIndex.from_product(
-            [[foil_pos_int], range(min_row, max_row + 1), range(min_col, max_col + 1)],
-            names=["foil_position", "hole_row", "hole_col"],
-        ).to_frame(index=False)
-        candidate["candidate_sieve_x_cm"] = x_origin_cm + candidate["hole_col"].to_numpy(dtype=np.float64) * x_spacing_cm
-        candidate["candidate_sieve_y_cm"] = y_origin_cm + candidate["hole_row"].to_numpy(dtype=np.float64) * y_spacing_cm
-        candidate["weak_hole_xptar_center"] = candidate["candidate_sieve_x_cm"] / float(args.sieve_distance_cm)
-        candidate["weak_hole_yptar_center"] = candidate["candidate_sieve_y_cm"] / float(args.sieve_distance_cm)
-        candidate["weak_hole_xptar_tol"] = float(tolerance_rad)
-        candidate["weak_hole_yptar_tol"] = float(tolerance_rad)
-        design_frames.append(candidate)
-        per_foil_summary[str(foil_pos_int)] = {
-            "row_range": [min_row, max_row],
-            "col_range": [min_col, max_col],
-            "candidate_count": int(len(candidate)),
-        }
-
-    design = pd.concat(design_frames, ignore_index=True)
-    meta = {
-        "x_spacing_cm": float(x_spacing_cm),
-        "y_spacing_cm": float(y_spacing_cm),
-        "x_origin_cm": float(x_origin_cm),
-        "y_origin_cm": float(y_origin_cm),
-        "per_foil": per_foil_summary,
-    }
-    return design.sort_values(["foil_position", "hole_row", "hole_col"]).reset_index(drop=True), meta
-
-
-def build_cluster_to_mechanical_hole_map(
-    clustering_results: dict[int, dict[str, Any]],
-    hole_design: pd.DataFrame,
-    args: argparse.Namespace,
-) -> tuple[pd.DataFrame, dict[str, Any]]:
-    cluster_centers = extract_cluster_centers(clustering_results)
-    if cluster_centers.empty:
-        raise RuntimeError("No cluster centres available for nearest mechanical-hole matching.")
-
-    candidate_design = ensure_candidate_sieve_columns(hole_design, args)
-
-    assignments: list[dict[str, Any]] = []
-    per_foil_stats: dict[str, Any] = {}
-    for foil_pos, df_foil in cluster_centers.groupby("foil_position"):
-        foil_pos_int = int(cast(Any, foil_pos))
-        candidates = candidate_design.loc[candidate_design["foil_position"] == foil_pos].copy()
-        if candidates.empty:
-            raise RuntimeError(f"No mechanical-hole candidates found for foil {foil_pos_int}.")
-        candidate_xy = candidates[["candidate_sieve_x_cm", "candidate_sieve_y_cm"]].to_numpy(dtype=np.float64)
-        candidate_rowcol = candidates[["hole_row", "hole_col"]].to_numpy(dtype=np.int64)
-        center_idx = int(np.argmin(np.sqrt(candidate_xy[:, 0] ** 2 + candidate_xy[:, 1] ** 2)))
-        center_ref_x = float(candidate_xy[center_idx, 0])
-        center_ref_y = float(candidate_xy[center_idx, 1])
-        assignment_mode = str(getattr(args, "cluster_hole_assignment_mode", "nearest"))
-        occupancy_penalty_cm = float(max(getattr(args, "cluster_hole_occupancy_penalty_cm", 0.0), 0.0))
-        cluster_frame = df_foil.copy()
-        cluster_radius = np.sqrt(
-            (cluster_frame["cluster_center_x"].to_numpy(dtype=np.float64) - center_ref_x) ** 2
-            + (cluster_frame["cluster_center_y"].to_numpy(dtype=np.float64) - center_ref_y) ** 2
-        )
-        cluster_frame["__center_out_radius"] = cluster_radius
-        if assignment_mode == "center_out_penalized":
-            cluster_frame = cluster_frame.sort_values(
-                ["__center_out_radius", "cluster_center_x", "cluster_center_y", "cluster"],
-                ascending=[True, True, True, True],
-            ).reset_index(drop=True)
-
-        distances: list[float] = []
-        effective_costs: list[float] = []
-        occupancies_before: list[int] = []
-        reassigned_from_nearest = 0
-        hole_usage_counts: dict[tuple[int, int], int] = {}
-        for row in cluster_frame.itertuples(index=False):
-            cluster_id = int(cast(Any, row.cluster))
-            cluster_center_x = float(cast(Any, row.cluster_center_x))
-            cluster_center_y = float(cast(Any, row.cluster_center_y))
-            delta = candidate_xy - np.array([cluster_center_x, cluster_center_y], dtype=np.float64)
-            dist = np.sqrt(np.sum(delta * delta, axis=1))
-            nearest_idx = int(np.argmin(dist))
-            if assignment_mode == "center_out_penalized":
-                occupancy_counts = np.array(
-                    [hole_usage_counts.get((int(rc[0]), int(rc[1])), 0) for rc in candidate_rowcol],
-                    dtype=np.float64,
-                )
-                effective_cost = dist + occupancy_penalty_cm * occupancy_counts
-                best_idx = int(np.argmin(effective_cost))
-                occupancies_before.append(int(occupancy_counts[best_idx]))
-                effective_costs.append(float(effective_cost[best_idx]))
-            else:
-                best_idx = nearest_idx
-                occupancies_before.append(int(hole_usage_counts.get((int(candidate_rowcol[best_idx, 0]), int(candidate_rowcol[best_idx, 1])), 0)))
-                effective_costs.append(float(dist[best_idx]))
-            if best_idx != nearest_idx:
-                reassigned_from_nearest += 1
-            distances.append(float(dist[best_idx]))
-            chosen_key = (int(candidate_rowcol[best_idx, 0]), int(candidate_rowcol[best_idx, 1]))
-            hole_usage_counts[chosen_key] = hole_usage_counts.get(chosen_key, 0) + 1
-            assignments.append(
-                {
-                    "foil_position": foil_pos_int,
-                    "cluster": cluster_id,
-                    "cluster_center_x": cluster_center_x,
-                    "cluster_center_y": cluster_center_y,
-                    "hole_row": int(candidate_rowcol[best_idx, 0]),
-                    "hole_col": int(candidate_rowcol[best_idx, 1]),
-                    "matched_sieve_x_cm": float(candidate_xy[best_idx, 0]),
-                    "matched_sieve_y_cm": float(candidate_xy[best_idx, 1]),
-                    "match_dx_cm": float(cluster_center_x - candidate_xy[best_idx, 0]),
-                    "match_dy_cm": float(cluster_center_y - candidate_xy[best_idx, 1]),
-                    "match_distance_cm": float(dist[best_idx]),
-                    "nearest_match_distance_cm": float(dist[nearest_idx]),
-                    "effective_match_cost_cm": float(effective_costs[-1]),
-                    "hole_occupancy_before_assignment": int(occupancies_before[-1]),
-                    "assignment_mode": assignment_mode,
-                }
-            )
-        per_foil_stats[str(foil_pos_int)] = {
-            "n_clusters": int(len(df_foil)),
-            "median_match_distance_cm": float(np.median(distances)) if distances else None,
-            "max_match_distance_cm": float(np.max(distances)) if distances else None,
-            "min_match_distance_cm": float(np.min(distances)) if distances else None,
-            "median_effective_match_cost_cm": float(np.median(effective_costs)) if effective_costs else None,
-            "reassigned_from_nearest_count": int(reassigned_from_nearest),
-            "max_hole_occupancy": int(max(hole_usage_counts.values())) if hole_usage_counts else 0,
-        }
-
-    assignment_df = pd.DataFrame(assignments).sort_values(["foil_position", "cluster"]).reset_index(drop=True)
-    duplicate_assignments = (
-        assignment_df.groupby(["foil_position", "hole_row", "hole_col"]).size().reset_index(name="assigned_clusters")
-    )
-    summary = {
-        "assignment_mode": str(getattr(args, "cluster_hole_assignment_mode", "nearest")),
-        "occupancy_penalty_cm": float(max(getattr(args, "cluster_hole_occupancy_penalty_cm", 0.0), 0.0)),
-        "per_foil": per_foil_stats,
-        "duplicate_mechanical_holes": int((duplicate_assignments["assigned_clusters"] > 1).sum()),
-    }
-    return assignment_df, summary
-
-
 def describe_cluster_hole_assignment_source(
     args: argparse.Namespace,
     *,
     generated_from_spacing: bool,
 ) -> str:
+    """Describe the hole label source string for summary metadata."""
     assignment_mode = str(getattr(args, "cluster_hole_assignment_mode", "nearest"))
     prefix = "generated_from_spacing" if generated_from_spacing else "table"
     if assignment_mode == "center_out_penalized":
@@ -723,188 +520,69 @@ def describe_cluster_hole_assignment_source(
     return f"{prefix}_nearest_cluster_match"
 
 
-def assign_events_to_mechanical_holes(
-    df: pd.DataFrame,
-    hole_design: pd.DataFrame,
-    args: argparse.Namespace,
-) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
-    if df.empty:
-        raise RuntimeError("No events available for direct_grid mechanical-hole assignment.")
-
-    candidate_design = ensure_candidate_sieve_columns(hole_design, args)
-    assignment_frames: list[pd.DataFrame] = []
-    for foil_pos, df_foil in df.groupby("foil_position", sort=True):
-        foil_pos_int = int(cast(Any, foil_pos))
-        candidates = candidate_design.loc[candidate_design["foil_position"] == foil_pos_int].copy()
-        if candidates.empty:
-            continue
-
-        event_xy = df_foil[["sieve_x", "sieve_y"]].to_numpy(dtype=np.float64)
-        candidate_xy = candidates[["candidate_sieve_x_cm", "candidate_sieve_y_cm"]].to_numpy(dtype=np.float64)
-        delta = event_xy[:, None, :] - candidate_xy[None, :, :]
-        dist_sq = np.sum(delta * delta, axis=2)
-        best_idx = np.argmin(dist_sq, axis=1)
-
-        assigned = df_foil.copy()
-        assigned["hole_row"] = candidates.iloc[best_idx]["hole_row"].to_numpy(dtype=np.int64)
-        assigned["hole_col"] = candidates.iloc[best_idx]["hole_col"].to_numpy(dtype=np.int64)
-        assigned["candidate_sieve_x_cm"] = candidates.iloc[best_idx]["candidate_sieve_x_cm"].to_numpy(dtype=np.float64)
-        assigned["candidate_sieve_y_cm"] = candidates.iloc[best_idx]["candidate_sieve_y_cm"].to_numpy(dtype=np.float64)
-        assigned["matched_sieve_x_cm"] = assigned["candidate_sieve_x_cm"]
-        assigned["matched_sieve_y_cm"] = assigned["candidate_sieve_y_cm"]
-        assigned["weak_hole_xptar_center"] = candidates.iloc[best_idx]["weak_hole_xptar_center"].to_numpy(dtype=np.float64)
-        assigned["weak_hole_yptar_center"] = candidates.iloc[best_idx]["weak_hole_yptar_center"].to_numpy(dtype=np.float64)
-        assigned["weak_hole_xptar_tol"] = candidates.iloc[best_idx]["weak_hole_xptar_tol"].to_numpy(dtype=np.float64)
-        assigned["weak_hole_yptar_tol"] = candidates.iloc[best_idx]["weak_hole_yptar_tol"].to_numpy(dtype=np.float64)
-        assigned["match_dx_cm"] = assigned["sieve_x"] - assigned["candidate_sieve_x_cm"]
-        assigned["match_dy_cm"] = assigned["sieve_y"] - assigned["candidate_sieve_y_cm"]
-        assigned["match_distance_cm"] = np.sqrt(np.take_along_axis(dist_sq, best_idx[:, None], axis=1).reshape(-1))
-        assignment_frames.append(assigned)
-
-    if not assignment_frames:
-        raise RuntimeError("No direct_grid event assignments were produced.")
-
-    assigned_raw = pd.concat(assignment_frames, ignore_index=True)
-    assigned = assigned_raw.copy()
-    x_spacing_mm = getattr(args, "hole_x_spacing_mm", None)
-    y_spacing_mm = getattr(args, "hole_y_spacing_mm", None)
-    max_match_distance_cm = getattr(args, "direct_grid_max_match_distance_cm", None)
-    if max_match_distance_cm is None and x_spacing_mm is not None and y_spacing_mm is not None:
-        max_match_distance_cm = 0.5 * math.hypot(float(x_spacing_mm) / 10.0, float(y_spacing_mm) / 10.0)
-    if max_match_distance_cm is not None:
-        assigned = assigned.loc[assigned["match_distance_cm"] <= float(max_match_distance_cm)].copy()
-    if assigned.empty:
-        raise RuntimeError("All direct_grid assignments were rejected by match-distance filtering.")
-
-    n_after_distance = int(len(assigned))
-
-    occupancy = (
-        assigned.groupby(["foil_position", "hole_row", "hole_col"], as_index=False)
-        .size()
-        .rename(columns={"size": "hole_population"})
-    )
-    min_population = int(max(getattr(args, "direct_grid_min_hole_population", 1), 1))
-    valid_holes = occupancy.loc[occupancy["hole_population"] >= min_population].copy()
-    if valid_holes.empty:
-        raise RuntimeError(
-            "All direct_grid holes were removed by minimum-population filtering; no training labels remain."
-        )
-
-    max_holes_per_foil = getattr(args, "direct_grid_max_holes_per_foil", None)
-    per_foil_cap_summary: dict[str, Any] = {}
-    if max_holes_per_foil is not None:
-        max_holes_per_foil = int(max(max_holes_per_foil, 1))
-        hole_quality = (
-            assigned.groupby(["foil_position", "hole_row", "hole_col"], as_index=False)
-            .agg(median_match_distance_cm=("match_distance_cm", "median"))
-        )
-        ranked_holes = valid_holes.merge(
-            hole_quality,
-            on=["foil_position", "hole_row", "hole_col"],
-            how="left",
-        )
-        kept_holes: list[pd.DataFrame] = []
-        for foil_pos, df_foil in ranked_holes.groupby("foil_position", sort=True):
-            foil_pos_int = int(cast(Any, foil_pos))
-            ranked = df_foil.sort_values(
-                ["hole_population", "median_match_distance_cm", "hole_row", "hole_col"],
-                ascending=[False, True, True, True],
-            ).reset_index(drop=True)
-            kept = ranked.head(max_holes_per_foil).copy()
-            kept_holes.append(kept)
-            per_foil_cap_summary[str(foil_pos_int)] = {
-                "holes_before_cap": int(len(ranked)),
-                "holes_after_cap": int(len(kept)),
-                "min_population_kept": int(kept["hole_population"].min()) if not kept.empty else None,
-                "max_population_kept": int(kept["hole_population"].max()) if not kept.empty else None,
-            }
-        valid_holes = pd.concat(kept_holes, ignore_index=True)
-
-    assigned = assigned.merge(
-        valid_holes,
-        on=["foil_position", "hole_row", "hole_col"],
-        how="inner",
-    )
-    if assigned.empty:
-        raise RuntimeError("No events survived direct_grid minimum-population filtering.")
-
-    filtered_design = candidate_design.merge(
-        valid_holes[["foil_position", "hole_row", "hole_col"]],
-        on=["foil_position", "hole_row", "hole_col"],
-        how="inner",
-    ).drop_duplicates(subset=["foil_position", "hole_row", "hole_col"])
-
-    cluster_lookup = valid_holes[["foil_position", "hole_row", "hole_col", "hole_population"]].sort_values(["foil_position", "hole_row", "hole_col"]).reset_index(drop=True).copy()
-    cluster_lookup["cluster"] = cluster_lookup.groupby("foil_position").cumcount().astype(int)
-
-    cluster_centers = (
-        assigned.groupby(["foil_position", "hole_row", "hole_col"], as_index=False)
-        .agg(
-            cluster_center_x=("sieve_x", "median"),
-            cluster_center_y=("sieve_y", "median"),
-        )
-    )
-    cluster_lookup = cluster_lookup.merge(
-        cluster_centers,
-        on=["foil_position", "hole_row", "hole_col"],
-        how="left",
-    )
-    assigned = assigned.merge(
-        cluster_lookup,
-        on=["foil_position", "hole_row", "hole_col", "hole_population"],
-        how="left",
-    )
-    assigned["is_noise"] = False
-
-    per_foil_stats: dict[str, Any] = {}
-    for foil_pos, df_foil in assigned.groupby("foil_position", sort=True):
-        foil_pos_int = int(cast(Any, foil_pos))
-        distances = df_foil["match_distance_cm"].to_numpy(dtype=np.float64)
-        per_foil_stats[str(foil_pos_int)] = {
-            "n_events": int(len(df_foil)),
-            "n_holes": int(df_foil["cluster"].nunique()),
-            "median_match_distance_cm": float(np.median(distances)) if len(distances) else None,
-            "max_match_distance_cm": float(np.max(distances)) if len(distances) else None,
-            "min_match_distance_cm": float(np.min(distances)) if len(distances) else None,
-        }
-
-    summary = {
-        "per_foil": per_foil_stats,
-        "min_population": int(min_population),
-        "max_match_distance_cm": float(max_match_distance_cm) if max_match_distance_cm is not None else None,
-        "max_holes_per_foil": int(max_holes_per_foil) if max_holes_per_foil is not None else None,
-        "per_foil_hole_cap": per_foil_cap_summary,
-        "dropped_events_far_from_hole": int(len(assigned_raw) - n_after_distance),
-        "dropped_events_below_population": int(n_after_distance - len(assigned)),
-    }
-    return assigned.reset_index(drop=True), filtered_design.reset_index(drop=True), summary
-
-
 def resolve_mechanical_hole_design(
     args: argparse.Namespace,
     clustering_results: dict[int, dict[str, Any]],
     output_csv: Path,
 ) -> tuple[pd.DataFrame, str, str | None, pd.DataFrame, dict[str, Any], dict[str, Any]]:
+    """Resolve mechanical hole design via calibration-tools MechanicalGridConfig.
+
+    When ``args.hole_design_table`` is provided, the external table is loaded
+    and ``soc.match_clusters_to_mechanical_grid`` handles the cluster→hole
+    assignment.  Otherwise the full pipeline (spacing detection or explicit
+    spacing → candidate grid → cluster matching) runs through
+    ``soc.build_mechanical_grid_index``.
+    """
+    cfg = _args_to_mechanical_grid_config(args)
+
     if args.hole_design_table:
         design = load_mechanical_hole_design(args)
-        design_meta = {
+        design = ensure_candidate_sieve_columns(design, args)
+        design_meta: dict[str, Any] = {
             "x_spacing_cm": None,
             "y_spacing_cm": None,
             "x_origin_cm": None,
             "y_origin_cm": None,
             "per_foil": {},
         }
-        cluster_hole_map, match_summary = build_cluster_to_mechanical_hole_map(clustering_results, design, args)
-        return design, describe_cluster_hole_assignment_source(args, generated_from_spacing=False), str(args.hole_design_table), cluster_hole_map, design_meta, match_summary
+        cluster_centers = extract_cluster_centers(clustering_results)
+        cluster_hole_map, match_summary = soc.match_clusters_to_mechanical_grid(
+            cluster_centers, design, config=cfg, verbose=True,
+        )
+        hole_source = describe_cluster_hole_assignment_source(args, generated_from_spacing=False)
+        return design, hole_source, str(args.hole_design_table), cluster_hole_map, design_meta, match_summary
 
-    design, design_meta = build_full_candidate_mechanical_hole_design_from_clusters(clustering_results, args)
+    # Auto-generation path: use full calibration-tools pipeline
+    hole_design, design_meta, cluster_hole_map, match_summary = soc.build_mechanical_grid_index(
+        clustering_results, config=cfg, verbose=True,
+    )
     resolved_path = Path(args.resolved_hole_design_csv) if args.resolved_hole_design_csv else output_csv.with_name(
         output_csv.stem + "_resolved_hole_design.csv"
     )
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
-    design.to_csv(resolved_path, index=False)
-    cluster_hole_map, match_summary = build_cluster_to_mechanical_hole_map(clustering_results, design, args)
-    return design, describe_cluster_hole_assignment_source(args, generated_from_spacing=True), str(resolved_path), cluster_hole_map, design_meta, match_summary
+    hole_design.to_csv(resolved_path, index=False)
+    hole_source = describe_cluster_hole_assignment_source(args, generated_from_spacing=True)
+    return hole_design, hole_source, str(resolved_path), cluster_hole_map, design_meta, match_summary
+
+
+def _args_to_mechanical_grid_config(args: argparse.Namespace) -> MechanicalGridConfig:
+    """Build a MechanicalGridConfig from command-line arguments."""
+    x_spacing = getattr(args, "hole_x_spacing_mm", None)
+    y_spacing = getattr(args, "hole_y_spacing_mm", None)
+    tolerance = getattr(args, "hole_tolerance_mm", None)
+    has_explicit_spacing = (x_spacing is not None) and (y_spacing is not None)
+
+    return MechanicalGridConfig(
+        x_spacing_mm=float(x_spacing) if x_spacing is not None else None,
+        y_spacing_mm=float(y_spacing) if y_spacing is not None else None,
+        tolerance_mm=float(tolerance) if tolerance is not None else 3.0,
+        sieve_distance_cm=float(getattr(args, "sieve_distance_cm", DEFAULT_SIEVE_DISTANCE_CM)),
+        assignment_mode=str(getattr(args, "cluster_hole_assignment_mode", "center_out_penalized")),
+        occupancy_penalty_cm=float(getattr(args, "cluster_hole_occupancy_penalty_cm", 0.35)),
+        hole_origin_xptar=float(getattr(args, "hole_origin_xptar", 0.0)),
+        hole_origin_yptar=float(getattr(args, "hole_origin_yptar", 0.0)),
+        auto_spacing=not has_explicit_spacing,
+    )
 
 
 def resolve_direct_grid_hole_design(

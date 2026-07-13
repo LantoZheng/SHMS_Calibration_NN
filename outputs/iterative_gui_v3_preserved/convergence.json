@@ -1,0 +1,32 @@
+[
+  {
+    "epoch": 50,
+    "val_loss": 0.015674229711294174,
+    "select_metric": 0.08802857995033264,
+    "select_name": "ytar_center_rmse",
+    "n_labeled": null,
+    "n_holes": null,
+    "duplicate_holes": -1,
+    "iteration": 1
+  },
+  {
+    "epoch": 57,
+    "val_loss": 0.030178772285580635,
+    "select_metric": 0.09475903958082199,
+    "select_name": "ytar_center_rmse",
+    "n_labeled": null,
+    "n_holes": null,
+    "duplicate_holes": -1,
+    "iteration": 2
+  },
+  {
+    "epoch": 73,
+    "val_loss": 0.029395153746008873,
+    "select_metric": 0.08760779350996017,
+    "select_name": "ytar_center_rmse",
+    "n_labeled": null,
+    "n_holes": null,
+    "duplicate_holes": -1,
+    "iteration": 3
+  }
+]

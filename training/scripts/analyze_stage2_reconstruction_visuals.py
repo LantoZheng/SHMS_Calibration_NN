@@ -43,6 +43,9 @@ from training.scripts.analyze_stage2_ytar_distribution import (
     resolve_path,
 )
 
+# Full SHMS optics projection (δ-corrected, not linear ×253).
+from SHMS_Optics_calibration_tools import nn_project_to_sieve
+
 _SIEVE_DISTANCE_CM = 253.0
 _FOIL_ORDER = [0, 1, 2]
 
@@ -116,10 +119,19 @@ def _build_plot_frame(df: pd.DataFrame, pred_phys: np.ndarray, sieve_distance_cm
     plot_df["root_yptar"] = plot_df["P_gtr_ph"].to_numpy(dtype=np.float64)
     plot_df["root_ztar"] = plot_df["P_react_z"].to_numpy(dtype=np.float64)
 
-    plot_df["nn_sieve_x_cm"] = plot_df["nn_xptar"].to_numpy(dtype=np.float64) * sieve_distance_cm
-    plot_df["nn_sieve_y_cm"] = plot_df["nn_yptar"].to_numpy(dtype=np.float64) * sieve_distance_cm
-    # Use the project_to_sieve output (already computed in the labelled table)
-    # instead of the simplified P_gtr_th/ph * 253 approximation.
+    # NN → sieve: full SHMS formula (δ-corrected, not linear ×253).
+    x_tar = plot_df["P_gtr_x"].to_numpy(dtype=np.float64) if "P_gtr_x" in plot_df.columns else None
+    y_tar = plot_df["P_gtr_y"].to_numpy(dtype=np.float64) if "P_gtr_y" in plot_df.columns else None
+    nn_sx, nn_sy = nn_project_to_sieve(
+        nn_delta=pred_phys[:, 0],
+        nn_xptar=pred_phys[:, 1],
+        nn_yptar=pred_phys[:, 2],
+        x_tar=x_tar,
+        y_tar=y_tar,
+    )
+    plot_df["nn_sieve_x_cm"] = nn_sx
+    plot_df["nn_sieve_y_cm"] = nn_sy
+    # ROOT → sieve: already computed via full formula in the labelled table.
     plot_df["root_sieve_x_cm"] = plot_df["sieve_x"].to_numpy(dtype=np.float64)
     plot_df["root_sieve_y_cm"] = plot_df["sieve_y"].to_numpy(dtype=np.float64)
 

@@ -1,0 +1,46 @@
+{
+  "n_events": 60000,
+  "train_events": 45000,
+  "test_events": 15000,
+  "input_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "fry_proxy"
+  ],
+  "weak_targets": [
+    "cluster_center_x",
+    "cluster_center_y",
+    "foil_ytar_center"
+  ],
+  "existing_cluster_use": "stratification and post-hoc held-out evaluation only",
+  "models": {
+    "linear": "Ridge",
+    "nonlinear": "MLP 5->96->64->3"
+  },
+  "metrics": {
+    "raw_fp_fry": {
+      "target_knn_overlap_k20": 0.026413333333333334,
+      "same_sieve_cluster_fraction_k20": 0.10968,
+      "distance_correlation_to_target": 0.23773305852162352,
+      "sieve_cluster_silhouette": -0.3601588839848416,
+      "target_rmse_scaled": null
+    },
+    "linear_metric": {
+      "target_knn_overlap_k20": 0.12464000000000003,
+      "same_sieve_cluster_fraction_k20": 0.5389533333333333,
+      "distance_correlation_to_target": 0.7342132800297753,
+      "sieve_cluster_silhouette": -0.054279446713429526,
+      "target_rmse_scaled": 0.5853144669563475
+    },
+    "nonlinear_metric": {
+      "target_knn_overlap_k20": 0.25538333333333335,
+      "same_sieve_cluster_fraction_k20": 0.94788,
+      "distance_correlation_to_target": 0.9811616548454789,
+      "sieve_cluster_silhouette": 0.4537513528293666,
+      "target_rmse_scaled": 0.12305052487918336
+    }
+  },
+  "interpretation": "A useful flattening metric should improve held-out target-neighborhood overlap and same-sieve-cluster locality without relying on hole identity as an input."
+}
