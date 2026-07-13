@@ -1,0 +1,51 @@
+model:
+  name: "residual_transport_mlp"
+  input_dim: 5          # [x_fp, y_fp, xp_fp, yp_fp, fry]
+  hidden_dim: 192
+  n_residual_blocks: 4
+  branch_dim: 64
+  dropout: 0.10
+  init_linear_with_least_squares: true
+  linear_init_ridge: 1.0e-6
+  linear_warmup_epochs: 10
+  freeze_linear_after_warmup: true
+  correction_l2_weight: 1.0e-4
+
+training:
+  epochs: 80
+  batch_size: 2048
+  learning_rate: 8.0e-4
+  weight_decay: 1.0e-4
+  early_stopping_patience: 15
+  early_stopping_min_delta: 5.0e-5
+  gradient_clip_max_norm: 1.0
+  val_fraction: 0.2
+  random_seed: 42
+  scheduler:
+    type: "reduce_on_plateau"
+    patience: 5
+    factor: 0.5
+    min_lr: 1.0e-5
+
+loss:
+  lambda_physics: 0.0
+  use_huber: true
+  huber_delta: 1.0
+  target_weights:
+    delta: 1.0
+    xptar: 1.0
+    yptar: 1.0
+    ytar: 0.5
+
+data:
+  simc_tree_name: "h10"
+  feature_schema: ["x_fp", "y_fp", "xp_fp", "yp_fp", "fry"]
+  include_fry: true
+  include_xtar: false
+  include_p0: false
+  fry_branch: "fry"
+  x_tar_sigma_cm: 0.1
+
+output:
+  checkpoint_dir: "checkpoints/pretrain_25521_fry/"
+  scaler_save_path: "checkpoints/pretrain_25521_fry/scaler_bundle.json"
