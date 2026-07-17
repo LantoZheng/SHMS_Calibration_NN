@@ -1,0 +1,20 @@
+{
+  "definition": "z3_global = flow_z3 + lambda(flow_z1,flow_z2) * g(flow_z1,flow_z2,robust_scaled_FP5D)",
+  "continuity": "g and lambda are normalized Gaussian-RBF partitions of unity; flow and all affine experts are continuous",
+  "weak_supervision": "final relative foil ordering only; reconstructed ytar is not used",
+  "close_pair_radius_standardized_z1z2": 0.3,
+  "close_cross_foil_pairs": 221,
+  "guide_experts": 9,
+  "correction_gates": 4,
+  "correction_lambda_quantiles": {
+    "min": -0.21917800267274024,
+    "median": -0.08141870452918484,
+    "max": 0.040792166952968875
+  },
+  "median_dprime_flow_z3": 6.394677868253476,
+  "median_dprime_global_continuous_z3": 6.597650555287997,
+  "p10_dprime_flow_z3": 4.235669569221077,
+  "p10_dprime_global_continuous_z3": 4.283995448558297,
+  "fraction_close_pairs_improved": 0.7239819004524887,
+  "mean_dprime_gain": 0.30862827832977213
+}

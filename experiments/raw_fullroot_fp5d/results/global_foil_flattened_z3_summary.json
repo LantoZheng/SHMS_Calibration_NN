@@ -1,0 +1,36 @@
+{
+  "definition": "z3_flat=z3+rho(z1)*(sum_k phi_k(z1,z2)*(a_k+b_k*z3)-z3)",
+  "inference_requires_foil_label": false,
+  "training_weak_supervision": "cluster-level final relative foil rank only; no reconstructed ytar",
+  "continuity": "normalized Gaussian RBF coefficient fields and smooth edge weight",
+  "monotonicity": "affine in z3 at fixed z1,z2",
+  "rbf_experts": 36,
+  "ridge_alpha": 0.01,
+  "rbf_width": 0.7905862645193663,
+  "cluster_level_5fold_mae": 0.19025905561279924,
+  "cluster_level_5fold_nearest_foil_accuracy": 0.9267241379310345,
+  "minimum_event_local_z3_slope": 0.38720931983267143,
+  "flattening_strength_quantiles": {
+    "min": 0.26869052715281977,
+    "median": 0.45922302174414464,
+    "max": 0.9398303082617723
+  },
+  "mean_within_foil_cluster_std": {
+    "overall_before": 0.3250209168258322,
+    "overall_after": 0.2598192909523769,
+    "overall_reduction_fraction": 0.20060747631326958,
+    "core_before": 0.3535900829073164,
+    "core_after": 0.2898355163251109,
+    "edge_before": 0.28701187461767785,
+    "edge_after": 0.21270182965406548,
+    "edge_reduction_fraction": 0.2589093049289307
+  },
+  "close_cross_foil_pair_separation": {
+    "pairs": 221,
+    "median_dprime_before": 6.597650555287997,
+    "median_dprime_after": 6.60454669398077,
+    "p10_dprime_before": 4.283995448558297,
+    "p10_dprime_after": 4.439944200634362,
+    "fraction_pairs_improved": 0.4072398190045249
+  }
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "pair": "S1",
+    "inferred_ytar_band": 0,
+    "clusters": [
+      219,
+      220
+    ],
+    "events": [
+      334,
+      326
+    ],
+    "sieve_center_distance_cm": 0.5873020093191778,
+    "best_raw_fp_feature_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_linear_lda_auc": 0.9994122185077697,
+    "fisher_dprime": 4.4255463626989755
+  },
+  {
+    "pair": "S2",
+    "inferred_ytar_band": 1,
+    "clusters": [
+      15,
+      68
+    ],
+    "events": [
+      66,
+      423
+    ],
+    "sieve_center_distance_cm": 0.8332645870877678,
+    "best_raw_fp_feature_pair": [
+      "P.dc.x_fp",
+      "P.dc.y_fp"
+    ],
+    "cross_validated_linear_lda_auc": 1.0,
+    "fisher_dprime": 12.077758436320071
+  },
+  {
+    "pair": "S3",
+    "inferred_ytar_band": 2,
+    "clusters": [
+      2,
+      3
+    ],
+    "events": [
+      62,
+      61
+    ],
+    "sieve_center_distance_cm": 0.21199395605542998,
+    "best_raw_fp_feature_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_linear_lda_auc": 1.0,
+    "fisher_dprime": 4.971103238153192
+  },
+  {
+    "pair": "S4",
+    "inferred_ytar_band": 2,
+    "clusters": [
+      45,
+      56
+    ],
+    "events": [
+      230,
+      126
+    ],
+    "sieve_center_distance_cm": 0.15439502529358515,
+    "best_raw_fp_feature_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_linear_lda_auc": 0.9996204278812975,
+    "fisher_dprime": 5.126887696804408
+  }
+]

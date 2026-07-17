@@ -1,0 +1,41 @@
+{
+  "skim_pid_events": 155137,
+  "stage2_foil_bounds_cm": {
+    "0": {
+      "count": 27171,
+      "min": -2.816372198119242,
+      "max": -1.3836296334205953,
+      "mean": -2.125521252615389,
+      "std": 0.32561991645833677
+    },
+    "1": {
+      "count": 36912,
+      "min": -0.7130627719646409,
+      "max": 0.9131107233800804,
+      "mean": 0.14259025623067353,
+      "std": 0.34938385703327995
+    },
+    "2": {
+      "count": 41140,
+      "min": 1.306698567896203,
+      "max": 3.293311952035707,
+      "mean": 2.3154530295049756,
+      "std": 0.4433275536551605
+    }
+  },
+  "hard_gaps_cm": [
+    {
+      "between": "foil 0 -> foil 1",
+      "low": -1.3836296334205953,
+      "high": -0.7130627719646409,
+      "width_cm": 0.6705668614559545
+    },
+    {
+      "between": "foil 1 -> foil 2",
+      "low": 0.9131107233800804,
+      "high": 1.306698567896203,
+      "width_cm": 0.3935878445161227
+    }
+  ],
+  "provenance": "build_stage2_labels_from_25521_fullroot.py calls classify_foils_with_range(P_gtr_y, bins=50, sigma_factor=3, y_range=(-5,5), drop_unclassified=True)"
+}

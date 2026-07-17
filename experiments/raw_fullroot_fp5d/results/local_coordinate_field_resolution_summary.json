@@ -1,0 +1,62 @@
+[
+  {
+    "pair": "S1",
+    "previous_ytar_band": 0,
+    "clusters": [
+      219,
+      220
+    ],
+    "events": 660,
+    "high_confidence_seed_events": 465,
+    "out_of_fold_seed_auc": 1.0,
+    "all_event_agreement_with_initial_hdbscan": 0.990909090909091,
+    "reassigned_relative_to_initial_hdbscan": 6,
+    "sieve_center_distance_cm": 0.5873020093191761,
+    "field_definition": "z3_local = Fisher/LDA decision_function(robust_scaled FP5D), fitted on high-probability branch seeds"
+  },
+  {
+    "pair": "S2",
+    "previous_ytar_band": 1,
+    "clusters": [
+      15,
+      68
+    ],
+    "events": 489,
+    "high_confidence_seed_events": 268,
+    "out_of_fold_seed_auc": 1.0,
+    "all_event_agreement_with_initial_hdbscan": 1.0,
+    "reassigned_relative_to_initial_hdbscan": 0,
+    "sieve_center_distance_cm": 0.8332645870877684,
+    "field_definition": "z3_local = Fisher/LDA decision_function(robust_scaled FP5D), fitted on high-probability branch seeds"
+  },
+  {
+    "pair": "S3",
+    "previous_ytar_band": 2,
+    "clusters": [
+      2,
+      3
+    ],
+    "events": 123,
+    "high_confidence_seed_events": 123,
+    "out_of_fold_seed_auc": 1.0,
+    "all_event_agreement_with_initial_hdbscan": 1.0,
+    "reassigned_relative_to_initial_hdbscan": 0,
+    "sieve_center_distance_cm": 0.21199395605543148,
+    "field_definition": "z3_local = Fisher/LDA decision_function(robust_scaled FP5D), fitted on high-probability branch seeds"
+  },
+  {
+    "pair": "S4",
+    "previous_ytar_band": 2,
+    "clusters": [
+      45,
+      56
+    ],
+    "events": 356,
+    "high_confidence_seed_events": 302,
+    "out_of_fold_seed_auc": 1.0,
+    "all_event_agreement_with_initial_hdbscan": 0.9971910112359551,
+    "reassigned_relative_to_initial_hdbscan": 1,
+    "sieve_center_distance_cm": 0.1543950252935879,
+    "field_definition": "z3_local = Fisher/LDA decision_function(robust_scaled FP5D), fitted on high-probability branch seeds"
+  }
+]

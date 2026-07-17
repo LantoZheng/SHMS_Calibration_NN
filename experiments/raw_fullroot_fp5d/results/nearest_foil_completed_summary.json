@@ -1,0 +1,118 @@
+{
+  "classified_clusters": 232,
+  "canonical_relative_mapping_clusters": 214,
+  "nearest_neighbour_completed_clusters": 18,
+  "remaining_unclassified_clusters": 0,
+  "nearest_distance_median": 0.3842749112499002,
+  "nearest_distance_max": 0.742099547427391,
+  "nearest_assignments": [
+    {
+      "cluster": 0,
+      "foil": 1,
+      "nearest_cluster": 5,
+      "distance_Z": 0.3339361218469555
+    },
+    {
+      "cluster": 11,
+      "foil": 0,
+      "nearest_cluster": 8,
+      "distance_Z": 0.3456174938610661
+    },
+    {
+      "cluster": 14,
+      "foil": 0,
+      "nearest_cluster": 6,
+      "distance_Z": 0.4162929335277219
+    },
+    {
+      "cluster": 15,
+      "foil": 0,
+      "nearest_cluster": 68,
+      "distance_Z": 0.2954213408982383
+    },
+    {
+      "cluster": 16,
+      "foil": 0,
+      "nearest_cluster": 69,
+      "distance_Z": 0.5036348937531598
+    },
+    {
+      "cluster": 24,
+      "foil": 0,
+      "nearest_cluster": 219,
+      "distance_Z": 0.4973577015158572
+    },
+    {
+      "cluster": 33,
+      "foil": 0,
+      "nearest_cluster": 20,
+      "distance_Z": 0.3396524602806736
+    },
+    {
+      "cluster": 38,
+      "foil": 0,
+      "nearest_cluster": 134,
+      "distance_Z": 0.4573359182988485
+    },
+    {
+      "cluster": 42,
+      "foil": 1,
+      "nearest_cluster": 67,
+      "distance_Z": 0.2969557038888956
+    },
+    {
+      "cluster": 44,
+      "foil": 0,
+      "nearest_cluster": 160,
+      "distance_Z": 0.3808279695398732
+    },
+    {
+      "cluster": 165,
+      "foil": 0,
+      "nearest_cluster": 158,
+      "distance_Z": 0.31491598281892064
+    },
+    {
+      "cluster": 171,
+      "foil": 1,
+      "nearest_cluster": 217,
+      "distance_Z": 0.742099547427391
+    },
+    {
+      "cluster": 197,
+      "foil": 1,
+      "nearest_cluster": 225,
+      "distance_Z": 0.2669195422061051
+    },
+    {
+      "cluster": 199,
+      "foil": 0,
+      "nearest_cluster": 219,
+      "distance_Z": 0.3877218529599272
+    },
+    {
+      "cluster": 207,
+      "foil": 0,
+      "nearest_cluster": 177,
+      "distance_Z": 0.5161289739097241
+    },
+    {
+      "cluster": 209,
+      "foil": 2,
+      "nearest_cluster": 231,
+      "distance_Z": 0.28129934896392705
+    },
+    {
+      "cluster": 215,
+      "foil": 1,
+      "nearest_cluster": 226,
+      "distance_Z": 0.4694887431847217
+    },
+    {
+      "cluster": 222,
+      "foil": 1,
+      "nearest_cluster": 226,
+      "distance_Z": 0.4049116687421305
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "root_entries": 521282,
+  "finite_reconstructed": 521281,
+  "technical_kinematic": 237895,
+  "technical_kinematic_pid_no_sieve_cut": 155057,
+  "fit_inputs": [
+    "P.dc.x_fp",
+    "P.dc.y_fp",
+    "P.dc.xp_fp",
+    "P.dc.yp_fp",
+    "P.rb.raster.frybRawAdc"
+  ],
+  "weak_continuous_targets": [
+    "sieve_x",
+    "sieve_y",
+    "P.gtr.y"
+  ],
+  "not_read": [
+    "foil_position",
+    "hole_id",
+    "hole_row",
+    "hole_col",
+    "sieve_label",
+    "cluster"
+  ],
+  "selection": "finite + valid DC + kinematics + PID; explicitly no sieve-range, foil, or hole cut",
+  "epochs": 80,
+  "hdbscan": {
+    "min_cluster_size": 60,
+    "min_samples": 10,
+    "selection": "eom",
+    "clusters": 232,
+    "noise_fraction": 0.3828205111668612,
+    "median_cluster_events": 371.0,
+    "largest_cluster_fraction": 0.009847991383813695,
+    "median_membership_probability": 0.827984869001428
+  },
+  "loss": [
+    {
+      "epoch": 1,
+      "loss": 0.7494236788738732
+    },
+    {
+      "epoch": 20,
+      "loss": 0.0167845003489518
+    },
+    {
+      "epoch": 40,
+      "loss": 0.010623446030583543
+    },
+    {
+      "epoch": 80,
+      "loss": 0.007400147299104688
+    }
+  ]
+}

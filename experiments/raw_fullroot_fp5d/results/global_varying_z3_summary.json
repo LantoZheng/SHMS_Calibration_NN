@@ -1,0 +1,13 @@
+{
+  "definition": "z3(u,f)=beta0(u)+beta(u)^T robust_scaled(FP5D), beta is normalized-RBF partition-of-unity over u=(flow_z1,flow_z2)",
+  "training_target": "relative foil layer minus one; reconstructed ytar excluded",
+  "rbf_experts": 9,
+  "rbf_width": 1.5743035120444238,
+  "ridge_alpha": 0.03,
+  "cluster_level_5fold_mae": 0.4136376125164571,
+  "cluster_level_5fold_nearest_layer_accuracy": 0.6206896551724138,
+  "close_cross_foil_pairs": 221,
+  "median_dprime_original_flow_z3": 6.394677868253476,
+  "median_dprime_global_varying_z3": 2.6991517839094863,
+  "fraction_pairs_improved": 0.03619909502262444
+}

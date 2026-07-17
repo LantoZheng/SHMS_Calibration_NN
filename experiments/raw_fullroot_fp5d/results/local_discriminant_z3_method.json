@@ -1,0 +1,6 @@
+{
+  "coordinate": "z3_local = w_local^T robust_scaled(FP5D) + b_local",
+  "w_local": "shrinkage Fisher/LDA normal fitted within each local sieve neighbourhood from provisional HDBSCAN branch labels",
+  "evaluation": "five-fold out-of-fold decision score; sign oriented by local reconstructed ytar mean",
+  "use": "local cluster refinement; not a globally meaningful coordinate"
+}

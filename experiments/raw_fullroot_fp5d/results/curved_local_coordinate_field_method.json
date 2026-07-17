@@ -1,0 +1,6 @@
+{
+  "local_basis": "u=(z3,z4,z5)=whitened PCA(FP5D), fitted independently in each conflict cell from high-confidence seeds",
+  "curved_coordinate": "s(u)=beta0 + sum beta_i u_i + sum beta_ij u_i*u_j; s=0 is the local curved branch surface",
+  "interpretation": "the local normal/branch coordinate can rotate and bend with z4,z5; values remain local to each sieve neighbourhood",
+  "evaluation": "five-fold OOF AUC over seed events; it remains weakly supervised by existing density-cluster seeds"
+}

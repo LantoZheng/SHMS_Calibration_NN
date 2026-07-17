@@ -1,0 +1,59 @@
+{
+  "posthoc_only": "three-component GMM of inferred-cluster median ytar; no foil label used in flow or HDBSCAN",
+  "bands": [
+    {
+      "band": 0,
+      "cluster_count": 75,
+      "median_ytar": -2.1147259454741296,
+      "ytar_q16_q84": [
+        -2.353665233504039,
+        -1.4636169647654884
+      ],
+      "median_cluster_events": 349.0,
+      "sieve_x_range": [
+        -13.610167265497722,
+        12.778432271410562
+      ],
+      "sieve_y_range": [
+        -7.838527199371484,
+        4.755000397656876
+      ]
+    },
+    {
+      "band": 1,
+      "cluster_count": 72,
+      "median_ytar": 0.17100486112838487,
+      "ytar_q16_q84": [
+        0.009255445456792638,
+        0.3717961059863404
+      ],
+      "median_cluster_events": 399.5,
+      "sieve_x_range": [
+        -12.464412194282168,
+        12.670047024670914
+      ],
+      "sieve_y_range": [
+        -6.566051283183958,
+        6.168544783184981
+      ]
+    },
+    {
+      "band": 2,
+      "cluster_count": 85,
+      "median_ytar": 2.4194535100773127,
+      "ytar_q16_q84": [
+        2.0490258176636345,
+        2.8793234049418865
+      ],
+      "median_cluster_events": 383.0,
+      "sieve_x_range": [
+        -12.287856931053527,
+        12.56149885395568
+      ],
+      "sieve_y_range": [
+        -5.538437185344536,
+        6.749475745114564
+      ]
+    }
+  ]
+}

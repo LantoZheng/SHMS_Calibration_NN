@@ -1,0 +1,52 @@
+{
+  "definition": "z3_prime=C(z1,z2,z3); (z1_prime,z2_prime) are the C=0 footpoint obtained by normalized gradient flow",
+  "training_weak_supervision": "cluster-level final relative foil rank only; reconstructed ytar excluded",
+  "inference_requires_foil_label": false,
+  "continuity": "C is a normalized Gaussian-RBF varying-affine field; gradient transport is continuous",
+  "normal_coordinate_property": "transport paths follow grad(C), which is orthogonal to every C=constant sheet",
+  "experts": 36,
+  "ridge_alpha": 0.01,
+  "rbf_width": 0.7905862645193663,
+  "z3_input_scale": 0.8035710553929233,
+  "cluster_5fold_mae": 0.1907762703469273,
+  "cluster_5fold_nearest_foil_accuracy": 0.9224137931034483,
+  "minimum_vertical_foliation_slope": 0.14307390606725554,
+  "max_abs_reference_surface_residual": 0.000875162588168471,
+  "plane_fit_before": {
+    "0": {
+      "plane_rmse": 0.3740204667447637,
+      "surface_slope": 0.08820882591621096
+    },
+    "1": {
+      "plane_rmse": 0.3829092452264973,
+      "surface_slope": 0.0347380508827784
+    },
+    "2": {
+      "plane_rmse": 0.19047382843571098,
+      "surface_slope": 0.06258495170695409
+    }
+  },
+  "plane_fit_after": {
+    "0": {
+      "plane_rmse": 0.220929979552886,
+      "surface_slope": 0.045552150546136316
+    },
+    "1": {
+      "plane_rmse": 0.2738939748965048,
+      "surface_slope": 0.056766290236395754
+    },
+    "2": {
+      "plane_rmse": 0.18087706231050246,
+      "surface_slope": 0.03066660494814657
+    }
+  },
+  "mean_pairwise_sheet_normal_angle_deg_before": 5.8105744066598275,
+  "mean_pairwise_sheet_normal_angle_deg_after": 3.869356917720706,
+  "close_cross_foil_pairs": {
+    "pairs": 221,
+    "median_dprime_before": 6.597650555287997,
+    "median_dprime_after": 6.346942001377849,
+    "p10_dprime_before": 4.283995448558297,
+    "p10_dprime_after": 4.412858255446906
+  }
+}

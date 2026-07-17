@@ -1,0 +1,11 @@
+{
+  "space": "raw robust-scaled measured FP5D; no reconstructed targets",
+  "events": 155057,
+  "min_cluster_size": 60,
+  "min_samples": 10,
+  "selection": "eom",
+  "clusters": 2,
+  "noise_fraction": 0.31050516906685927,
+  "median_cluster_events": 53455.5,
+  "largest_cluster_fraction": 0.6890691810108541
+}

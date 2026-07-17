@@ -1,0 +1,302 @@
+[
+  {
+    "clusters": [
+      219,
+      220
+    ],
+    "sieve_center_distance_cm": 0.5674818369061428,
+    "best_raw_fp_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_2d_lda_auc": 0.9994122185077697,
+    "fisher_dprime": 4.4253377910005565,
+    "all_pairs": [
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.9994122185077697,
+        "fisher_dprime": 4.4253377910005565
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.9923772087726388,
+        "fisher_dprime": 4.459440670919223
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.9069652106829287,
+        "fisher_dprime": 1.8885812170112326
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.9048528709452259,
+        "fisher_dprime": 2.021182971806416
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.y_fp",
+        "auc": 0.7883711105396568,
+        "fisher_dprime": 0.8926988326515686
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.7801329855626171,
+        "fisher_dprime": 1.1865446417648102
+      },
+      {
+        "feature_x": "P.dc.yp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.6996436574703354,
+        "fisher_dprime": 0.8064885106322738
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.6509588185592006,
+        "fisher_dprime": 0.5861452828867272
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.6034862789757908,
+        "fisher_dprime": 0.4039203650584963
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.568219389441975,
+        "fisher_dprime": 0.29232989789023384
+      }
+    ]
+  },
+  {
+    "clusters": [
+      97,
+      110
+    ],
+    "sieve_center_distance_cm": 0.012089515845494858,
+    "best_raw_fp_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_2d_lda_auc": 1.0,
+    "fisher_dprime": 7.475234282192839,
+    "all_pairs": [
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 1.0,
+        "fisher_dprime": 7.475234282192839
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.8030098831985624,
+        "fisher_dprime": 1.3035478861408478
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.y_fp",
+        "auc": 0.796832884097035,
+        "fisher_dprime": 1.271343844289591
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.7270440251572325,
+        "fisher_dprime": 0.8952496141469651
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.7085953878406709,
+        "fisher_dprime": 0.8627049271322261
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.6475965858041329,
+        "fisher_dprime": 0.6970881561441066
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.6078990715783169,
+        "fisher_dprime": 0.9734117576782483
+      },
+      {
+        "feature_x": "P.dc.yp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5953279424977538,
+        "fisher_dprime": 0.528043957438246
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5187481281820905,
+        "fisher_dprime": 0.07471861405160742
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5046046720575023,
+        "fisher_dprime": 0.09651275084104345
+      }
+    ]
+  },
+  {
+    "clusters": [
+      128,
+      150
+    ],
+    "sieve_center_distance_cm": 0.013379202057228317,
+    "best_raw_fp_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_2d_lda_auc": 1.0,
+    "fisher_dprime": 7.984395516091707,
+    "all_pairs": [
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 1.0,
+        "fisher_dprime": 7.984395516091707
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.y_fp",
+        "auc": 0.9305478612754936,
+        "fisher_dprime": 2.0720435074952266
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.9238082834071374,
+        "fisher_dprime": 1.9949865965548317
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.7136633292854286,
+        "fisher_dprime": 0.9004084688374999
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.655668839816707,
+        "fisher_dprime": 1.0430759110156693
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.6131951909424769,
+        "fisher_dprime": 0.527601513089011
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.5954272129259014,
+        "fisher_dprime": 0.4592333036753152
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5533039340497268,
+        "fisher_dprime": 0.2345515214837307
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5445997160352058,
+        "fisher_dprime": 0.20713954790440464
+      },
+      {
+        "feature_x": "P.dc.yp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5414005261053165,
+        "fisher_dprime": 0.03510418894362391
+      }
+    ]
+  },
+  {
+    "clusters": [
+      100,
+      107
+    ],
+    "sieve_center_distance_cm": 0.013599789400962431,
+    "best_raw_fp_pair": [
+      "P.dc.y_fp",
+      "P.dc.yp_fp"
+    ],
+    "cross_validated_2d_lda_auc": 0.9985490170027236,
+    "fisher_dprime": 3.9635378623220014,
+    "all_pairs": [
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.9985490170027236,
+        "fisher_dprime": 3.9635378623220014
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.8096555051693454,
+        "fisher_dprime": 1.1709369805148346
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.y_fp",
+        "auc": 0.808120609902347,
+        "fisher_dprime": 1.1621778082496157
+      },
+      {
+        "feature_x": "P.dc.y_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.7635666910245338,
+        "fisher_dprime": 0.9854033030455087
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.6923426557534098,
+        "fisher_dprime": 0.662089292144049
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.dc.yp_fp",
+        "auc": 0.6864967676294434,
+        "fisher_dprime": 0.6453625300513948
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.dc.xp_fp",
+        "auc": 0.5624499585683168,
+        "fisher_dprime": 0.5385162891433193
+      },
+      {
+        "feature_x": "P.dc.x_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5319408558352242,
+        "fisher_dprime": 0.14341671861651734
+      },
+      {
+        "feature_x": "P.dc.xp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5283571026491802,
+        "fisher_dprime": 0.13204314953059446
+      },
+      {
+        "feature_x": "P.dc.yp_fp",
+        "feature_y": "P.rb.raster.frybRawAdc",
+        "auc": 0.5192840884854885,
+        "fisher_dprime": 0.31023806046723185
+      }
+    ]
+  }
+]

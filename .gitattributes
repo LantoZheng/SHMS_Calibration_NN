@@ -1,0 +1,5 @@
+experiments/raw_fullroot_fp5d/results/*.csv filter=lfs diff=lfs merge=lfs -text
+experiments/raw_fullroot_fp5d/results/*.png filter=lfs diff=lfs merge=lfs -text
+experiments/raw_fullroot_fp5d/results/*.html filter=lfs diff=lfs merge=lfs -text
+experiments/raw_fullroot_fp5d/results/*.js filter=lfs diff=lfs merge=lfs -text
+experiments/raw_fullroot_fp5d/results/*.pt filter=lfs diff=lfs merge=lfs -text

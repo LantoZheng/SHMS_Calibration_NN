@@ -1,0 +1,34 @@
+{
+  "description": "Event-level 3-component GMM of reconstructed P.gtr.y for visualization only; not truth foil labels.",
+  "coordinate": [
+    "sieve_x",
+    "sieve_y",
+    "P.gtr.y"
+  ],
+  "components": [
+    {
+      "slice": 0,
+      "ytar_mean_cm": -2.0624854992424693,
+      "ytar_sigma_cm": 0.41633443160877115,
+      "mixture_weight": 0.2862895349074094,
+      "argmax_events": 27472,
+      "median_posterior": 0.9999998773990855
+    },
+    {
+      "slice": 1,
+      "ytar_mean_cm": 0.15295400176266655,
+      "ytar_sigma_cm": 0.40364624473970306,
+      "mixture_weight": 0.3412156390491118,
+      "argmax_events": 32629,
+      "median_posterior": 0.9995958678439636
+    },
+    {
+      "slice": 2,
+      "ytar_mean_cm": 2.344353399878811,
+      "ytar_sigma_cm": 0.555682484246551,
+      "mixture_weight": 0.3724948260434788,
+      "argmax_events": 35597,
+      "median_posterior": 0.9999993125356834
+    }
+  ]
+}

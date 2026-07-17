@@ -1,0 +1,18 @@
+{
+  "method": "z3 = PC1[FP5D - E(FP5D | reconstructed sieve_x, sieve_y)]",
+  "conditional_mean_model": "degree-5 polynomial ridge regression, no cluster/foil/ytar labels",
+  "residual_pc_explained_variance": [
+    0.49495716171421517,
+    0.3359877124289967,
+    0.16244843925212143,
+    0.004402030538539677,
+    0.0022046560661270515
+  ],
+  "pc1_weights_in_robust_scaled_fp5d": {
+    "P.dc.x_fp": 0.70078204678676,
+    "P.dc.y_fp": -0.3579135047712072,
+    "P.dc.xp_fp": 0.5856252206690923,
+    "P.dc.yp_fp": -0.19153818558187488,
+    "P.rb.raster.frybRawAdc": 0.03403924770070635
+  }
+}

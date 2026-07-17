@@ -1,0 +1,15 @@
+{
+  "inference_input": "cluster median flow_z1,z2,z3 only; sieve_x/sieve_y excluded",
+  "z_normalization": "robust centre standard deviation",
+  "translation_score": 122,
+  "translation_normalized": [
+    0.0009304883680716358,
+    0.45096807497851216,
+    1.2031832936850866
+  ],
+  "matching_tolerance": 0.22,
+  "one_to_one_translation_edges": 126,
+  "translation_components": 73,
+  "valid_relative_hole_families_size_2_or_3": 72,
+  "clusters_in_relative_families": 195
+}

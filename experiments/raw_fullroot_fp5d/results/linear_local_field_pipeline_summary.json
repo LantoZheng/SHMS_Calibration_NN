@@ -1,0 +1,21 @@
+{
+  "input": "raw_fullroot_flow_hdbscan_labels.csv",
+  "stage_1": "continuous-prior FP5D flow + HDBSCAN",
+  "stage_2": "sieve-local, high-confidence-seeded shrinkage-LDA field in original FP5D",
+  "sieve_used_for": "finding conflict cells only; never as a label or a clustering coordinate",
+  "ytar_used_for": "binary z3 display orientation only; never as a routing label",
+  "parameters": {
+    "sieve_conflict_radius_cm": 0.9,
+    "seed_probability": 0.8,
+    "min_seed_events_per_branch": 20,
+    "reassign_probability": 0.9,
+    "reassign_margin": 0.2
+  },
+  "clusters_in_stage_1": 232,
+  "candidate_conflict_cells": 75,
+  "resolved_cells": 75,
+  "skipped_cells": 0,
+  "events_routed_by_local_fields": 91241,
+  "conservative_reassignments": 898,
+  "median_oof_seed_balanced_accuracy": 0.9985875706214689
+}

@@ -1,0 +1,16 @@
+{
+  "inference": "relative-Z seeds -> graph label spreading -> quadratic layer warps -> global one-to-one canonical matching",
+  "sieve_coordinates_used_in_inference": false,
+  "previous_matched_clusters": 195,
+  "previous_unmatched_clusters": 37,
+  "foil_layer_classifier": "15-neighbour LabelSpreading in Z",
+  "foil_layer_classifier_oof_balanced_accuracy": 0.9120370370370371,
+  "canonical_reference_layer": 1,
+  "quadratic_seed_pair_error_q90": 0.037275559322663916,
+  "canonical_median_lattice_spacing": 0.3238956751544545,
+  "adaptive_match_threshold": 0.2008153185957618,
+  "accepted_edges": 136,
+  "canonical_hole_families": 78,
+  "canonical_matched_clusters": 214,
+  "canonical_unmatched_clusters": 18
+}
