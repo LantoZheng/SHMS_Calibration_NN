@@ -1,0 +1,84 @@
+{
+  "n_events": 60000,
+  "train_events": 47467,
+  "test_events": 12533,
+  "held_out_complete_reference_holes": 44,
+  "input_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "P_rb_raster_frybRawAdc"
+  ],
+  "weak_targets": [
+    "cluster_center_x",
+    "cluster_center_y",
+    "foil_ytar_center"
+  ],
+  "split": "all events from selected foil+sieve reference clusters excluded from training",
+  "model": "6-coupling RealNVP, exactly invertible 5D-to-5D; first 3 axes weakly supervised, final 2 residual axes retained",
+  "training_checkpoints": [
+    {
+      "epoch": 1,
+      "loss": 0.6492961558670914
+    },
+    {
+      "epoch": 25,
+      "loss": 0.02619014357048882
+    },
+    {
+      "epoch": 50,
+      "loss": 0.023493751753933506
+    },
+    {
+      "epoch": 100,
+      "loss": 0.0189596569316233
+    }
+  ],
+  "round_trip_max_abs_error": 2.47955322265625e-05,
+  "metrics": {
+    "raw_5d": {
+      "target_knn_overlap_k20": 0.024754647729992817,
+      "same_reference_cluster_fraction_k20": 0.3937205776749382,
+      "reference_cluster_silhouette": -0.16736860573291779
+    },
+    "flow_full_5d_equal_weight": {
+      "target_knn_overlap_k20": 0.07057767493816325,
+      "same_reference_cluster_fraction_k20": 0.9902537301523977,
+      "reference_cluster_silhouette": 0.4801500141620636,
+      "target_rmse_scaled": 0.1359537520504323
+    },
+    "flow_full_5d_residual_weight_0p10": {
+      "target_knn_overlap_k20": 0.071535147211362,
+      "same_reference_cluster_fraction_k20": 0.9903534668475226,
+      "reference_cluster_silhouette": 0.5385472774505615,
+      "target_rmse_scaled": 0.1359537520504323
+    }
+  },
+  "hdbscan_on_held_out_holes": {
+    "selection_rule": "clusters>=20, noise<0.50, largest cluster<10%; then maximal reference-hole AMI",
+    "best_candidate": {
+      "space": "flow_5d_residual_weight_0p10",
+      "min_cluster_size": 15,
+      "selection": "eom",
+      "clusters": 46,
+      "noise_fraction": 0.03319237213755688,
+      "median_cluster_size": 244.0,
+      "max_cluster_fraction": 0.05617170669432698,
+      "reference_hole_ami": 0.9584342504361953,
+      "reference_hole_ari": 0.9283821762046349
+    },
+    "raw_baseline_best": {
+      "space": "raw_5d",
+      "min_cluster_size": 15,
+      "selection": "leaf",
+      "clusters": 130,
+      "noise_fraction": 0.7055772759913828,
+      "median_cluster_size": 23.0,
+      "max_cluster_fraction": 0.0070214633367908725,
+      "reference_hole_ami": 0.23353257435243907,
+      "reference_hole_ari": -0.0016600940567413828
+    }
+  },
+  "caution": "Targets are reconstructed sieve/foil references from this run; held-out holes test interpolation but not external physical truth or cross-run transfer."
+}
