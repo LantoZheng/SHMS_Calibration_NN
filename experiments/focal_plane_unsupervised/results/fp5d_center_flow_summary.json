@@ -1,0 +1,57 @@
+{
+  "reference_centers": 220,
+  "fp_features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "P_rb_raster_frybRawAdc"
+  ],
+  "interpretation": "Each point is an existing sieve-cluster event mean in original measured FP coordinates.",
+  "per_foil": [
+    {
+      "foil": 0,
+      "holes": 66,
+      "center_pca_first2_fraction": 0.7478372862779752,
+      "center_pca_effective_dimension": 2.9030171727732226,
+      "fp5d_vs_sieve_distance_spearman": 0.6071000588692304,
+      "median_5d_nearest_center_grid_separation": 1.0,
+      "fraction_5d_nearest_center_grid_adjacent": 0.8333333333333334
+    },
+    {
+      "foil": 1,
+      "holes": 77,
+      "center_pca_first2_fraction": 0.8138781276153179,
+      "center_pca_effective_dimension": 2.684907587629591,
+      "fp5d_vs_sieve_distance_spearman": 0.5893916671979356,
+      "median_5d_nearest_center_grid_separation": 1.0,
+      "fraction_5d_nearest_center_grid_adjacent": 0.7402597402597403
+    },
+    {
+      "foil": 2,
+      "holes": 77,
+      "center_pca_first2_fraction": 0.8005062028677515,
+      "center_pca_effective_dimension": 2.357425740945687,
+      "fp5d_vs_sieve_distance_spearman": 0.5302401435197724,
+      "median_5d_nearest_center_grid_separation": 1.0,
+      "fraction_5d_nearest_center_grid_adjacent": 0.6493506493506493
+    }
+  ],
+  "cross_foil_same_grid": [
+    {
+      "foil_pair": "0-1",
+      "common_grid_positions": 66,
+      "median_same_grid_5d_distance": 0.35962436379595825
+    },
+    {
+      "foil_pair": "0-2",
+      "common_grid_positions": 59,
+      "median_same_grid_5d_distance": 0.45902016839528564
+    },
+    {
+      "foil_pair": "1-2",
+      "common_grid_positions": 71,
+      "median_same_grid_5d_distance": 0.3266160911240615
+    }
+  ]
+}

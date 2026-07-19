@@ -1,118 +1,138 @@
 {
   "classified_clusters": 232,
   "canonical_relative_mapping_clusters": 214,
-  "nearest_neighbour_completed_clusters": 18,
+  "local_cross_foil_completed_clusters": 18,
+  "nearest_fallback_completed_clusters": 0,
+  "eligible_multi_foil_anchor_families": 78,
   "remaining_unclassified_clusters": 0,
-  "nearest_distance_median": 0.3842749112499002,
-  "nearest_distance_max": 0.742099547427391,
-  "nearest_assignments": [
+  "cross_foil_relation_distance_median": 0.37286781913385114,
+  "cross_foil_relation_distance_max": 0.762309753950194,
+  "relational_assignments": [
     {
       "cluster": 0,
       "foil": 1,
-      "nearest_cluster": 5,
-      "distance_Z": 0.3339361218469555
+      "anchor_family": 2,
+      "anchor_clusters": "5;8",
+      "distance": 0.35821195857055416
     },
     {
       "cluster": 11,
       "foil": 0,
-      "nearest_cluster": 8,
-      "distance_Z": 0.3456174938610661
+      "anchor_family": 2,
+      "anchor_clusters": "5;8",
+      "distance": 0.35796191761100765
     },
     {
       "cluster": 14,
       "foil": 0,
-      "nearest_cluster": 6,
-      "distance_Z": 0.4162929335277219
+      "anchor_family": 17,
+      "anchor_clusters": "32;49;91",
+      "distance": 0.40505744469193683
     },
     {
       "cluster": 15,
       "foil": 0,
-      "nearest_cluster": 68,
-      "distance_Z": 0.2954213408982383
+      "anchor_family": 25,
+      "anchor_clusters": "67;68",
+      "distance": 0.35405629281327955
     },
     {
       "cluster": 16,
       "foil": 0,
-      "nearest_cluster": 69,
-      "distance_Z": 0.5036348937531598
+      "anchor_family": 5,
+      "anchor_clusters": "9;12;19",
+      "distance": 0.6166310495184125
     },
     {
       "cluster": 24,
       "foil": 0,
-      "nearest_cluster": 219,
-      "distance_Z": 0.4973577015158572
+      "anchor_family": 68,
+      "anchor_clusters": "217;219",
+      "distance": 0.5390865321531486
     },
     {
       "cluster": 33,
       "foil": 0,
-      "nearest_cluster": 20,
-      "distance_Z": 0.3396524602806736
+      "anchor_family": 7,
+      "anchor_clusters": "20;53",
+      "distance": 0.39144782358788255
     },
     {
       "cluster": 38,
       "foil": 0,
-      "nearest_cluster": 134,
-      "distance_Z": 0.4573359182988485
+      "anchor_family": 53,
+      "anchor_clusters": "134;145",
+      "distance": 0.5055623638771268
     },
     {
       "cluster": 42,
       "foil": 1,
-      "nearest_cluster": 67,
-      "distance_Z": 0.2969557038888956
+      "anchor_family": 25,
+      "anchor_clusters": "67;68",
+      "distance": 0.3430386690427335
     },
     {
       "cluster": 44,
       "foil": 0,
-      "nearest_cluster": 160,
-      "distance_Z": 0.3808279695398732
+      "anchor_family": 46,
+      "anchor_clusters": "116;117",
+      "distance": 0.3493408075999733
     },
     {
       "cluster": 165,
       "foil": 0,
-      "nearest_cluster": 158,
-      "distance_Z": 0.31491598281892064
+      "anchor_family": 39,
+      "anchor_clusters": "98;154;158",
+      "distance": 0.3702389444558337
     },
     {
       "cluster": 171,
       "foil": 1,
-      "nearest_cluster": 217,
-      "distance_Z": 0.742099547427391
+      "anchor_family": 68,
+      "anchor_clusters": "182;217;219",
+      "distance": 0.762309753950194
     },
     {
       "cluster": 197,
       "foil": 1,
-      "nearest_cluster": 225,
-      "distance_Z": 0.2669195422061051
+      "anchor_family": 69,
+      "anchor_clusters": "185;225",
+      "distance": 0.3601980847036482
     },
     {
       "cluster": 199,
       "foil": 0,
-      "nearest_cluster": 219,
-      "distance_Z": 0.3877218529599272
+      "anchor_family": 69,
+      "anchor_clusters": "185;225",
+      "distance": 0.3063207927244477
     },
     {
       "cluster": 207,
       "foil": 0,
-      "nearest_cluster": 177,
-      "distance_Z": 0.5161289739097241
+      "anchor_family": 64,
+      "anchor_clusters": "181;201",
+      "distance": 0.516202380608255
     },
     {
       "cluster": 209,
       "foil": 2,
-      "nearest_cluster": 231,
-      "distance_Z": 0.28129934896392705
+      "anchor_family": 76,
+      "anchor_clusters": "212;223;231",
+      "distance": 0.31247553082375407
     },
     {
       "cluster": 215,
       "foil": 1,
-      "nearest_cluster": 226,
-      "distance_Z": 0.4694887431847217
+      "anchor_family": 77,
+      "anchor_clusters": "220;226;230",
+      "distance": 0.37549669381186856
     },
     {
       "cluster": 222,
       "foil": 1,
-      "nearest_cluster": 226,
-      "distance_Z": 0.4049116687421305
+      "anchor_family": 77,
+      "anchor_clusters": "220;226;230",
+      "distance": 0.40551515356526857
     }
   ]
 }

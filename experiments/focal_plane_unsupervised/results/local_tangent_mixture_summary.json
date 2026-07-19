@@ -1,0 +1,50 @@
+{
+  "n_events": 24000,
+  "features": [
+    "P_dc_x_fp",
+    "P_dc_y_fp",
+    "P_dc_xp_fp",
+    "P_dc_yp_fp",
+    "P_rb_raster_frybRawAdc"
+  ],
+  "method": "full-covariance Gaussian mixture: each component is a soft local tangent expert in raw robust-scaled 5D",
+  "not_used_in_fit": [
+    "sieve_x",
+    "sieve_y",
+    "foil_position",
+    "cluster",
+    "P_gtr_y",
+    "cluster_center_x",
+    "cluster_center_y"
+  ],
+  "evaluation_only": "existing sieve-plane cluster and foil labels",
+  "best_by_reference_ami": {
+    "components": 220,
+    "converged": true,
+    "iterations": 121,
+    "bic": -74078.05315255269,
+    "active_components": 220,
+    "median_component_size": 88.5,
+    "max_component_fraction": 0.018666666666666668,
+    "posterior_entropy_median": 0.6754215602391185,
+    "expert_effective_dimension_median": 2.098200040698101,
+    "reference_hole_ami": 0.45361796996015297,
+    "reference_hole_ari": 0.11727933411988893,
+    "reference_foil_ami": 0.14743155762571103
+  },
+  "best_by_bic": {
+    "components": 100,
+    "converged": true,
+    "iterations": 95,
+    "bic": -85335.03383766848,
+    "active_components": 100,
+    "median_component_size": 182.0,
+    "max_component_fraction": 0.042291666666666665,
+    "posterior_entropy_median": 0.8039416832632292,
+    "expert_effective_dimension_median": 2.036202475731901,
+    "reference_hole_ami": 0.42939039017860314,
+    "reference_hole_ari": 0.0967488370512807,
+    "reference_foil_ami": 0.11195000231812645
+  },
+  "verdict": "This tests whether local tangent patches naturally coincide with holes; no reconstructed coordinate is used to guide the experts."
+}

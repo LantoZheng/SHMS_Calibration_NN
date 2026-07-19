@@ -10,6 +10,7 @@ unsupervised) full-data clustering experiment.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -26,7 +27,10 @@ from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
 
-RAW = Path(r"C:\Users\Lanto\Desktop\AI_ML R-SIDIS\RootData\shms_coin_replay_production_25521_-1.root")
+RAW = Path(os.environ.get(
+    "SHMS_RUN25521_ROOT",
+    Path(__file__).resolve().parents[3] / "RootData" / "shms_coin_replay_production_25521_-1.root",
+)).expanduser().resolve()
 OUT = Path(__file__).parent / "results"
 SEED = 25521
 FP = ["P.dc.x_fp", "P.dc.y_fp", "P.dc.xp_fp", "P.dc.yp_fp"]
